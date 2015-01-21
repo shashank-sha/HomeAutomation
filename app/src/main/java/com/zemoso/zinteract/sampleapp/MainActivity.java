@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.zemoso.zinteract.sdk.Zinteract;
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -12,6 +14,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Zinteract.initializeWithContextAndKey(getApplicationContext(),"AndroidAPIKey");
     }
 
 
@@ -35,5 +38,17 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Zinteract.startSession();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Zinteract.endSession();
     }
 }
