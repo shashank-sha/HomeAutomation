@@ -15,6 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,12 +42,13 @@ public class HttpHelper {
         return httpHelper;
     }
 
-    public static HttpResponse doPost(String url, List<NameValuePair> postParams){
+    public static String doPost(String url, List<NameValuePair> postParams){
 
         if(BuildConfig.DEBUG){
             Log.d(TAG,"doPost() called");
         }
         HttpResponse response = null;
+        String stringResponse = null;
         HttpPost postRequest = new HttpPost(url);
         try {
             postRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
@@ -59,7 +61,7 @@ public class HttpHelper {
         HttpClient client = new DefaultHttpClient();
         try {
             response = client.execute(postRequest);
-            //String stringResponse = EntityUtils.toString(response.getEntity());
+            stringResponse = EntityUtils.toString(response.getEntity());
         } catch (org.apache.http.conn.HttpHostConnectException e) {
             // Log.w(TAG,
             // "No internet connection found, unable to upload events");
@@ -81,6 +83,6 @@ public class HttpHelper {
                 client.getConnectionManager().shutdown();
             }
         }
-        return response;
+        return stringResponse;
     }
 }

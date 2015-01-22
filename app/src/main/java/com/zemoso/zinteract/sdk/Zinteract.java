@@ -370,7 +370,7 @@ public class Zinteract {
 
         boolean uploadSuccess = false;
         try {
-            HttpResponse response = HttpHelper.getHttpHelper().doPost(url,postParams);
+            String response = HttpHelper.getHttpHelper().doPost(url,postParams);
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
             Log.e(TAG, "Exception:", e);
@@ -420,9 +420,9 @@ public class Zinteract {
 
         boolean syncSuccess = false;
         try {
-            HttpResponse response = HttpHelper.getHttpHelper().doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
-            String stringResponse = EntityUtils.toString(response.getEntity());
-            final JSONObject jsonResponse = new JSONObject(stringResponse);
+            String response = HttpHelper.getHttpHelper().doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
+            //String stringResponse = EntityUtils.toString(response.getEntity());
+            final JSONObject jsonResponse = new JSONObject(response);
             if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
                 if(BuildConfig.DEBUG){
                     Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
@@ -494,9 +494,9 @@ public class Zinteract {
 
         boolean uploadSuccess = false;
         try {
-            HttpResponse response = HttpHelper.getHttpHelper().doPost(url,postParams);
-            String stringResponse = EntityUtils.toString(response.getEntity());
-            JSONObject jsonResponse = new JSONObject(stringResponse);
+            String response = HttpHelper.getHttpHelper().doPost(url,postParams);
+            //String stringResponse = EntityUtils.toString(response.getEntity());
+            JSONObject jsonResponse = new JSONObject(response);
             if (jsonResponse.getString("status").equals("success")) {
                 uploadSuccess = true;
                 logWorker.post(new Runnable() {
