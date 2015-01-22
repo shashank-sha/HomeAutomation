@@ -114,16 +114,50 @@ public class Zinteract {
                         && now - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
                     DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                     dbHelper.removeEvent(previousEndSessionId);
+
                 }
+                //startSession() can be called in every activity by developer, hence upload events and sync datastore
+                // only if it is a new session
+                syncToServerIfNeeded(now);
                 startNewSessionIfNeeded(now);
+
                 openSession();
 
                 // Update last event time
                 setLastEventTime(now);
+                //syncDataStore();
+                //uploadEvents();
+
+            }
+        });
+    }
+
+    private static void syncToServerIfNeeded(long timestamp){
+        if (!isSessionOpen) {
+            long lastEndSessionTime = getEndSessionTime();
+            if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
+                // Sessions close enough, set sessionId to previous sessionId
+
+                SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+                long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
+                        -1);
+
+                if (previousSessionId == -1) {
+                    syncDataStore();
+                    uploadEvents();
+                }
+            } else {
+                // Sessions not close enough, create new sessionId
                 syncDataStore();
                 uploadEvents();
             }
-        });
+        } else {
+            long lastEventTime = getLastEventTime();
+            if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
+                syncDataStore();
+                uploadEvents();
+            }
+        }
     }
 
     public static void endSession() {
@@ -259,10 +293,13 @@ public class Zinteract {
                 if(BuildConfig.DEBUG){
                     Log.d(TAG,"starting new session as session timedout");
                 }
+            }
+            else {
                 if(BuildConfig.DEBUG){
                     Log.d(TAG,"Already previous session is open so not starting another session");
                 }
             }
+
         }
     }
 
