@@ -45,6 +45,9 @@ public class Constants {
     public static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sessionStart";
     public static final String Z_INIT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/init";
 
+    //Promotions related
+    public static final String Z_PROMOTION_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/fetchPromo";
+
 
     public static final int Z_EVENT_MAX_COUNT = 100;
     public static final long Z_EVENT_REMOVE_BATCH_SIZE = 100;

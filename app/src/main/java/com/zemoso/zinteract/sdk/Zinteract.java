@@ -139,6 +139,10 @@ public class Zinteract {
         });
     }
 
+    private static void fetchPromotions(){
+
+    }
+
     private static void sync(){
         syncDataStore();
         uploadEvents();
