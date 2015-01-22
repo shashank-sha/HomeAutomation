@@ -2,13 +2,18 @@ package com.zemoso.zinteract.sdk;
 
 import android.util.Log;
 
+import com.zemoso.zinteract.sampleapp.BuildConfig;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
@@ -38,6 +43,9 @@ public class HttpHelper {
 
     public static HttpResponse doPost(String url, List<NameValuePair> postParams){
 
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"doPost() called");
+        }
         HttpResponse response = null;
         HttpPost postRequest = new HttpPost(url);
         try {

@@ -132,6 +132,11 @@ public class Zinteract {
         });
     }
 
+    private static void sync(){
+        syncDataStore();
+        uploadEvents();
+    }
+
     private static void syncToServerIfNeeded(long timestamp){
         if (!isSessionOpen) {
             long lastEndSessionTime = getEndSessionTime();
@@ -143,19 +148,16 @@ public class Zinteract {
                         -1);
 
                 if (previousSessionId == -1) {
-                    syncDataStore();
-                    uploadEvents();
+                    sync();
                 }
             } else {
                 // Sessions not close enough, create new sessionId
-                syncDataStore();
-                uploadEvents();
+                sync();
             }
         } else {
             long lastEventTime = getLastEventTime();
             if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
-                syncDataStore();
-                uploadEvents();
+                sync();
             }
         }
     }
@@ -303,7 +305,7 @@ public class Zinteract {
         }
     }
 
-    private static void startNewSession(long timestamp) {
+    private static void startNewSession(final long timestamp) {
         // Log session start in events
         openSession();
         sessionId = timestamp;
@@ -315,6 +317,65 @@ public class Zinteract {
         } catch (JSONException e) {
         }
         logEvent(START_SESSION_EVENT, null, apiProperties, timestamp, false);
+        logWorker.post(new Runnable() {
+            @Override
+            public void run() {
+                sendEventToServer(START_SESSION_EVENT, timestamp,Constants.Z_START_SESSION_EVENT_LOG_URL,true);
+            }
+        });
+
+    }
+
+    private static void sendEventToServer(final String eventType,final long timestamp,final String url, final boolean header){
+        httpWorker.post(new Runnable() {
+            @Override
+            public void run() {
+                sendEvent(eventType, timestamp,url,header);
+            }
+        });
+    }
+
+    private static void sendEvent(String eventType, long timestamp, String url,boolean header){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"Sending "+eventType+" separately");
+        }
+        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+
+        //postParams.add(new BasicNameValuePair("v", apiVersionString));
+        postParams.add(new BasicNameValuePair("apiKey", apiKey));
+        //postParams.add(new BasicNameValuePair("eventList", events));
+        postParams.add(new BasicNameValuePair("sdkId", Constants.Z_VERSION));
+        postParams.add(new BasicNameValuePair("appVersion", deviceDetails.getVersionName()));//
+        postParams.add(new BasicNameValuePair("appName", deviceDetails.getVersionName()));
+        postParams.add(new BasicNameValuePair("userId", userId));
+        postParams.add(new BasicNameValuePair("deviceId", deviceId));
+
+        postParams.add(new BasicNameValuePair("OSVersion", deviceDetails.getOSVersion()));
+        postParams.add(new BasicNameValuePair("deviceModel", deviceDetails.getModel()));//
+        postParams.add(new BasicNameValuePair("deviceDataProvider", deviceDetails.getCarrier()));
+        postParams.add(new BasicNameValuePair("language", deviceDetails.getLanguage()));
+        //postParams.add(new BasicNameValuePair("isLocationAvailable", deviceId));
+
+        //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));
+       // postParams.add(new BasicNameValuePair("lastLocation", deviceDetails.getMostRecentLocation().toString()));//
+        //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
+        //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
+        //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
+
+        //postParams.add(new BasicNameValuePair("lastPurchaseMadeTime", deviceDetails.getVersionName()));
+        //postParams.add(new BasicNameValuePair("lastCustomEventTime", userId));
+        //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
+        //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
+
+
+        boolean uploadSuccess = false;
+        try {
+            HttpResponse response = HttpHelper.getHttpHelper().doPost(url,postParams);
+        } catch (Exception e) {
+            // Just log any other exception so things don't crash on upload
+            Log.e(TAG, "Exception:", e);
+        } finally {
+        }
     }
 
     public static void uploadEvents() {
@@ -325,23 +386,9 @@ public class Zinteract {
         logWorker.post(new Runnable() {
             @Override
             public void run() {
-                updateScheduled.set(false);
                 updateServer();
             }
         });
-
-//        if(!updateScheduled.getAndSet(true)){
-//            if(BuildConfig.DEBUG){
-//                Log.d(TAG,"Upload server is not scheduled ");
-//            }
-//            logWorker.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    updateScheduled.set(false);
-//                    updateServer();
-//                }
-//            });
-//        }
     }
 
     public static void syncDataStore(){
@@ -605,41 +652,41 @@ public class Zinteract {
             event.put("event_type", CommonUtils.replaceWithJSONNull(eventType));
 
             event.put("timestamp", timestamp);
-            event.put("user_id", (userId == null) ? CommonUtils.replaceWithJSONNull(deviceId)
-                    : CommonUtils.replaceWithJSONNull(userId));
-            event.put("device_id", CommonUtils.replaceWithJSONNull(deviceId));
-            event.put("session_id", sessionId);
-            event.put("version_name", CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-            event.put("os_name", CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
-            event.put("os_version", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
-            event.put("device_brand", CommonUtils.replaceWithJSONNull(deviceDetails.getBrand()));
-            event.put("device_manufacturer", CommonUtils.replaceWithJSONNull(deviceDetails.getManufacturer()));
-            event.put("device_model", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
-            event.put("carrier", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
-            event.put("country", CommonUtils.replaceWithJSONNull(deviceDetails.getCountry()));
-            event.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
-            event.put("platform", Constants.Z_PLATFORM);
-
-            JSONObject library = new JSONObject();
-            //library.put("name", Constants.LIBRARY);
-            library.put("version", Constants.Z_VERSION);
-            event.put("library", library);
-
-            apiProperties = (apiProperties == null) ? new JSONObject() : apiProperties;
-            Location location = deviceDetails.getMostRecentLocation();
-            if (location != null) {
-                JSONObject locationJSON = new JSONObject();
-                locationJSON.put("lat", location.getLatitude());
-                locationJSON.put("lng", location.getLongitude());
-                apiProperties.put("location", locationJSON);
-            }
-            if (deviceDetails.getAdvertisingId() != null) {
-                apiProperties.put("androidADID", deviceDetails.getAdvertisingId());
-            }
-
-            event.put("api_properties", apiProperties);
-            event.put("event_properties", (eventProperties == null) ? new JSONObject()
-                    : eventProperties);
+//            event.put("user_id", (userId == null) ? CommonUtils.replaceWithJSONNull(deviceId)
+//                    : CommonUtils.replaceWithJSONNull(userId));
+//            event.put("device_id", CommonUtils.replaceWithJSONNull(deviceId));
+//            event.put("session_id", sessionId);
+//            event.put("version_name", CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+//            event.put("os_name", CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
+//            event.put("os_version", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
+//            event.put("device_brand", CommonUtils.replaceWithJSONNull(deviceDetails.getBrand()));
+//            event.put("device_manufacturer", CommonUtils.replaceWithJSONNull(deviceDetails.getManufacturer()));
+//            event.put("device_model", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
+//            event.put("carrier", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
+//            event.put("country", CommonUtils.replaceWithJSONNull(deviceDetails.getCountry()));
+//            event.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
+//            event.put("platform", Constants.Z_PLATFORM);
+//
+//            JSONObject library = new JSONObject();
+//            //library.put("name", Constants.LIBRARY);
+//            library.put("version", Constants.Z_VERSION);
+//            event.put("library", library);
+//
+//            apiProperties = (apiProperties == null) ? new JSONObject() : apiProperties;
+//            Location location = deviceDetails.getMostRecentLocation();
+//            if (location != null) {
+//                JSONObject locationJSON = new JSONObject();
+//                locationJSON.put("lat", location.getLatitude());
+//                locationJSON.put("lng", location.getLongitude());
+//                apiProperties.put("location", locationJSON);
+//            }
+//            if (deviceDetails.getAdvertisingId() != null) {
+//                apiProperties.put("androidADID", deviceDetails.getAdvertisingId());
+//            }
+//
+//            event.put("api_properties", apiProperties);
+//            event.put("event_properties", (eventProperties == null) ? new JSONObject()
+//                    : eventProperties);
             //event.put("user_properties", (userProperties == null) ? new JSONObject()
                     //: userProperties);
         } catch (JSONException e) {
