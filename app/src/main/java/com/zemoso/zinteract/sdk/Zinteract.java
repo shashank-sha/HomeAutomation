@@ -91,6 +91,13 @@ public class Zinteract {
                 userId = getUUID();
             }
             setUserId(userId);
+            //Send init event
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(),Constants.Z_INIT_LOG_URL,true);
+                }
+            });
 
         }
     }

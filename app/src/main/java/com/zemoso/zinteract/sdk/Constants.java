@@ -23,6 +23,7 @@ public class Constants {
     //session related
     public static final long Z_SESSION_TIMEOUT = 30*1000;//in milliseconds
     public static final String Z_SESSION_START_EVENT = "session_start";
+    public static final String Z_INIT_EVENT = "init";
     public static final String Z_SESSION_END_EVENT = "session_end";
     public static final long Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS = 15 * 1000; // 15s
     public static final String Z_PREFKEY_LAST_SESSION_TIME = Z_NAMESPACE+".last_session_time";
@@ -42,6 +43,8 @@ public class Constants {
     public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
     public static final String Z_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sendEvent";
     public static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sessionStart";
+    public static final String Z_INIT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/init";
+
 
     public static final int Z_EVENT_MAX_COUNT = 100;
     public static final long Z_EVENT_REMOVE_BATCH_SIZE = 100;
