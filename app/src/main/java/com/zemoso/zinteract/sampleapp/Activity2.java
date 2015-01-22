@@ -10,20 +10,19 @@ import android.view.View;
 import com.zemoso.zinteract.sdk.Zinteract;
 
 
-public class MainActivity extends ActionBarActivity {
+public class Activity2 extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Zinteract.initializeWithContextAndKey(getApplicationContext(),"AndroidAPIKey");
+        setContentView(R.layout.activity_activity2);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_activity2, menu);
         return true;
     }
 
@@ -46,6 +45,7 @@ public class MainActivity extends ActionBarActivity {
     public void onResume(){
         super.onResume();
         Zinteract.startSession();
+        Zinteract.logEvent("view screen2");
     }
 
     @Override
@@ -54,9 +54,17 @@ public class MainActivity extends ActionBarActivity {
         Zinteract.endSession();
     }
 
-    public void sendToActivity2(View view)
+    public void sendToActivity3(View view)
     {
-        Intent intent = new Intent(MainActivity.this, Activity2.class);
+        Zinteract.logEvent("clicked to view screen3");
+        Intent intent = new Intent(Activity2.this, Activity3.class);
+        startActivity(intent);
+    }
+
+    public void sendToActivity1(View view)
+    {
+        Zinteract.logEvent("clicked to view screen1");
+        Intent intent = new Intent(Activity2.this, MainActivity.class);
         startActivity(intent);
     }
 }

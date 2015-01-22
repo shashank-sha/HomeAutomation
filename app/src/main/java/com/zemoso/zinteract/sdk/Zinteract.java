@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
+import com.zemoso.zinteract.sampleapp.BuildConfig;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -64,6 +66,9 @@ public class Zinteract {
 
 
     public static void initializeWithContextAndKey(Context context, String apiKey) {
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"initializeWithContextAndKey() called");
+        }
         initialize(context, apiKey, null);
     }
 
@@ -91,6 +96,9 @@ public class Zinteract {
     }
 
     public static void startSession() {
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"startSession() called");
+        }
         if (!isContextAndApiKeySet("startSession()")) {
             return;
         }
@@ -119,6 +127,9 @@ public class Zinteract {
     }
 
     public static void endSession() {
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"endSession() called");
+        }
         if (!isContextAndApiKeySet("endSession()")) {
             return;
         }
@@ -157,6 +168,7 @@ public class Zinteract {
     }
 
     public static void setUserProperty(String key, String value){
+
         dataStore.setUserProperty(context, key, value);
     }
 
@@ -185,6 +197,9 @@ public class Zinteract {
             public void run() {
                 deviceId = initializeDeviceId();
                 deviceDetails.getadditionalDetails();
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"Device details initialization finished");
+                }
             }
         });
     }
@@ -221,18 +236,32 @@ public class Zinteract {
 
                 if (previousSessionId == -1) {
                     // Invalid session Id, create new sessionId
+
+
                     startNewSession(timestamp);
                 } else {
                     sessionId = previousSessionId;
+                    if(BuildConfig.DEBUG){
+                        Log.d(TAG,"starting new session is not required as very close previous session already exists");
+                    }
                 }
             } else {
                 // Sessions not close enough, create new sessionId
                 startNewSession(timestamp);
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"starting new session as previous session was not close enough");
+                }
             }
         } else {
             long lastEventTime = getLastEventTime();
             if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
                 startNewSession(timestamp);
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"starting new session as session timedout");
+                }
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"Already previous session is open so not starting another session");
+                }
             }
         }
     }
@@ -259,12 +288,29 @@ public class Zinteract {
         logWorker.post(new Runnable() {
             @Override
             public void run() {
+                updateScheduled.set(false);
                 updateServer();
             }
         });
+
+//        if(!updateScheduled.getAndSet(true)){
+//            if(BuildConfig.DEBUG){
+//                Log.d(TAG,"Upload server is not scheduled ");
+//            }
+//            logWorker.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    updateScheduled.set(false);
+//                    updateServer();
+//                }
+//            });
+//        }
     }
 
     public static void syncDataStore(){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
+        }
         if (!isContextAndApiKeySet("syncDataStore()")) {
             return;
         }
@@ -278,6 +324,9 @@ public class Zinteract {
     }
 
     private static void checkAndUpdateDataStore(){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"httpWorker is now making server request to update DataStore");
+        }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
         postParams.add(new BasicNameValuePair("apiKey", apiKey));
@@ -291,13 +340,22 @@ public class Zinteract {
             String stringResponse = EntityUtils.toString(response.getEntity());
             final JSONObject jsonResponse = new JSONObject(stringResponse);
             if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
+                }
                 syncSuccess = true;
+                synchingDataStoreCurrently.set(false);
                 logWorker.post(new Runnable() {
                     @Override
                     public void run() {
                         updateDataStore(jsonResponse);
                     }
                 });
+            }
+            else {
+                if(BuildConfig.DEBUG){
+                    Log.d(TAG,"DataStore already latest version, not updating local DataStore");
+                }
             }
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
@@ -306,12 +364,15 @@ public class Zinteract {
         }
 
         if (!syncSuccess) {
-            uploadingCurrently.set(false);
+            synchingDataStoreCurrently.set(false);
         }
 
     }
 
     private static void updateDataStore(JSONObject newDataStore){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"logWorker id updating local data store with the fetched data store");
+        }
         try {
             JSONObject variables = newDataStore.getJSONObject("variables");
             for(int i = 0; i<variables.names().length(); i++){
@@ -320,6 +381,9 @@ public class Zinteract {
             dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
         } catch (Exception e){
             Log.e(TAG, "Exception:", e);
+        }
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"DataStore update done, we have latest version now.");
         }
 
         synchingDataStoreCurrently.set(false);
@@ -330,6 +394,9 @@ public class Zinteract {
     }
 
     private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"httpWorker is uploading events now - "+events);
+        }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
         //postParams.add(new BasicNameValuePair("v", apiVersionString));
@@ -351,10 +418,16 @@ public class Zinteract {
                 logWorker.post(new Runnable() {
                     @Override
                     public void run() {
+                        if(BuildConfig.DEBUG){
+                            Log.d(TAG,"Events upload successful, trying to delete uploaded events");
+                        }
                         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                         dbHelper.removeEvents(maxId);
                         uploadingCurrently.set(false);
                         if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
+                            if(BuildConfig.DEBUG){
+                                Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
+                            }
                             logWorker.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -386,9 +459,19 @@ public class Zinteract {
                         limit ? Constants.Z_EVENT_UPLOAD_MAX_BATCH_SIZE : -1);
                 final long maxId = pair.first;
                 final JSONArray events = pair.second;
+                if(events.length() == 0){
+                    if(BuildConfig.DEBUG){
+                        Log.d(TAG,"httpWorker tried uploading events but found zero event, hence not making server request");
+                    }
+                    uploadingCurrently.set(false);
+                    return;
+                }
                 httpWorker.post(new Runnable() {
                     @Override
                     public void run() {
+                        if(BuildConfig.DEBUG){
+                            Log.d(TAG,"Asking httpWorker to upload "+events.length()+" events");
+                        }
                         makeEventUploadPostRequest(Constants.Z_EVENT_LOG_URL, events.toString(),
                                 maxId);
                     }
@@ -398,16 +481,29 @@ public class Zinteract {
                 Log.e(TAG, e.toString());
             }
         }
+        else {
+            if(BuildConfig.DEBUG){
+                Log.d(TAG,"Already uploading events to the server hence not uploading now");
+            }
+        }
     }
 
     private static void _syncDataStore() {
         if (!synchingDataStoreCurrently.getAndSet(true)) {
+            if(BuildConfig.DEBUG){
+                Log.d(TAG,"Asking httpWorker to sync datastore");
+            }
                 httpWorker.post(new Runnable() {
                     @Override
                     public void run() {
                         checkAndUpdateDataStore();
                     }
                 });
+        }
+        else {
+            if(BuildConfig.DEBUG){
+                Log.d(TAG,"sync datastore is already going on, so not syncing now");
+            }
         }
     }
 

@@ -39,10 +39,10 @@ public class Constants {
 
     //Events related
     public static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
-    public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 1;
+    public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
     public static final String Z_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sendEvent";
-    public static final int Z_EVENT_MAX_COUNT = 10;
-    public static final long Z_EVENT_REMOVE_BATCH_SIZE = 10;
-    public static final long Z_EVENT_UPLOAD_PERIOD_MILLIS = 5*1000;
+    public static final int Z_EVENT_MAX_COUNT = 100;
+    public static final long Z_EVENT_REMOVE_BATCH_SIZE = 100;
+    public static final long Z_EVENT_UPLOAD_PERIOD_MILLIS = 15*1000;
 
 }
