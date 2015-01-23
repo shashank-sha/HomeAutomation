@@ -53,7 +53,7 @@ public class InAppMessage extends Activity {
     private SystemUiHider mSystemUiHider;
 
     private static String campaignId;
-    public static final String TAG = "com.zemoso.zinteract.sdk.inAppMessage";
+    private static final String TAG = "com.zemoso.zinteract.sdk.inAppMessage";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

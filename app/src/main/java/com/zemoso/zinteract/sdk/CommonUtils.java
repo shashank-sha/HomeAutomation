@@ -28,8 +28,7 @@ public class CommonUtils {
     }
 
     public static SharedPreferences getSharedPreferences(Context context){
-        SharedPreferences preferences = context.getSharedPreferences(
+        return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-        return  preferences;
     }
 }

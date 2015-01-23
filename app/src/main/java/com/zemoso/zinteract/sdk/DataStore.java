@@ -58,8 +58,7 @@ public class DataStore extends UserProperties{
     }
 
     private SharedPreferences getSharedPreferences(Context context){
-        SharedPreferences preferences = context.getSharedPreferences(
+        return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME, Context.MODE_PRIVATE);
-        return  preferences;
     }
 }

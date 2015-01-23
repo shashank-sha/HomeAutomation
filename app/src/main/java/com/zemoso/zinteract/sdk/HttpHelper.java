@@ -46,9 +46,9 @@ public class HttpHelper {
             Log.d(TAG,"doPost() called");
         }
 
-        addRequiredParams(postParams);
+        postParams = addRequiredParams(postParams);
 
-        HttpResponse response = null;
+        HttpResponse response;
         String stringResponse = null;
         HttpPost postRequest = new HttpPost(url);
         try {
@@ -87,7 +87,7 @@ public class HttpHelper {
         return stringResponse;
     }
 
-    public static List<NameValuePair> addRequiredParams(List<NameValuePair> postParams){
+    private static List<NameValuePair> addRequiredParams(List<NameValuePair> postParams){
         postParams.add(new BasicNameValuePair("apiKey", Zinteract.getApiKey()));
         postParams.add(new BasicNameValuePair("userId", Zinteract.getUserId()));
         postParams.add(new BasicNameValuePair("deviceId", Zinteract.getDeviceId()));

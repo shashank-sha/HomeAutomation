@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class DeviceDetails {
 
-    public static final String TAG = "com.zemoso.zinteract.DeviceDetails";
+    private static final String TAG = "com.zemoso.zinteract.DeviceDetails";
 
     private boolean locationListening = true;
 
@@ -32,20 +32,20 @@ public class DeviceDetails {
 
 
     private static String versionName;
-    private static String osName = "android";
-    private static String osVersion = Build.VERSION.RELEASE;
-    private static String brand = Build.BRAND;
-    private static String manufacturer = Build.MANUFACTURER;
-    private static String model =Build.MODEL;
+    private static final String osName = "android";
+    private static final String osVersion = Build.VERSION.RELEASE;
+    private static final String brand = Build.BRAND;
+    private static final String manufacturer = Build.MANUFACTURER;
+    private static final String model =Build.MODEL;
     private static String carrier;
-    private static String language = Locale.getDefault().getLanguage();
+    private static final String language = Locale.getDefault().getLanguage();
 
     // Cached properties, since fetching these take time
     private String advertisingId;
     private String country;
 
     public DeviceDetails(Context context) {
-        this.context = context;
+        DeviceDetails.context = context;
     }
 
     public void getadditionalDetails(){

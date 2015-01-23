@@ -26,13 +26,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Zinteract {
 
-    public static final String TAG = "com.zemoso.zinteract.sdk.zinteract";
+    private static final String TAG = "com.zemoso.zinteract.sdk.zinteract";
     private static Context context;
     private static String apiKey;
     private static String userId;
     private static String deviceId;
 
-    private static DataStore dataStore = DataStore.getDataStore();
+    private static final DataStore dataStore = DataStore.getDataStore();
 
 
 
@@ -40,7 +40,7 @@ public class Zinteract {
 
     private static long sessionId = -1;
     private static boolean isSessionOpen = false;
-    private static long sessionTimeoutMillis = Constants.Z_SESSION_TIMEOUT;
+    private static final long sessionTimeoutMillis = Constants.Z_SESSION_TIMEOUT;
     private static Runnable endSessionRunnable;
 
     private static AtomicBoolean updateScheduled = new AtomicBoolean(false);
@@ -51,12 +51,12 @@ public class Zinteract {
     private static boolean DEBUG = true;
 
 
-    public static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
-    public static final String END_SESSION_EVENT = Constants.Z_SESSION_END_EVENT;
+    private static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
+    private static final String END_SESSION_EVENT = Constants.Z_SESSION_END_EVENT;
 
-    private static Zinteract Zinteract = null;
-    protected static Worker logWorker = new Worker("logWorker");
-    protected static Worker httpWorker = new Worker("httpWorker");
+    private static boolean isInitialzed = false;
+    private static Worker logWorker = new Worker("logWorker");
+    private static Worker httpWorker = new Worker("httpWorker");
 
     static {
         logWorker.start();
@@ -67,22 +67,15 @@ public class Zinteract {
 
     }
 
-    public static Zinteract getInstance(){
-        if(isContextAndApiKeySet("getInstance()")){
-            return null;
-        }
-        return Zinteract;
-    }
-
-    protected static String getApiKey(){
+    static String getApiKey(){
         return apiKey;
     }
 
-    protected static String getUserId(){
+    static String getUserId(){
         return userId;
     }
 
-    protected static String getDeviceId(){
+    static String getDeviceId(){
         return deviceId;
     }
 
@@ -91,10 +84,10 @@ public class Zinteract {
         if(BuildConfig.DEBUG && DEBUG){
             Log.d(TAG,"initializeWithContextAndKey() called");
         }
-        initialize(context, apiKey, null);
+        initialize(context, apiKey);
     }
 
-    public synchronized static void initialize(Context context, String apiKey, String userId) {
+    private synchronized static void initialize(Context context, String apiKey) {
         if (context == null) {
             Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
             return;
@@ -103,16 +96,17 @@ public class Zinteract {
             Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
             return;
         }
-        if (Zinteract == null) {
+        if (!isInitialzed) {
 
-            Zinteract.setContext(context.getApplicationContext());
-            Zinteract.setApiKey(apiKey);
+            setContext(context.getApplicationContext());
+            setApiKey(apiKey);
             initializeDeviceDetails();
 
+            userId = getSavedUserId();
             if(userId == null){
                 userId = getUUID();
+                setUserId(userId);
             }
-            setUserId(userId);
             //Send init event
             logWorker.post(new Runnable() {
                 @Override
@@ -129,16 +123,14 @@ public class Zinteract {
     }
 
     private static void showPromotion(Activity currentActivity){
-        String screen_id = "";
-        if(currentActivity.getLocalClassName().equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
+        String screen_id = currentActivity.getLocalClassName();
+        if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
             screen_id = "ViewController4";
         }
-        else if(currentActivity.getLocalClassName().equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
+        else if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
             screen_id = "ViewController5";
         }
-        else {
-            return;
-        }
+        
         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
 
         dbHelper.removeSeenPromotions();
@@ -249,18 +241,21 @@ public class Zinteract {
 
         boolean fetchSuccess = false;
         try {
-            String response = HttpHelper.getHttpHelper().doPost(Constants.Z_PROMOTION_URL,postParams);
+            String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
             //String stringResponse = EntityUtils.toString(response.getEntity());
-            final JSONObject jsonResponse = new JSONObject(response);
+            if(response != null){
+                final JSONObject jsonResponse = new JSONObject(response);
 
-            fetchSuccess = true;
-            fetchingPromotionsCurrently.set(false);
-            logWorker.post(new Runnable() {
-                @Override
-                public void run() {
-                    addPromotions(jsonResponse);
-                }
-            });
+                fetchSuccess = true;
+                fetchingPromotionsCurrently.set(false);
+                logWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addPromotions(jsonResponse);
+                    }
+                });
+            }
+
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
             Log.e(TAG, "Exception:", e);
@@ -523,10 +518,8 @@ public class Zinteract {
         //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
         //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
 
-
-        boolean uploadSuccess = false;
         try {
-            String response = HttpHelper.getHttpHelper().doPost(url,postParams);
+            HttpHelper.doPost(url,postParams);
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
             Log.e(TAG, "Exception:", e);
@@ -573,27 +566,30 @@ public class Zinteract {
 
         boolean syncSuccess = false;
         try {
-            String response = HttpHelper.getHttpHelper().doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
+            String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
             //String stringResponse = EntityUtils.toString(response.getEntity());
-            final JSONObject jsonResponse = new JSONObject(response);
-            if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
-                if(BuildConfig.DEBUG && DEBUG){
-                    Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
-                }
-                syncSuccess = true;
-                synchingDataStoreCurrently.set(false);
-                logWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateDataStore(jsonResponse);
+            if(response != null){
+                final JSONObject jsonResponse = new JSONObject(response);
+                if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
+                    if(BuildConfig.DEBUG && DEBUG){
+                        Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
                     }
-                });
-            }
-            else {
-                if(BuildConfig.DEBUG && DEBUG){
-                    Log.d(TAG,"DataStore already latest version, not updating local DataStore");
+                    syncSuccess = true;
+                    synchingDataStoreCurrently.set(false);
+                    logWorker.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateDataStore(jsonResponse);
+                        }
+                    });
+                }
+                else {
+                    if(BuildConfig.DEBUG && DEBUG){
+                        Log.d(TAG,"DataStore already latest version, not updating local DataStore");
+                    }
                 }
             }
+
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
             Log.e(TAG, "Exception:", e);
@@ -644,34 +640,37 @@ public class Zinteract {
 
         boolean uploadSuccess = false;
         try {
-            String response = HttpHelper.getHttpHelper().doPost(url,postParams);
+            String response = HttpHelper.doPost(url,postParams);
             //String stringResponse = EntityUtils.toString(response.getEntity());
-            JSONObject jsonResponse = new JSONObject(response);
-            if (jsonResponse.getString("status").equals("success")) {
-                uploadSuccess = true;
-                logWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(BuildConfig.DEBUG && DEBUG){
-                            Log.d(TAG,"Events upload successful, trying to delete uploaded events");
-                        }
-                        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-                        dbHelper.removeEvents(maxId);
-                        uploadingCurrently.set(false);
-                        if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
+            if(response !=null){
+                JSONObject jsonResponse = new JSONObject(response);
+                if (jsonResponse.getString("status").equals("success")) {
+                    uploadSuccess = true;
+                    logWorker.post(new Runnable() {
+                        @Override
+                        public void run() {
                             if(BuildConfig.DEBUG && DEBUG){
-                                Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
+                                Log.d(TAG,"Events upload successful, trying to delete uploaded events");
                             }
-                            logWorker.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateServer(false);
+                            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                            dbHelper.removeEvents(maxId);
+                            uploadingCurrently.set(false);
+                            if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
+                                if(BuildConfig.DEBUG && DEBUG){
+                                    Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
                                 }
-                            });
+                                logWorker.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateServer(false);
+                                    }
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
+
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
             Log.e(TAG, "Exception:", e);
@@ -873,6 +872,9 @@ public class Zinteract {
     }
 
 
+    private static String getSavedUserId(){
+        return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_USER_ID,null);
+    }
 
     private static void setUserId(String userId){
         Zinteract.userId = userId;

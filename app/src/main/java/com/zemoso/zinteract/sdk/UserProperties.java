@@ -40,8 +40,7 @@ public class UserProperties {
     }
 
     private SharedPreferences getSharedPreferences(Context context){
-        SharedPreferences preferences = context.getSharedPreferences(
+        return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME, Context.MODE_PRIVATE);
-        return  preferences;
     }
 }
