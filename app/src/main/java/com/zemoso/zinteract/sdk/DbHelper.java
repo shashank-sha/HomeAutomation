@@ -26,13 +26,23 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String TAG = "com.amplitude.api.DbHelper";
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
+    private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
+
     private static final String ID_FIELD = Constants.Z_DB_EVENT_ID_FIELD_NAME;
     private static final String EVENT_FIELD = Constants.Z_DB_EVENT_EVENTS_FIELD_NAME;
 
     private static final String CREATE_EVENTS_TABLE = "CREATE TABLE IF NOT EXISTS "
             + EVENT_TABLE_NAME + " ("
-            + ID_FIELD + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + EVENT_FIELD + " TEXT);";
+            + Constants.Z_DB_EVENT_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Constants.Z_DB_EVENT_EVENTS_FIELD_NAME + " TEXT);";
+
+    private static final String CREATE_PROMOTIONS_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + PROMOTION_TABLE_NAME + " ("
+            + Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, screen_id TEXT, status INTEGER DEFAULT 0,"
+            + Constants.Z_DB_PROMOTION_PROMOTION_FIELD_NAME + " TEXT);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID = "CREATE UNIQUE INDEX campaign_id_idx" +
+            " on "+ PROMOTION_TABLE_NAME+" (campaign_id);";
 
     private File file;
 
@@ -54,14 +64,22 @@ class DbHelper extends SQLiteOpenHelper {
         // for the field will be monotonically increasing and unique over the
         // lifetime of the table, even if rows get removed
         db.execSQL(CREATE_EVENTS_TABLE);
+        db.execSQL(CREATE_PROMOTIONS_TABLE);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PROMOTION_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
+        db.execSQL(CREATE_PROMOTIONS_TABLE);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
     }
 
+
+    //Events related
     synchronized long addEvent(String event) {
         long result = -1;
         try {
@@ -169,6 +187,81 @@ class DbHelper extends SQLiteOpenHelper {
         } finally {
             close();
         }
+    }
+
+    //Promotions related
+    synchronized long addPromotion(String promotion, String campaign_id, String screen_id) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Constants.Z_DB_PROMOTION_PROMOTION_FIELD_NAME, promotion);
+            contentValues.put("campaign_id", campaign_id);
+            contentValues.put("screen_id", screen_id);
+
+            result = db.insert(PROMOTION_TABLE_NAME, null, contentValues);
+            if (result == -1) {
+                Log.w(TAG, "Insert failed");
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "addPromotion failed", e);
+            // Not much we can do, just start fresh
+            delete();
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    synchronized void removeSeenPromotions() {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            db.delete(PROMOTION_TABLE_NAME, "status = 1", null);
+        } catch (SQLiteException e) {
+            Log.e(TAG, "removePromotion failed", e);
+        } finally {
+            close();
+        }
+    }
+
+    synchronized void markPromotionAsSeen(String campaign_id) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("status", 1);
+            db.update(PROMOTION_TABLE_NAME,contentValues,"campaign_id = "+campaign_id,null);
+        } catch (SQLiteException e) {
+            Log.e(TAG, "markPromotionAsSeen failed", e);
+        } finally {
+            close();
+        }
+    }
+
+    synchronized JSONObject getPromotionforScreen(String screen_id){
+        JSONObject promotion = new JSONObject();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.query(PROMOTION_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
+                    null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", "1");
+
+            while (cursor.moveToNext()) {
+                String p = cursor.getString(4);
+
+                promotion = new JSONObject(p);
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getPromotionforScreen failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getPromotionforScreen falied", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return promotion;
     }
 
     private void delete() {

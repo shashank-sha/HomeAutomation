@@ -44,7 +44,7 @@ public class Activity5 extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.startSession();
+        Zinteract.startSession(this);
         Zinteract.logEvent("view screen5");
     }
 

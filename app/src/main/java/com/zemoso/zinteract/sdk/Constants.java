@@ -38,6 +38,11 @@ public class Constants {
     public static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     public static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";
 
+    public static final String Z_DB_PROMOTION_TABLE_NAME = "promotions";
+    public static final String Z_DB_PROMOTION_ID_FIELD_NAME = "id";
+    public static final String Z_DB_PROMOTION_PROMOTION_FIELD_NAME = "promotion";
+
+
     //Events related
     public static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
     public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;

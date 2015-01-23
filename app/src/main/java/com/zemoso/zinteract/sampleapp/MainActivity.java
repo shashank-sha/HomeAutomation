@@ -45,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.startSession();
+        Zinteract.startSession(this);
     }
 
     @Override

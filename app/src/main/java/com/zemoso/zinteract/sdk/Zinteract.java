@@ -1,6 +1,9 @@
 package com.zemoso.zinteract.sdk;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.text.TextUtils;
@@ -47,6 +50,8 @@ public class Zinteract {
     private static AtomicBoolean updateScheduled = new AtomicBoolean(false);
     private static AtomicBoolean uploadingCurrently = new AtomicBoolean(false);
     private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
+    private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
+
 
     public static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
     public static final String END_SESSION_EVENT = Constants.Z_SESSION_END_EVENT;
@@ -102,13 +107,99 @@ public class Zinteract {
         }
     }
 
-    public static void startSession() {
+    private static void showPromotion(Activity currentActivity){
+        String screen_id = "";
+        if(currentActivity.getLocalClassName().equals("Activity4")){
+            screen_id = "ViewController4";
+        }
+        else if(currentActivity.getLocalClassName().equals("Activity5")){
+            screen_id = "ViewController5";
+        }
+        else {
+            return;
+        }
+        final DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+
+        dbHelper.removeSeenPromotions();
+        final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
+
+        if(promotion.length() == 0 || promotion == null){
+            if(BuildConfig.DEBUG){
+                Log.d(TAG,"No Promotions found for "+screen_id);
+            }
+            return;
+        }
+
+
+
+        try {
+            final String campaignId = promotion.getString("campaignId");
+
+            currentActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                            context);
+
+                    // set title
+                    alertDialogBuilder.setTitle(promotion.getString("name"));
+
+                    // set dialog message
+                    alertDialogBuilder
+                            .setMessage(promotion.getString("subject"))
+                            .setCancelable(true)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                    try {
+                                        dbHelper.markPromotionAsSeen(campaignId);
+                                        JSONObject promotionEvent = new JSONObject();
+                                        promotionEvent.put("campaignId", campaignId);
+                                        logEvent("promotion", promotionEvent);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Exception: " + e);
+                                    }
+
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // if this button is clicked, just close
+                                    // the dialog box markPromotionAsSeen
+                                    dialog.cancel();
+                                    dbHelper.markPromotionAsSeen(campaignId);
+                                }
+                            });
+
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // show it
+                    alertDialog.show();
+                }
+                catch (Exception e){
+                    Log.e(TAG,"Exception: "+e);
+                }
+                }
+            });
+
+
+        }
+        catch (Exception e){
+            Log.e(TAG,"Exception: "+e);
+        }
+
+    }
+
+    public static void startSession(Activity currentActivity) {
         if(BuildConfig.DEBUG){
             Log.d(TAG,"startSession() called");
         }
         if (!isContextAndApiKeySet("startSession()")) {
             return;
         }
+        showPromotion(currentActivity);
         final long now = System.currentTimeMillis();
 
         runOnLogWorker(new Runnable() {
@@ -139,12 +230,89 @@ public class Zinteract {
         });
     }
 
-    private static void fetchPromotions(){
+    private static void checkPromotions(){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"checkPromotions() called");
+        }
+        logWorker.post(new Runnable() {
+            @Override
+            public void run() {
+                getPromotions();
+            }
+        });
+    }
 
+    private static void getPromotions(){
+        if(!fetchingPromotionsCurrently.getAndSet(true)) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "logWorker is now asking httpWorker to fetch Promotions");
+            }
+            httpWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    fetchPromotions();
+                }
+            });
+        }
+    }
+
+    private static void fetchPromotions(){
+        if(BuildConfig.DEBUG){
+            Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
+        }
+        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+
+        postParams.add(new BasicNameValuePair("apiKey", apiKey));
+        postParams.add(new BasicNameValuePair("userId", userId));
+        postParams.add(new BasicNameValuePair("deviceId", deviceId));
+        postParams.add(new BasicNameValuePair("lastCampaignSynchedTime", null));//TODO
+
+        boolean fetchSuccess = false;
+        try {
+            String response = HttpHelper.getHttpHelper().doPost(Constants.Z_PROMOTION_URL,postParams);
+            //String stringResponse = EntityUtils.toString(response.getEntity());
+            final JSONObject jsonResponse = new JSONObject(response);
+
+            fetchSuccess = true;
+            fetchingPromotionsCurrently.set(false);
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    addPromotions(jsonResponse);
+                }
+            });
+        } catch (Exception e) {
+            // Just log any other exception so things don't crash on upload
+            Log.e(TAG, "Exception:", e);
+        } finally {
+        }
+
+        if (!fetchSuccess) {
+            fetchingPromotionsCurrently.set(false);
+        }
+    }
+
+    private static void addPromotions(JSONObject json){
+        try {
+            JSONArray promotions = json.getJSONArray("promotions");
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            for(int i =0; i < promotions.length(); i++){
+                JSONObject promotion = promotions.getJSONObject(i);
+                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+            }
+            if(BuildConfig.DEBUG){
+                Log.d(TAG,"Added "+promotions.length()+" promotions in db");
+            }
+        } catch (Exception e) {
+        // Just log any other exception so things don't crash on upload
+        Log.e(TAG, "Exception:", e);
+        } finally {
+        }
     }
 
     private static void sync(){
         syncDataStore();
+        checkPromotions();
         uploadEvents();
     }
 
