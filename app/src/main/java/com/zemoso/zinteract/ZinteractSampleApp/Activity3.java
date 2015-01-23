@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sampleapp;
+package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -6,24 +6,27 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.zemoso.zinteract.sdk.Zinteract;
 
 
-public class MainActivity extends ActionBarActivity {
+public class Activity3 extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Zinteract.initializeWithContextAndKey(getApplicationContext(),"AndroidAPIKey");
+        setContentView(R.layout.activity_activity3);
+
+        TextView messageView = (TextView) findViewById(R.id.activity3_heading);
+        messageView.setText(Zinteract.getData("text","Hello"));
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_activity3, menu);
         return true;
     }
 
@@ -46,6 +49,7 @@ public class MainActivity extends ActionBarActivity {
     public void onResume(){
         super.onResume();
         Zinteract.startSession(this);
+        Zinteract.logEvent("view screen3");
     }
 
     @Override
@@ -54,9 +58,17 @@ public class MainActivity extends ActionBarActivity {
         Zinteract.endSession();
     }
 
+    public void sendToActivity4(View view)
+    {
+        Zinteract.logEvent("clicked to view screen4");
+        Intent intent = new Intent(Activity3.this, Activity4.class);
+        startActivity(intent);
+    }
+
     public void sendToActivity2(View view)
     {
-        Intent intent = new Intent(MainActivity.this, Activity2.class);
+        Zinteract.logEvent("clicked view screen2");
+        Intent intent = new Intent(Activity3.this, Activity2.class);
         startActivity(intent);
     }
 }

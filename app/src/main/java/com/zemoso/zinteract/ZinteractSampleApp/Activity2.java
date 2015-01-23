@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sampleapp;
+package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;

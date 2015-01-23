@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import com.zemoso.zinteract.sampleapp.BuildConfig;
+import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -67,6 +67,25 @@ public class Zinteract {
 
     }
 
+    public static Zinteract getInstance(){
+        if(isContextAndApiKeySet("getInstance()")){
+            return null;
+        }
+        return Zinteract;
+    }
+
+    protected static String getApiKey(){
+        return apiKey;
+    }
+
+    protected static String getUserId(){
+        return userId;
+    }
+
+    protected static String getDeviceId(){
+        return deviceId;
+    }
+
 
     public static void initializeWithContextAndKey(Context context, String apiKey) {
         if(BuildConfig.DEBUG && DEBUG){
@@ -111,10 +130,10 @@ public class Zinteract {
 
     private static void showPromotion(Activity currentActivity){
         String screen_id = "";
-        if(currentActivity.getLocalClassName().equals("Activity4")){
+        if(currentActivity.getLocalClassName().equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
             screen_id = "ViewController4";
         }
-        else if(currentActivity.getLocalClassName().equals("Activity5")){
+        else if(currentActivity.getLocalClassName().equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
             screen_id = "ViewController5";
         }
         else {
@@ -142,6 +161,8 @@ public class Zinteract {
             inApp.putExtra("message", promotion.getString("subject"));
             inApp.putExtra("campaignId", campaignId);
             context.startActivity(inApp);
+
+            //Run the below code in InApp Activity onStop function
             //dbHelper.markPromotionAsSeen(campaignId);
             //JSONObject promotionEvent = new JSONObject();
             //promotionEvent.put("campaignId", campaignId);
@@ -224,10 +245,6 @@ public class Zinteract {
             Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-
-        postParams.add(new BasicNameValuePair("apiKey", apiKey));
-        postParams.add(new BasicNameValuePair("userId", userId));
-        postParams.add(new BasicNameValuePair("deviceId", deviceId));
         postParams.add(new BasicNameValuePair("lastCampaignSynchedTime", null));//TODO
 
         boolean fetchSuccess = false;
@@ -484,13 +501,10 @@ public class Zinteract {
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
         //postParams.add(new BasicNameValuePair("v", apiVersionString));
-        postParams.add(new BasicNameValuePair("apiKey", apiKey));
         //postParams.add(new BasicNameValuePair("eventList", events));
         postParams.add(new BasicNameValuePair("sdkId", Constants.Z_VERSION));
         postParams.add(new BasicNameValuePair("appVersion", deviceDetails.getVersionName()));//
         postParams.add(new BasicNameValuePair("appName", deviceDetails.getVersionName()));
-        postParams.add(new BasicNameValuePair("userId", userId));
-        postParams.add(new BasicNameValuePair("deviceId", deviceId));
 
         postParams.add(new BasicNameValuePair("OSVersion", deviceDetails.getOSVersion()));
         postParams.add(new BasicNameValuePair("deviceModel", deviceDetails.getModel()));//
@@ -555,9 +569,6 @@ public class Zinteract {
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
-        postParams.add(new BasicNameValuePair("apiKey", apiKey));
-        postParams.add(new BasicNameValuePair("userId", userId));
-        postParams.add(new BasicNameValuePair("deviceId", deviceId));
         postParams.add(new BasicNameValuePair("lastDataStoreSynchedTime", dataStore.getDataStoreVersion(context)));
 
         boolean syncSuccess = false;
@@ -626,13 +637,10 @@ public class Zinteract {
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 
         //postParams.add(new BasicNameValuePair("v", apiVersionString));
-        postParams.add(new BasicNameValuePair("apiKey", apiKey));
         postParams.add(new BasicNameValuePair("eventList", events));
         postParams.add(new BasicNameValuePair("sdkId", Constants.Z_VERSION));
         postParams.add(new BasicNameValuePair("appVersion", deviceDetails.getVersionName()));//
         postParams.add(new BasicNameValuePair("appName", deviceDetails.getVersionName()));
-        postParams.add(new BasicNameValuePair("userId", userId));
-        postParams.add(new BasicNameValuePair("deviceId", deviceId));
 
         boolean uploadSuccess = false;
         try {

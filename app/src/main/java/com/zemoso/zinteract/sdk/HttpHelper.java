@@ -2,7 +2,7 @@ package com.zemoso.zinteract.sdk;
 
 import android.util.Log;
 
-import com.zemoso.zinteract.sampleapp.BuildConfig;
+import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -10,10 +10,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.HttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
@@ -47,6 +45,9 @@ public class HttpHelper {
         if(BuildConfig.DEBUG){
             Log.d(TAG,"doPost() called");
         }
+
+        addRequiredParams(postParams);
+
         HttpResponse response = null;
         String stringResponse = null;
         HttpPost postRequest = new HttpPost(url);
@@ -84,5 +85,13 @@ public class HttpHelper {
             }
         }
         return stringResponse;
+    }
+
+    public static List<NameValuePair> addRequiredParams(List<NameValuePair> postParams){
+        postParams.add(new BasicNameValuePair("apiKey", Zinteract.getApiKey()));
+        postParams.add(new BasicNameValuePair("userId", Zinteract.getUserId()));
+        postParams.add(new BasicNameValuePair("deviceId", Zinteract.getDeviceId()));
+        postParams.add(new BasicNameValuePair("sdkId", Constants.Z_SDK_ID));
+        return postParams;
     }
 }

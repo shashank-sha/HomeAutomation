@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zemoso.zinteract.sampleapp.R;
+import com.zemoso.zinteract.ZinteractSampleApp.R;
 
 import org.json.JSONObject;
 

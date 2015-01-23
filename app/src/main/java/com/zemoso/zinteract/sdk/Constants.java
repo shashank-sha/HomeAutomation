@@ -6,6 +6,8 @@ package com.zemoso.zinteract.sdk;
 public class Constants {
     public static final String Z_PLATFORM = "Android";
     public static final String Z_VERSION = "0.1";
+    public static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
+
     public static final String Z_API_VERSION = "0.1";
     public static final String Z_NAMESPACE = Constants.class.getPackage().getName();
     public static final String Z_SHARED_PREFERENCE_FILE_NAME = Z_NAMESPACE;

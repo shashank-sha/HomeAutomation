@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sampleapp;
+package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -10,19 +10,19 @@ import android.view.View;
 import com.zemoso.zinteract.sdk.Zinteract;
 
 
-public class Activity3 extends ActionBarActivity {
+public class Activity4 extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity3);
+        setContentView(R.layout.activity_activity4);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_activity3, menu);
+        getMenuInflater().inflate(R.menu.menu_activity4, menu);
         return true;
     }
 
@@ -45,7 +45,7 @@ public class Activity3 extends ActionBarActivity {
     public void onResume(){
         super.onResume();
         Zinteract.startSession(this);
-        Zinteract.logEvent("view screen3");
+        Zinteract.logEvent("view screen4");
     }
 
     @Override
@@ -54,17 +54,17 @@ public class Activity3 extends ActionBarActivity {
         Zinteract.endSession();
     }
 
-    public void sendToActivity4(View view)
+    public void sendToActivity5(View view)
     {
-        Zinteract.logEvent("clicked to view screen4");
-        Intent intent = new Intent(Activity3.this, Activity4.class);
+        Zinteract.logEvent("clicked to view screen5");
+        Intent intent = new Intent(Activity4.this, Activity5.class);
         startActivity(intent);
     }
 
-    public void sendToActivity2(View view)
+    public void sendToActivity3(View view)
     {
-        Zinteract.logEvent("clicked view screen2");
-        Intent intent = new Intent(Activity3.this, Activity2.class);
+        Zinteract.logEvent("clicked to view screen3");
+        Intent intent = new Intent(Activity4.this, Activity3.class);
         startActivity(intent);
     }
 }

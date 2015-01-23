@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sampleapp;
+package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -10,19 +10,19 @@ import android.view.View;
 import com.zemoso.zinteract.sdk.Zinteract;
 
 
-public class Activity4 extends ActionBarActivity {
+public class Activity5 extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity4);
+        setContentView(R.layout.activity_activity5);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_activity4, menu);
+        getMenuInflater().inflate(R.menu.menu_activity5, menu);
         return true;
     }
 
@@ -45,7 +45,7 @@ public class Activity4 extends ActionBarActivity {
     public void onResume(){
         super.onResume();
         Zinteract.startSession(this);
-        Zinteract.logEvent("view screen4");
+        Zinteract.logEvent("view screen5");
     }
 
     @Override
@@ -54,17 +54,17 @@ public class Activity4 extends ActionBarActivity {
         Zinteract.endSession();
     }
 
-    public void sendToActivity5(View view)
+    public void sendToActivity4(View view)
     {
-        Zinteract.logEvent("clicked to view screen5");
-        Intent intent = new Intent(Activity4.this, Activity5.class);
+        Zinteract.logEvent("clicked to view screen4");
+        Intent intent = new Intent(Activity5.this, Activity4.class);
         startActivity(intent);
     }
 
-    public void sendToActivity3(View view)
+    public void sendToActivity1(View view)
     {
-        Zinteract.logEvent("clicked to view screen3");
-        Intent intent = new Intent(Activity4.this, Activity3.class);
+        Zinteract.logEvent("clicked to view screen1");
+        Intent intent = new Intent(Activity5.this, MainActivity.class);
         startActivity(intent);
     }
 }

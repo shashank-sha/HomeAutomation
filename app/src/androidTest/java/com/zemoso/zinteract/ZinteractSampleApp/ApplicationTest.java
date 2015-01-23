@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sampleapp;
+package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
