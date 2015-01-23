@@ -34,6 +34,12 @@
             android:name=".Activity5"
             android:label="@string/title_activity_activity5" >
         </activity>
+        <activity
+            android:name="com.zemoso.zinteract.sdk.InAppMessage"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_in_app_message"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
     </application>
 
 </manifest>

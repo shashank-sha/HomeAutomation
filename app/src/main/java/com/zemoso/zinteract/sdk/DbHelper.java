@@ -199,7 +199,7 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
 
-            result = db.insert(PROMOTION_TABLE_NAME, null, contentValues);
+            result = db.insertWithOnConflict(PROMOTION_TABLE_NAME, null, contentValues,5);
             if (result == -1) {
                 Log.w(TAG, "Insert failed");
             }
@@ -229,7 +229,7 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put("status", 1);
-            db.update(PROMOTION_TABLE_NAME,contentValues,"campaign_id = "+campaign_id,null);
+            db.update(PROMOTION_TABLE_NAME,contentValues,"campaign_id = ?",new String[]{campaign_id});
         } catch (SQLiteException e) {
             Log.e(TAG, "markPromotionAsSeen failed", e);
         } finally {
@@ -242,7 +242,7 @@ class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-            cursor = db.query(PROMOTION_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
+            cursor = db.query(PROMOTION_TABLE_NAME, null,"screen_id = ? AND status = ?", new String[]{screen_id,"0"}, null,
                     null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", "1");
 
             while (cursor.moveToNext()) {

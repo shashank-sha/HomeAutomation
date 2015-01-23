@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.text.TextUtils;
@@ -133,56 +134,71 @@ public class Zinteract {
 
 
         try {
-            final String campaignId = promotion.getString("campaignId");
+            String campaignId = promotion.getString("campaignId");
 
-            currentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                            context);
+            Intent inApp = new Intent(context,InAppMessage.class);
+            inApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            inApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            inApp.putExtra("title", promotion.getString("name"));
+            inApp.putExtra("message", promotion.getString("subject"));
+            context.startActivity(inApp);
+            try {
+                dbHelper.markPromotionAsSeen(campaignId);
+                JSONObject promotionEvent = new JSONObject();
+                promotionEvent.put("campaignId", campaignId);
+                logEvent("promotion", promotionEvent);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception: " + e);
+            }
 
-                    // set title
-                    alertDialogBuilder.setTitle(promotion.getString("name"));
-
-                    // set dialog message
-                    alertDialogBuilder
-                            .setMessage(promotion.getString("subject"))
-                            .setCancelable(true)
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                    try {
-                                        dbHelper.markPromotionAsSeen(campaignId);
-                                        JSONObject promotionEvent = new JSONObject();
-                                        promotionEvent.put("campaignId", campaignId);
-                                        logEvent("promotion", promotionEvent);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "Exception: " + e);
-                                    }
-
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // if this button is clicked, just close
-                                    // the dialog box markPromotionAsSeen
-                                    dialog.cancel();
-                                    dbHelper.markPromotionAsSeen(campaignId);
-                                }
-                            });
-
-                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    // show it
-                    alertDialog.show();
-                }
-                catch (Exception e){
-                    Log.e(TAG,"Exception: "+e);
-                }
-                }
-            });
+//            currentActivity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try{
+//                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+//                            context);
+//
+//                    // set title
+//                    alertDialogBuilder.setTitle(promotion.getString("name"));
+//
+//                    // set dialog message
+//                    alertDialogBuilder
+//                            .setMessage(promotion.getString("subject"))
+//                            .setCancelable(true)
+//                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    dialog.cancel();
+//                                    try {
+//                                        dbHelper.markPromotionAsSeen(campaignId);
+//                                        JSONObject promotionEvent = new JSONObject();
+//                                        promotionEvent.put("campaignId", campaignId);
+//                                        logEvent("promotion", promotionEvent);
+//                                    } catch (Exception e) {
+//                                        Log.e(TAG, "Exception: " + e);
+//                                    }
+//
+//                                }
+//                            })
+//                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    // if this button is clicked, just close
+//                                    // the dialog box markPromotionAsSeen
+//                                    dialog.cancel();
+//                                    dbHelper.markPromotionAsSeen(campaignId);
+//                                }
+//                            });
+//
+//                    // create alert dialog
+//                    AlertDialog alertDialog = alertDialogBuilder.create();
+//
+//                    // show it
+//                    alertDialog.show();
+//                }
+//                catch (Exception e){
+//                    Log.e(TAG,"Exception: "+e);
+//                }
+//                }
+//            });
 
 
         }
@@ -304,8 +320,8 @@ public class Zinteract {
                 Log.d(TAG,"Added "+promotions.length()+" promotions in db");
             }
         } catch (Exception e) {
-        // Just log any other exception so things don't crash on upload
-        Log.e(TAG, "Exception:", e);
+            // Just log any other exception so things don't crash on upload
+            Log.e(TAG, "Exception:", e);
         } finally {
         }
     }
@@ -536,7 +552,7 @@ public class Zinteract {
         //postParams.add(new BasicNameValuePair("isLocationAvailable", deviceId));
 
         //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));
-       // postParams.add(new BasicNameValuePair("lastLocation", deviceDetails.getMostRecentLocation().toString()));//
+        // postParams.add(new BasicNameValuePair("lastLocation", deviceDetails.getMostRecentLocation().toString()));//
         //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
         //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
         //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
@@ -756,12 +772,12 @@ public class Zinteract {
             if(BuildConfig.DEBUG){
                 Log.d(TAG,"Asking httpWorker to sync datastore");
             }
-                httpWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkAndUpdateDataStore();
-                    }
-                });
+            httpWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    checkAndUpdateDataStore();
+                }
+            });
         }
         else {
             if(BuildConfig.DEBUG){
@@ -867,7 +883,7 @@ public class Zinteract {
 //            event.put("event_properties", (eventProperties == null) ? new JSONObject()
 //                    : eventProperties);
             //event.put("user_properties", (userProperties == null) ? new JSONObject()
-                    //: userProperties);
+            //: userProperties);
         } catch (JSONException e) {
             Log.e(TAG, e.toString());
         }
@@ -875,7 +891,7 @@ public class Zinteract {
         return logEvent(event);
     }
 
-    
+
 
     private static long logEvent(JSONObject event) {
         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
@@ -901,7 +917,7 @@ public class Zinteract {
         }
     }
 
-    
+
 
     private static void setUserId(String userId){
         Zinteract.userId = userId;
