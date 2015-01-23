@@ -8,11 +8,14 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.zemoso.zinteract.sampleapp.R;
+
+import org.json.JSONObject;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -49,6 +52,9 @@ public class InAppMessage extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
+    private static String campaignId;
+    public static final String TAG = "com.zemoso.zinteract.sdk.inAppMessage";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +64,11 @@ public class InAppMessage extends Activity {
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
         String message = intent.getStringExtra("message");
+        campaignId = intent.getStringExtra("campaignId");
 
-        TextView titleView = (TextView) findViewById(R.id.textView);
         TextView messageView = (TextView) findViewById(R.id.textView2);
 
-        titleView.setText(title);
+        setTitle(title);
         messageView.setText(message);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -169,5 +175,22 @@ public class InAppMessage extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+
+        try {
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(getApplicationContext());
+            dbHelper.markPromotionAsSeen(campaignId);
+            JSONObject promotionEvent = new JSONObject();
+            promotionEvent.put("campaignId", campaignId);
+            Zinteract.logEvent("promotion", promotionEvent);
+        }
+        catch (Exception e){
+            Log.e(TAG, "Exception: " + e);
+        }
+        finish();
     }
 }

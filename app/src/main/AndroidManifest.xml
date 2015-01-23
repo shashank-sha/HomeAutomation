@@ -37,8 +37,7 @@
         <activity
             android:name="com.zemoso.zinteract.sdk.InAppMessage"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_in_app_message"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@android:style/Theme.Dialog" >
         </activity>
     </application>
 
