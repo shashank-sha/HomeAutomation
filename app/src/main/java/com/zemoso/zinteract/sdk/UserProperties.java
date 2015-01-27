@@ -31,7 +31,7 @@ public class UserProperties {
 
     public void setUserProperty(Context context,String key, String value){
         SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(key, value).commit();
+        preferences.edit().putString(key, value).apply();
     }
 
     public Map<String,?> getAllUserProperties(Context context,String key, String value){

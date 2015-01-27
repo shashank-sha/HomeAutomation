@@ -5,21 +5,16 @@ import android.util.Log;
 import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 /**
  * Created by praveen on 21/01/15.
@@ -105,8 +100,8 @@ public class HttpHelper {
             postParams.put("apiKey",CommonUtils.replaceWithJSONNull(Zinteract.getApiKey()));
             postParams.put("userId",CommonUtils.replaceWithJSONNull(Zinteract.getUserId()));
 
-            postParams.put("deviceId",CommonUtils.replaceWithJSONNull(Zinteract.getDeviceId()));
-            postParams.put("sdkId",CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
+            postParams.put("deviceId", CommonUtils.replaceWithJSONNull(Zinteract.getDeviceId()));
+            postParams.put("sdkId", CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
             return postParams;
         }
         catch (Exception e){

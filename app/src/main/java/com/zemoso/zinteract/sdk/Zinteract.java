@@ -11,14 +11,10 @@ import android.util.Pair;
 
 import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -348,7 +344,7 @@ public class Zinteract {
                     SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
                     preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, eventId)
                             .putLong(Constants.Z_PREFKEY_LAST_END_SESSION_TIME, timestamp)
-                            .commit();
+                            .apply();
                 }
                 closeSession();
             }
@@ -418,7 +414,7 @@ public class Zinteract {
 
         //TODO check if we can use advertizer id
         String randomId = deviceDetails.generateUUID();
-        preferences.edit().putString(Constants.Z_PREFKEY_USER_ID, randomId).commit();
+        preferences.edit().putString(Constants.Z_PREFKEY_USER_ID, randomId).apply();
         return randomId;
 
     }
@@ -473,7 +469,7 @@ public class Zinteract {
         openSession();
         sessionId = timestamp;
         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).commit();
+        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
         JSONObject apiProperties = new JSONObject();
         try {
             apiProperties.put("special", START_SESSION_EVENT);
@@ -955,13 +951,13 @@ public class Zinteract {
 
     private static void setLastEventTime(long timestamp) {
         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_SESSION_TIME, timestamp).commit();
+        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_SESSION_TIME, timestamp).apply();
     }
 
     private static void clearEndSession() {
         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
         preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
-                .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).commit();
+                .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
     }
 
     private static long getEndSessionTime() {

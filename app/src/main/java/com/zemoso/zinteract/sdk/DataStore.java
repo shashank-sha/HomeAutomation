@@ -29,12 +29,12 @@ public class DataStore extends UserProperties{
 
     public void setData(Context context,String key, String value){
         SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(key, value).commit();
+        preferences.edit().putString(key, value).apply();
     }
 
     public void setLastSyncTime(Context context,String value){
         SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, value).commit();
+        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, value).apply();
     }
 
     public String getLastSyncTime(Context context){
@@ -44,7 +44,7 @@ public class DataStore extends UserProperties{
 
     public void setDataStoreVersion(Context context,String value){
         SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, value).commit();
+        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, value).apply();
     }
 
     public String getDataStoreVersion(Context context){

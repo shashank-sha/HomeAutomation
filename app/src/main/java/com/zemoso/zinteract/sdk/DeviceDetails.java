@@ -20,7 +20,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class DeviceDetails {
