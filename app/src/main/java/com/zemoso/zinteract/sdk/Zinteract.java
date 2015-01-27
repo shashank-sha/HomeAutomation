@@ -48,7 +48,7 @@ public class Zinteract {
     private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
     private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
     
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
 
     private static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
@@ -888,6 +888,38 @@ public class Zinteract {
     private static void setUserId(String userId){
         Zinteract.userId = userId;
         CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
+        logWorker.post(new Runnable() {
+            @Override
+            public void run() {
+                setUserId();
+            }
+        });
+    }
+
+    private static void setUserId(){
+        httpWorker.post(new Runnable() {
+            @Override
+            public void run() {
+                setUserOnServer();
+            }
+        });
+    }
+
+    private static void setUserOnServer(){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+            Log.d(TAG,"Sending new user id to the server.");
+        }
+        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+
+        postParams.add(new BasicNameValuePair("oldUserID", getUserId()));//TODO
+
+        try {
+            HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
+        } catch (Exception e) {
+            // Just log any other exception so things don't crash on upload
+            Log.e(TAG, "Exception:", e);
+        } finally {
+        }
     }
 
     private synchronized static boolean isContextAndApiKeySet(String methodName) {

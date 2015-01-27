@@ -49,6 +49,7 @@ public class Constants {
     public static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
     public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
     public static final String Z_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sendEvent";
+    public static final String Z_SET_USER_URL = "http://private-anon-8eb73ed09-dummysdkapi.apiary-mock.com/changeUser";
     public static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sessionStart";
     public static final String Z_INIT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/init";
 
