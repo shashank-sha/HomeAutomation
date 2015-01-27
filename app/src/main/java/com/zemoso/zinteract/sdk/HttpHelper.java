@@ -42,7 +42,7 @@ public class HttpHelper {
 
     public static String doPost(String url, List<NameValuePair> postParams){
 
-        if(BuildConfig.DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"doPost() called");
         }
 

@@ -81,7 +81,7 @@ public class Zinteract {
 
 
     public static void initializeWithContextAndKey(Context context, String apiKey) {
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"initializeWithContextAndKey() called");
         }
         initialize(context, apiKey);
@@ -118,8 +118,17 @@ public class Zinteract {
         }
     }
     
-    public static void setDebug(boolean debug){
-        DEBUG = debug;
+    
+    public static void enableDebugging(){
+        DEBUG = true;
+    }
+    
+    public static void disableDebugging(){
+        DEBUG = false;
+    }
+    
+    static boolean isDebuggingOn(){
+        return DEBUG;
     }
 
     private static void showPromotion(Activity currentActivity){
@@ -130,14 +139,14 @@ public class Zinteract {
         else if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
             screen_id = "ViewController5";
         }
-        
+
         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
 
         dbHelper.removeSeenPromotions();
         JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
 
         if(promotion.length() == 0 || promotion == null){
-            if(BuildConfig.DEBUG && DEBUG){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"No Promotions found for "+screen_id);
             }
             return;
@@ -169,7 +178,7 @@ public class Zinteract {
     }
 
     public static void startSession(Activity currentActivity) {
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"startSession() called");
         }
         if (!isContextAndApiKeySet("startSession()")) {
@@ -207,7 +216,7 @@ public class Zinteract {
     }
 
     private static void checkPromotions(){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"checkPromotions() called");
         }
         logWorker.post(new Runnable() {
@@ -220,7 +229,7 @@ public class Zinteract {
 
     private static void getPromotions(){
         if(!fetchingPromotionsCurrently.getAndSet(true)) {
-            if (BuildConfig.DEBUG && DEBUG) {
+            if (BuildConfig.DEBUG && Zinteract.isDebuggingOn()) {
                 Log.d(TAG, "logWorker is now asking httpWorker to fetch Promotions");
             }
             httpWorker.post(new Runnable() {
@@ -233,7 +242,7 @@ public class Zinteract {
     }
 
     private static void fetchPromotions(){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
@@ -275,7 +284,7 @@ public class Zinteract {
                 JSONObject promotion = promotions.getJSONObject(i);
                 dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
             }
-            if(BuildConfig.DEBUG && DEBUG){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"Added "+promotions.length()+" promotions in db");
             }
         } catch (Exception e) {
@@ -317,7 +326,7 @@ public class Zinteract {
     }
 
     public static void endSession() {
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"endSession() called");
         }
         if (!isContextAndApiKeySet("endSession()")) {
@@ -387,7 +396,7 @@ public class Zinteract {
             public void run() {
                 deviceId = initializeDeviceId();
                 deviceDetails.getadditionalDetails();
-                if(BuildConfig.DEBUG && DEBUG){
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"Device details initialization finished");
                 }
             }
@@ -431,14 +440,14 @@ public class Zinteract {
                     startNewSession(timestamp);
                 } else {
                     sessionId = previousSessionId;
-                    if(BuildConfig.DEBUG && DEBUG){
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                         Log.d(TAG,"starting new session is not required as very close previous session already exists");
                     }
                 }
             } else {
                 // Sessions not close enough, create new sessionId
                 startNewSession(timestamp);
-                if(BuildConfig.DEBUG && DEBUG){
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"starting new session as previous session was not close enough");
                 }
             }
@@ -446,12 +455,12 @@ public class Zinteract {
             long lastEventTime = getLastEventTime();
             if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
                 startNewSession(timestamp);
-                if(BuildConfig.DEBUG && DEBUG){
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"starting new session as session timedout");
                 }
             }
             else {
-                if(BuildConfig.DEBUG && DEBUG){
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"Already previous session is open so not starting another session");
                 }
             }
@@ -490,7 +499,7 @@ public class Zinteract {
     }
 
     private static void sendEvent(String eventType, long timestamp, String url,boolean header){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"Sending "+eventType+" separately");
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
@@ -541,7 +550,7 @@ public class Zinteract {
     }
 
     public static void syncDataStore(){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
         }
         if (!isContextAndApiKeySet("syncDataStore()")) {
@@ -557,7 +566,7 @@ public class Zinteract {
     }
 
     private static void checkAndUpdateDataStore(){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is now making server request to update DataStore");
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
@@ -571,7 +580,7 @@ public class Zinteract {
             if(response != null){
                 final JSONObject jsonResponse = new JSONObject(response);
                 if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
-                    if(BuildConfig.DEBUG && DEBUG){
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                         Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
                     }
                     syncSuccess = true;
@@ -584,7 +593,7 @@ public class Zinteract {
                     });
                 }
                 else {
-                    if(BuildConfig.DEBUG && DEBUG){
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                         Log.d(TAG,"DataStore already latest version, not updating local DataStore");
                     }
                 }
@@ -603,7 +612,7 @@ public class Zinteract {
     }
 
     private static void updateDataStore(JSONObject newDataStore){
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"logWorker id updating local data store with the fetched data store");
         }
         try {
@@ -615,7 +624,7 @@ public class Zinteract {
         } catch (Exception e){
             Log.e(TAG, "Exception:", e);
         }
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"DataStore update done, we have latest version now.");
         }
 
@@ -627,7 +636,7 @@ public class Zinteract {
     }
 
     private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
-        if(BuildConfig.DEBUG && DEBUG){
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is uploading events now - "+events);
         }
         List<NameValuePair> postParams = new ArrayList<NameValuePair>();
@@ -649,14 +658,14 @@ public class Zinteract {
                     logWorker.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(BuildConfig.DEBUG && DEBUG){
+                            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                                 Log.d(TAG,"Events upload successful, trying to delete uploaded events");
                             }
                             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                             dbHelper.removeEvents(maxId);
                             uploadingCurrently.set(false);
                             if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
-                                if(BuildConfig.DEBUG && DEBUG){
+                                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                                     Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
                                 }
                                 logWorker.post(new Runnable() {
@@ -693,7 +702,7 @@ public class Zinteract {
                 final long maxId = pair.first;
                 final JSONArray events = pair.second;
                 if(events.length() == 0){
-                    if(BuildConfig.DEBUG && DEBUG){
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                         Log.d(TAG,"httpWorker tried uploading events but found zero event, hence not making server request");
                     }
                     uploadingCurrently.set(false);
@@ -702,7 +711,7 @@ public class Zinteract {
                 httpWorker.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(BuildConfig.DEBUG && DEBUG){
+                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                             Log.d(TAG,"Asking httpWorker to upload "+events.length()+" events");
                         }
                         makeEventUploadPostRequest(Constants.Z_EVENT_LOG_URL, events.toString(),
@@ -715,7 +724,7 @@ public class Zinteract {
             }
         }
         else {
-            if(BuildConfig.DEBUG && DEBUG){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"Already uploading events to the server hence not uploading now");
             }
         }
@@ -723,7 +732,7 @@ public class Zinteract {
 
     private static void _syncDataStore() {
         if (!synchingDataStoreCurrently.getAndSet(true)) {
-            if(BuildConfig.DEBUG && DEBUG){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"Asking httpWorker to sync datastore");
             }
             httpWorker.post(new Runnable() {
@@ -734,7 +743,7 @@ public class Zinteract {
             });
         }
         else {
-            if(BuildConfig.DEBUG && DEBUG){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"sync datastore is already going on, so not syncing now");
             }
         }
