@@ -14,11 +14,12 @@ public class Constants {
     public static final String Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME = Z_NAMESPACE+".userproperties";
     public static final String Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME = Z_NAMESPACE+".datastore";
     public static final String Z_PREFKEY_USER_ID = Z_NAMESPACE+"userId";
+    public static final String Z_PREFKEY_FIRSTTIME_FLAG = Z_NAMESPACE+".firsttime";
 
     //DataStore
     public static final String Z_PREFKEY_LAST_DATASTORE_SYNC_TIME = Z_NAMESPACE+".last_datastore_sync_time";
     public static final String Z_PREFKEY_LAST_DATASTORE_VERSION = Z_NAMESPACE+".last_datastore_version";
-    public static final String Z_DATASTORE_SYNCH_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/fetchDatastore";
+    public static final String Z_DATASTORE_SYNCH_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchDatastore";
 
 
 
@@ -48,14 +49,14 @@ public class Constants {
     //Events related
     public static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
     public static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
-    public static final String Z_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sendEvent";
-    public static final String Z_SET_USER_URL = "http://private-anon-8eb73ed09-dummysdkapi.apiary-mock.com/changeUser";
-    public static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/sessionStart";
-    public static final String Z_INIT_LOG_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/init";
+    public static final String Z_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sendEvent";
+    public static final String Z_SET_USER_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/changeUser";
+    public static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sessionStart";
+    public static final String Z_INIT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/init";
 
     //Promotions related
-    public static final String Z_PROMOTION_URL = "http://private-anon-1d8d31179-dummysdkapi.apiary-mock.com/fetchPromo";
-
+    public static final String Z_PROMOTION_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchPromo";
+    public static final String Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME = Z_NAMESPACE+".lastcampaignsynctime";
 
     public static final int Z_EVENT_MAX_COUNT = 100;
     public static final long Z_EVENT_REMOVE_BATCH_SIZE = 100;

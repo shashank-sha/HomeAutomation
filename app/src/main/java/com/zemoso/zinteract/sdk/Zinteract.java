@@ -104,13 +104,16 @@ public class Zinteract {
                 userId = getUUID();
                 setUserId(userId);
             }
-            //Send init event
-            logWorker.post(new Runnable() {
-                @Override
-                public void run() {
-                    sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(),Constants.Z_INIT_LOG_URL,true);
-                }
-            });
+            //Send init event if installed for the first time.
+            if(isFirstTimeUse()) {
+                setFirstTimeFalse();
+                logWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(), Constants.Z_INIT_LOG_URL, true);
+                    }
+                });
+            }
 
         }
     }
@@ -126,6 +129,16 @@ public class Zinteract {
     
     static boolean isDebuggingOn(){
         return DEBUG;
+    }
+
+    private static boolean isFirstTimeUse(){
+        return CommonUtils.getSharedPreferences(context).getBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
+                true);
+    }
+
+    private static void setFirstTimeFalse(){
+        CommonUtils.getSharedPreferences(context).edit().putBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
+                false).apply();
     }
 
     private static void showPromotion(Activity currentActivity){
@@ -150,7 +163,7 @@ public class Zinteract {
         }
 
         try {
-            String campaignId = promotion.getString("campaignId");
+            String campaignId = promotion.getString("promoId");
 
             Intent inApp = new Intent(context,InAppMessage.class);
             inApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -245,7 +258,7 @@ public class Zinteract {
         boolean fetchSuccess = false;
         try {
             JSONObject postParams = new JSONObject();
-            postParams.put("lastCampaignSynchedTime", null);//TODO
+            postParams.put("lastCampaignSynchedTime", CommonUtils.replaceWithJSONNull(getLastCampaignSyncTime()));
             String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
             //String stringResponse = EntityUtils.toString(response.getEntity());
             if(response != null){
@@ -278,8 +291,10 @@ public class Zinteract {
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             for(int i =0; i < promotions.length(); i++){
                 JSONObject promotion = promotions.getJSONObject(i);
-                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                dbHelper.addPromotion(promotion.toString(), promotion.getString("promoId"), promotion.getString("screenId"));
             }
+
+            setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"Added "+promotions.length()+" promotions in db");
             }
@@ -641,7 +656,7 @@ public class Zinteract {
         boolean uploadSuccess = false;
         try {
             JSONObject postParams = new JSONObject();
-            postParams.put("eventList",CommonUtils.replaceWithJSONNull(events));
+            postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
             postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
             postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
             String response = HttpHelper.doPost(url,postParams);
@@ -801,9 +816,10 @@ public class Zinteract {
 
         JSONObject event = new JSONObject();
         try {
-            event.put("event_type", CommonUtils.replaceWithJSONNull(eventType));
+            event.put("eventName", CommonUtils.replaceWithJSONNull(eventType));
+            event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
 
-            event.put("timestamp", timestamp);
+            event.put("eventTime", timestamp);
             //event.put("sessionId",sessionId);
 //            event.put("user_id", (userId == null) ? CommonUtils.replaceWithJSONNull(deviceId)
 //                    : CommonUtils.replaceWithJSONNull(userId));
@@ -972,6 +988,14 @@ public class Zinteract {
     private static long getSharedPreferenceValueByKey(String key){
         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
         return preferences.getLong(key, -1);
+    }
+
+    private static String getLastCampaignSyncTime(){
+        return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,"");
+    }
+
+    private static void setLastCampaignSyncTime(String lastCampaignSyncTime){
+        CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,lastCampaignSyncTime).apply();
     }
 
 
