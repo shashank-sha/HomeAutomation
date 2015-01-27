@@ -30,14 +30,14 @@ public class HttpHelper {
 
     }
 
-    public synchronized static HttpHelper getHttpHelper(){
+    synchronized static HttpHelper getHttpHelper(){
         if(httpHelper == null){
             httpHelper = new HttpHelper();
         }
         return httpHelper;
     }
 
-    public static String doPost(String url, JSONObject postParams){
+    static String doPost(String url, JSONObject postParams){
 
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"doPost() called");

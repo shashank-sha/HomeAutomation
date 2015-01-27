@@ -10,11 +10,11 @@ import org.json.JSONObject;
  */
 public class CommonUtils {
 
-    public static Object replaceWithJSONNull(Object obj) {
+    static Object replaceWithJSONNull(Object obj) {
         return obj == null ? JSONObject.NULL : obj;
     }
 
-    public static String bytesToHexString(byte[] bytes) {
+    static String bytesToHexString(byte[] bytes) {
         final char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
                 'd', 'e', 'f' };
         char[] hexChars = new char[bytes.length * 2];
@@ -27,7 +27,7 @@ public class CommonUtils {
         return new String(hexChars);
     }
 
-    public static SharedPreferences getSharedPreferences(Context context){
+    static SharedPreferences getSharedPreferences(Context context){
         return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
     }
