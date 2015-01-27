@@ -1,1002 +1,964 @@
-package com.zemoso.zinteract.sdk;
+    package com.zemoso.zinteract.sdk;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.location.Location;
-import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
+    import android.app.Activity;
+    import android.content.Context;
+    import android.content.Intent;
+    import android.content.SharedPreferences;
+    import android.location.Location;
+    import android.text.TextUtils;
+    import android.util.Log;
+    import android.util.Pair;
 
-import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
+    import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+    import org.json.JSONArray;
+    import org.json.JSONException;
+    import org.json.JSONObject;
 
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+    import java.util.UUID;
+    import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Created by praveen on 19/01/15.
- */
-public class Zinteract {
+    /**
+     * Created by praveen on 19/01/15.
+     */
+    public class Zinteract {
 
-    private static final String TAG = "com.zemoso.zinteract.sdk.zinteract";
-    private static Context context;
-    private static String apiKey;
-    private static String userId;
-    private static String deviceId;
+        private static final String TAG = "com.zemoso.zinteract.sdk.zinteract";
+        private static Context context;
+        private static String apiKey;
+        private static String userId;
+        private static String deviceId;
 
-    private static final DataStore dataStore = DataStore.getDataStore();
-
-
-
-    private static DeviceDetails deviceDetails;
-
-    private static long sessionId = -1;
-    private static boolean isSessionOpen = false;
-    private static final long sessionTimeoutMillis = Constants.Z_SESSION_TIMEOUT;
-    private static Runnable endSessionRunnable;
-
-    private static AtomicBoolean updateScheduled = new AtomicBoolean(false);
-    private static AtomicBoolean uploadingCurrently = new AtomicBoolean(false);
-    private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
-    private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
-    
-    private static boolean DEBUG = false;
+        private static final DataStore dataStore = DataStore.getDataStore();
 
 
-    private static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
-    private static final String END_SESSION_EVENT = Constants.Z_SESSION_END_EVENT;
 
-    private static boolean isInitialzed = false;
-    private static Worker logWorker = new Worker("logWorker");
-    private static Worker httpWorker = new Worker("httpWorker");
+        private static DeviceDetails deviceDetails;
 
-    static {
-        logWorker.start();
-        httpWorker.start();
-    }
+        private static long sessionId = -1;
+        private static boolean isSessionOpen = false;
+        private static final long sessionTimeoutMillis = Constants.Z_SESSION_TIMEOUT;
+        private static Runnable endSessionRunnable;
 
-    private Zinteract(){
+        private static AtomicBoolean updateScheduled = new AtomicBoolean(false);
+        private static AtomicBoolean uploadingCurrently = new AtomicBoolean(false);
+        private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
+        private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
 
-    }
-
-    static String getApiKey(){
-        return apiKey;
-    }
-
-    static String getUserId(){
-        return userId;
-    }
-
-    static String getDeviceId(){
-        return deviceId;
-    }
+        private static boolean DEBUG = false;
 
 
-    public static void initializeWithContextAndKey(Context context, String apiKey) {
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"initializeWithContextAndKey() called");
-        }
-        initialize(context, apiKey);
-    }
+        private static final String START_SESSION_EVENT = Constants.Z_SESSION_START_EVENT;
+        private static final String END_SESSION_EVENT = Constants.Z_SESSION_END_EVENT;
 
-    private synchronized static void initialize(Context context, String apiKey) {
-        if (context == null) {
-            Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
-            return;
-        }
-        if (TextUtils.isEmpty(apiKey) || apiKey == null) {
-            Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
-            return;
-        }
-        if (!isInitialzed) {
+        private static boolean isInitialzed = false;
+        private static Worker logWorker = new Worker("logWorker");
+        private static Worker httpWorker = new Worker("httpWorker");
 
-            setContext(context.getApplicationContext());
-            setApiKey(apiKey);
-            initializeDeviceDetails();
-
-            userId = getSavedUserId();
-            if(userId == null){
-                userId = getUUID();
-                setUserId(userId);
-            }
-            //Send init event if installed for the first time.
-            if(isFirstTimeUse()) {
-                setFirstTimeFalse();
-                logWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(), Constants.Z_INIT_LOG_URL, true);
-                    }
-                });
-            }
-
-        }
-    }
-    
-    
-    public static void enableDebugging(){
-        DEBUG = true;
-    }
-    
-    public static void disableDebugging(){
-        DEBUG = false;
-    }
-    
-    static boolean isDebuggingOn(){
-        return DEBUG;
-    }
-
-    private static boolean isFirstTimeUse(){
-        return CommonUtils.getSharedPreferences(context).getBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
-                true);
-    }
-
-    private static void setFirstTimeFalse(){
-        CommonUtils.getSharedPreferences(context).edit().putBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
-                false).apply();
-    }
-
-    private static void showPromotion(Activity currentActivity){
-        String screen_id = currentActivity.getLocalClassName();
-        if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
-            screen_id = "ViewController4";
-        }
-        else if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
-            screen_id = "ViewController5";
+        static {
+            logWorker.start();
+            httpWorker.start();
         }
 
-        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-
-        dbHelper.removeSeenPromotions();
-        JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
-
-        if(promotion.length() == 0 || promotion == null){
-            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"No Promotions found for "+screen_id);
-            }
-            return;
-        }
-
-        try {
-            String campaignId = promotion.getString("promoId");
-
-            Intent inApp = new Intent(context,InAppMessage.class);
-            inApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            inApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            inApp.putExtra("title", promotion.getString("name"));
-            inApp.putExtra("message", promotion.getString("subject"));
-            inApp.putExtra("campaignId", campaignId);
-            context.startActivity(inApp);
-
-            //Run the below code in InApp Activity onStop function
-            //dbHelper.markPromotionAsSeen(campaignId);
-            //JSONObject promotionEvent = new JSONObject();
-            //promotionEvent.put("campaignId", campaignId);
-            //logEvent("promotion", promotionEvent);
-
+        private Zinteract(){
 
         }
-        catch (Exception e){
-            Log.e(TAG,"Exception: "+e);
+
+        static String getApiKey(){
+            return apiKey;
         }
 
-    }
-
-    public static void startSession(Activity currentActivity) {
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"startSession() called");
-        }
-        if (!isContextAndApiKeySet("startSession()")) {
-            return;
-        }
-        showPromotion(currentActivity);
-        final long now = System.currentTimeMillis();
-
-        runOnLogWorker(new Runnable() {
-            @Override
-            public void run() {
-                logWorker.removeCallbacks(endSessionRunnable);
-                long previousEndSessionId = getEndSessionId();
-                long lastEndSessionTime = getEndSessionTime();
-                if (previousEndSessionId != -1
-                        && now - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
-                    DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-                    dbHelper.removeEvent(previousEndSessionId);
-
-                }
-                //startSession() can be called in every activity by developer, hence upload events and sync datastore
-                // only if it is a new session
-                syncToServerIfNeeded(now);
-                startNewSessionIfNeeded(now);
-
-                openSession();
-
-                // Update last event time
-                setLastEventTime(now);
-                //syncDataStore();
-                //uploadEvents();
-
-            }
-        });
-    }
-
-    private static void checkPromotions(){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"checkPromotions() called");
-        }
-        logWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                getPromotions();
-            }
-        });
-    }
-
-    private static void getPromotions(){
-        if(!fetchingPromotionsCurrently.getAndSet(true)) {
-            if (BuildConfig.DEBUG && Zinteract.isDebuggingOn()) {
-                Log.d(TAG, "logWorker is now asking httpWorker to fetch Promotions");
-            }
-            httpWorker.post(new Runnable() {
-                @Override
-                public void run() {
-                    fetchPromotions();
-                }
-            });
-        }
-    }
-
-    private static void fetchPromotions(){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
-        }
-        boolean fetchSuccess = false;
-        try {
-            JSONObject postParams = new JSONObject();
-            postParams.put("lastCampaignSynchedTime", CommonUtils.replaceWithJSONNull(getLastCampaignSyncTime()));
-            String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
-            //String stringResponse = EntityUtils.toString(response.getEntity());
-            if(response != null){
-                final JSONObject jsonResponse = new JSONObject(response);
-
-                fetchSuccess = true;
-                fetchingPromotionsCurrently.set(false);
-                logWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        addPromotions(jsonResponse);
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
+        static String getUserId(){
+            return userId;
         }
 
-        if (!fetchSuccess) {
-            fetchingPromotionsCurrently.set(false);
-        }
-    }
-
-    private static void addPromotions(JSONObject json){
-        try {
-            JSONArray promotions = json.getJSONArray("promotions");
-            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-            for(int i =0; i < promotions.length(); i++){
-                JSONObject promotion = promotions.getJSONObject(i);
-                dbHelper.addPromotion(promotion.toString(), promotion.getString("promoId"), promotion.getString("screenId"));
-            }
-
-            setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
-            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"Added "+promotions.length()+" promotions in db");
-            }
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
-        }
-    }
-
-    private static void sync(){
-        syncDataStore();
-        checkPromotions();
-        uploadEvents();
-    }
-
-    private static void syncToServerIfNeeded(long timestamp){
-        if (!isSessionOpen) {
-            long lastEndSessionTime = getEndSessionTime();
-            if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
-                // Sessions close enough, set sessionId to previous sessionId
-
-                SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-                long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
-                        -1);
-
-                if (previousSessionId == -1) {
-                    sync();
-                }
-            } else {
-                // Sessions not close enough, create new sessionId
-                sync();
-            }
-        } else {
-            long lastEventTime = getLastEventTime();
-            if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
-                sync();
-            }
-        }
-    }
-
-    public static void endSession() {
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"endSession() called");
-        }
-        if (!isContextAndApiKeySet("endSession()")) {
-            return;
-        }
-        final long timestamp = System.currentTimeMillis();
-        runOnLogWorker(new Runnable() {
-            @Override
-            public void run() {
-                JSONObject apiProperties = new JSONObject();
-                try {
-                    apiProperties.put("special", END_SESSION_EVENT);
-                } catch (JSONException e) {
-                }
-                if (isSessionOpen) {
-                    long eventId = logEvent(END_SESSION_EVENT, null, apiProperties, timestamp,
-                            false);
-
-                    SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-                    preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, eventId)
-                            .putLong(Constants.Z_PREFKEY_LAST_END_SESSION_TIME, timestamp)
-                            .apply();
-                }
-                closeSession();
-            }
-        });
-        // Queue up upload events 16 seconds later
-        logWorker.removeCallbacks(endSessionRunnable);
-        endSessionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                clearEndSession();
-                uploadEvents();
-            }
-        };
-        logWorker
-                .postDelayed(endSessionRunnable, Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS + 1000);
-    }
-
-    public static void setUserProperty(String key, String value){
-
-        dataStore.setUserProperty(context, key, value);
-    }
-
-    public static String getUserProperty(String key, String defaultValue){
-        return dataStore.getUserProperty(context,key,defaultValue);
-    }
-
-    public static String getData(String key, String defaultValue){
-        return dataStore.getData(context, key, defaultValue);
-    }
-
-    private static void closeSession() {
-        // Close the session. Events within the next MIN_TIME_BETWEEN_SESSIONS_MILLIS seconds
-        // will stay in the session.
-        // A startSession call within the next MIN_TIME_BETWEEN_SESSIONS_MILLIS seconds
-        // will reopen the session.
-        isSessionOpen = false;
-    }
-
-
-    private static void initializeDeviceDetails() {
-        deviceDetails = new DeviceDetails(context);
-        runOnLogWorker(new Runnable() {
-
-            @Override
-            public void run() {
-                deviceId = initializeDeviceId();
-                deviceDetails.getadditionalDetails();
-                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                    Log.d(TAG,"Device details initialization finished");
-                }
-            }
-        });
-    }
-
-    private static boolean isValidDeviceId(String deviceId){
-        //Filter invalid device ids like empty string etc
-        return true;
-    }
-
-    private static String initializeDeviceId() {
-
-        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        String deviceId = preferences.getString(Constants.Z_PREFKEY_USER_ID, null);
-        if (!(TextUtils.isEmpty(deviceId) || isValidDeviceId(deviceId))) {
+        static String getDeviceId(){
             return deviceId;
         }
 
-        //TODO check if we can use advertizer id
-        String randomId = deviceDetails.generateUUID();
-        preferences.edit().putString(Constants.Z_PREFKEY_USER_ID, randomId).apply();
-        return randomId;
 
-    }
+        public static void initializeWithContextAndKey(Context context, String apiKey) {
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"initializeWithContextAndKey() called");
+            }
+            initialize(context, apiKey);
+        }
 
-    private static void startNewSessionIfNeeded(long timestamp) {
-        if (!isSessionOpen) {
-            long lastEndSessionTime = getEndSessionTime();
-            if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
-                // Sessions close enough, set sessionId to previous sessionId
+        private synchronized static void initialize(Context context, String apiKey) {
+            if (context == null) {
+                Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
+                return;
+            }
+            if (TextUtils.isEmpty(apiKey) || apiKey == null) {
+                Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
+                return;
+            }
+            if (!isInitialzed) {
 
-                SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-                long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
-                        -1);
+                setContext(context.getApplicationContext());
+                setApiKey(apiKey);
+                initializeDeviceDetails();
 
-                if (previousSessionId == -1) {
-                    // Invalid session Id, create new sessionId
-
-
-                    startNewSession(timestamp);
-                } else {
-                    sessionId = previousSessionId;
-                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"starting new session is not required as very close previous session already exists");
-                    }
+                userId = getSavedUserId();
+                if(userId == null){
+                    userId = getUUID();
+                    setUserId(userId);
                 }
-            } else {
-                // Sessions not close enough, create new sessionId
-                startNewSession(timestamp);
-                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                    Log.d(TAG,"starting new session as previous session was not close enough");
-                }
-            }
-        } else {
-            long lastEventTime = getLastEventTime();
-            if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
-                startNewSession(timestamp);
-                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                    Log.d(TAG,"starting new session as session timedout");
-                }
-            }
-            else {
-                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                    Log.d(TAG,"Already previous session is open so not starting another session");
-                }
-            }
-
-        }
-    }
-
-    private static void startNewSession(final long timestamp) {
-        // Log session start in events
-        openSession();
-        sessionId = timestamp;
-        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
-        JSONObject apiProperties = new JSONObject();
-        try {
-            apiProperties.put("special", START_SESSION_EVENT);
-        } catch (JSONException e) {
-        }
-        logEvent(START_SESSION_EVENT, null, apiProperties, timestamp, false);
-        logWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                sendEventToServer(START_SESSION_EVENT, timestamp,Constants.Z_START_SESSION_EVENT_LOG_URL,true);
-            }
-        });
-
-    }
-
-    private static void sendEventToServer(final String eventType,final long timestamp,final String url, final boolean header){
-        httpWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                sendEvent(eventType, timestamp,url,header);
-            }
-        });
-    }
-
-    private static void sendEvent(String eventType, long timestamp, String url,boolean header){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"Sending "+eventType+" separately");
-        }
-
-        try {
-            JSONObject postParams = new JSONObject();
-
-            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-            postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
-            postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
-            postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
-            postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
-            postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
-
-
-            //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
-            Location location = deviceDetails.getMostRecentLocation();
-            if(location != null){
-                postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(true));
-                postParams.put("lastLocationLat", CommonUtils.replaceWithJSONNull(location.getLatitude()));
-                postParams.put("lastLocationLong", CommonUtils.replaceWithJSONNull(location.getLongitude()));
-            }
-            else{
-                postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(false));
-            }
-            //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
-            //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
-            //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
-
-            //postParams.add(new BasicNameValuePair("lastPurchaseMadeTime", deviceDetails.getVersionName()));
-            //postParams.add(new BasicNameValuePair("lastCustomEventTime", userId));
-            //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
-            //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
-            HttpHelper.doPost(url,postParams);
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
-        }
-    }
-
-    public static void uploadEvents() {
-        if (!isContextAndApiKeySet("uploadEvents()")) {
-            return;
-        }
-
-        logWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                updateServer();
-            }
-        });
-    }
-
-    public static void syncDataStore(){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
-        }
-        if (!isContextAndApiKeySet("syncDataStore()")) {
-            return;
-        }
-
-        logWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                _syncDataStore();
-            }
-        });
-    }
-
-    private static void checkAndUpdateDataStore(){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"httpWorker is now making server request to update DataStore");
-        }
-
-        boolean syncSuccess = false;
-        try {
-            JSONObject postParams = new JSONObject();
-            postParams.put("lastDataStoreSynchedTime",CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
-            String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
-            if(response != null){
-                final JSONObject jsonResponse = new JSONObject(response);
-                if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
-                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
-                    }
-                    syncSuccess = true;
-                    synchingDataStoreCurrently.set(false);
+                //Send init event if installed for the first time.
+                if(isFirstTimeUse()) {
+                    setFirstTimeFalse();
                     logWorker.post(new Runnable() {
                         @Override
                         public void run() {
-                            updateDataStore(jsonResponse);
+                            sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(), Constants.Z_INIT_LOG_URL, true);
                         }
                     });
                 }
-                else {
-                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"DataStore already latest version, not updating local DataStore");
-                    }
-                }
+
+            }
+        }
+
+
+        public static void enableDebugging(){
+            DEBUG = true;
+        }
+
+        public static void disableDebugging(){
+            DEBUG = false;
+        }
+
+        static boolean isDebuggingOn(){
+            return DEBUG;
+        }
+
+        private static boolean isFirstTimeUse(){
+            return CommonUtils.getSharedPreferences(context).getBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
+                    true);
+        }
+
+        private static void setFirstTimeFalse(){
+            CommonUtils.getSharedPreferences(context).edit().putBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
+                    false).apply();
+        }
+
+        private static void showPromotion(Activity currentActivity){
+            String screen_id = currentActivity.getLocalClassName();
+            if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
+                screen_id = "ViewController4";
+            }
+            else if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
+                screen_id = "ViewController5";
             }
 
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
-        }
-
-        if (!syncSuccess) {
-            synchingDataStoreCurrently.set(false);
-        }
-
-    }
-
-    private static void updateDataStore(JSONObject newDataStore){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"logWorker id updating local data store with the fetched data store");
-        }
-        try {
-            JSONObject variables = newDataStore.getJSONObject("variables");
-            for(int i = 0; i<variables.names().length(); i++){
-                setData(variables.names().getString(i),variables.getString(variables.names().getString(i)));
-            }
-            dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
-        } catch (Exception e){
-            Log.e(TAG, "Exception:", e);
-        }
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"DataStore update done, we have latest version now.");
-        }
-
-        synchingDataStoreCurrently.set(false);
-    }
-
-    private static void setData(String key, String value){
-        dataStore.setData(context, key, value);
-    }
-
-    private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"httpWorker is uploading events now - "+events);
-        }
-
-        boolean uploadSuccess = false;
-        try {
-            JSONObject postParams = new JSONObject();
-            postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
-            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-            postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-            String response = HttpHelper.doPost(url,postParams);
-            if(response !=null){
-                JSONObject jsonResponse = new JSONObject(response);
-                if (jsonResponse.getString("status").equals("success")) {
-                    uploadSuccess = true;
-                    logWorker.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                                Log.d(TAG,"Events upload successful, trying to delete uploaded events");
-                            }
-                            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-                            dbHelper.removeEvents(maxId);
-                            uploadingCurrently.set(false);
-                            if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
-                                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                                    Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
-                                }
-                                logWorker.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateServer(false);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            }
-
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
-        }
-
-        if (!uploadSuccess) {
-            uploadingCurrently.set(false);
-        }
-
-    }
-
-    private static void updateServer(boolean limit) {
-        if (!uploadingCurrently.getAndSet(true)) {
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+
+            dbHelper.removeSeenPromotions();
+            JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
+
+            if(promotion.length() == 0 || promotion == null){
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"No Promotions found for "+screen_id);
+                }
+                return;
+            }
+
             try {
-                long endSessionId = getEndSessionId();
-                Pair<Long, JSONArray> pair = dbHelper.getEvents(endSessionId,
-                        limit ? Constants.Z_EVENT_UPLOAD_MAX_BATCH_SIZE : -1);
-                final long maxId = pair.first;
-                final JSONArray events = pair.second;
-                if(events.length() == 0){
-                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"httpWorker tried uploading events but found zero event, hence not making server request");
+                String campaignId = promotion.getString("promoId");
+
+                Intent inApp = new Intent(context,InAppMessage.class);
+                inApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                inApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                inApp.putExtra("title", promotion.getString("name"));
+                inApp.putExtra("message", promotion.getString("subject"));
+                inApp.putExtra("campaignId", campaignId);
+                context.startActivity(inApp);
+
+                //Run the below code in InApp Activity onStop function
+                //dbHelper.markPromotionAsSeen(campaignId);
+                //JSONObject promotionEvent = new JSONObject();
+                //promotionEvent.put("campaignId", campaignId);
+                //logEvent("promotion", promotionEvent);
+
+
+            }
+            catch (Exception e){
+                Log.e(TAG,"Exception: "+e);
+            }
+
+        }
+
+        public static void startSession(Activity currentActivity) {
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"startSession() called");
+            }
+            if (!isContextAndApiKeySet("startSession()")) {
+                return;
+            }
+            showPromotion(currentActivity);
+            final long now = System.currentTimeMillis();
+
+            runOnLogWorker(new Runnable() {
+                @Override
+                public void run() {
+                    logWorker.removeCallbacks(endSessionRunnable);
+                    long previousEndSessionId = getEndSessionId();
+                    long lastEndSessionTime = getEndSessionTime();
+                    if (previousEndSessionId != -1
+                            && now - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
+                        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                        dbHelper.removeEvent(previousEndSessionId);
+
                     }
-                    uploadingCurrently.set(false);
-                    return;
+                    //startSession() can be called in every activity by developer, hence upload events and sync datastore
+                    // only if it is a new session
+                    syncToServerIfNeeded(now);
+                    startNewSessionIfNeeded(now);
+
+                    openSession();
+
+                    // Update last event time
+                    setLastEventTime(now);
+                    //syncDataStore();
+                    //uploadEvents();
+
+                }
+            });
+        }
+
+        private static void checkPromotions(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"checkPromotions() called");
+            }
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    getPromotions();
+                }
+            });
+        }
+
+        private static void getPromotions(){
+            if(!fetchingPromotionsCurrently.getAndSet(true)) {
+                if (BuildConfig.DEBUG && Zinteract.isDebuggingOn()) {
+                    Log.d(TAG, "logWorker is now asking httpWorker to fetch Promotions");
                 }
                 httpWorker.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                            Log.d(TAG,"Asking httpWorker to upload "+events.length()+" events");
-                        }
-                        makeEventUploadPostRequest(Constants.Z_EVENT_LOG_URL, events.toString(),
-                                maxId);
+                        fetchPromotions();
                     }
                 });
-            } catch (JSONException e) {
-                uploadingCurrently.set(false);
-                Log.e(TAG, e.toString());
             }
         }
-        else {
-            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"Already uploading events to the server hence not uploading now");
-            }
-        }
-    }
 
-    private static void _syncDataStore() {
-        if (!synchingDataStoreCurrently.getAndSet(true)) {
+        private static void fetchPromotions(){
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"Asking httpWorker to sync datastore");
+                Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
             }
-            httpWorker.post(new Runnable() {
+            boolean fetchSuccess = false;
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("lastCampaignSynchedTime", CommonUtils.replaceWithJSONNull(getLastCampaignSyncTime()));
+                String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
+                //String stringResponse = EntityUtils.toString(response.getEntity());
+                if(response != null){
+                    final JSONObject jsonResponse = new JSONObject(response);
+
+                    fetchSuccess = true;
+                    fetchingPromotionsCurrently.set(false);
+                    logWorker.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            addPromotions(jsonResponse);
+                        }
+                    });
+                }
+
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+
+            if (!fetchSuccess) {
+                fetchingPromotionsCurrently.set(false);
+            }
+        }
+
+        private static void addPromotions(JSONObject json){
+            try {
+                JSONArray promotions = json.getJSONArray("promotions");
+                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                for(int i =0; i < promotions.length(); i++){
+                    JSONObject promotion = promotions.getJSONObject(i);
+                    dbHelper.addPromotion(promotion.toString(), promotion.getString("promoId"), promotion.getString("screenId"));
+                }
+
+                setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"Added "+promotions.length()+" promotions in db");
+                }
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+        }
+
+        private static void sync(){
+            syncDataStore();
+            checkPromotions();
+            uploadEvents();
+        }
+
+        private static void syncToServerIfNeeded(long timestamp){
+            if (!isSessionOpen) {
+                long lastEndSessionTime = getEndSessionTime();
+                if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
+                    // Sessions close enough, set sessionId to previous sessionId
+
+                    SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+                    long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
+                            -1);
+
+                    if (previousSessionId == -1) {
+                        sync();
+                    }
+                } else {
+                    // Sessions not close enough, create new sessionId
+                    sync();
+                }
+            } else {
+                long lastEventTime = getLastEventTime();
+                if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
+                    sync();
+                }
+            }
+        }
+
+        public static void endSession() {
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"endSession() called");
+            }
+            if (!isContextAndApiKeySet("endSession()")) {
+                return;
+            }
+            final long timestamp = System.currentTimeMillis();
+            runOnLogWorker(new Runnable() {
                 @Override
                 public void run() {
-                    checkAndUpdateDataStore();
+                    JSONObject apiProperties = new JSONObject();
+                    try {
+                        apiProperties.put("special", END_SESSION_EVENT);
+                    } catch (JSONException e) {
+                    }
+                    if (isSessionOpen) {
+                        long eventId = logEvent(END_SESSION_EVENT, null, apiProperties, timestamp,
+                                false);
+
+                        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+                        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, eventId)
+                                .putLong(Constants.Z_PREFKEY_LAST_END_SESSION_TIME, timestamp)
+                                .apply();
+                    }
+                    closeSession();
+                }
+            });
+            // Queue up upload events 16 seconds later
+            logWorker.removeCallbacks(endSessionRunnable);
+            endSessionRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    clearEndSession();
+                    uploadEvents();
+                }
+            };
+            logWorker
+                    .postDelayed(endSessionRunnable, Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS + 1000);
+        }
+
+        public static void setUserProperty(String key, String value){
+
+            dataStore.setUserProperty(context, key, value);
+        }
+
+        public static String getUserProperty(String key, String defaultValue){
+            return dataStore.getUserProperty(context,key,defaultValue);
+        }
+
+        public static String getData(String key, String defaultValue){
+            return dataStore.getData(context, key, defaultValue);
+        }
+
+        private static void closeSession() {
+            // Close the session. Events within the next MIN_TIME_BETWEEN_SESSIONS_MILLIS seconds
+            // will stay in the session.
+            // A startSession call within the next MIN_TIME_BETWEEN_SESSIONS_MILLIS seconds
+            // will reopen the session.
+            isSessionOpen = false;
+        }
+
+
+        private static void initializeDeviceDetails() {
+            deviceDetails = new DeviceDetails(context);
+            runOnLogWorker(new Runnable() {
+
+                @Override
+                public void run() {
+                    deviceId = initializeDeviceId();
+                    deviceDetails.getadditionalDetails();
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                        Log.d(TAG,"Device details initialization finished");
+                    }
                 }
             });
         }
-        else {
-            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"sync datastore is already going on, so not syncing now");
+
+        private static boolean isValidDeviceId(String deviceId){
+            //Filter invalid device ids like empty string etc
+            return true;
+        }
+
+        private static String initializeDeviceId() {
+
+            SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+            String deviceId = preferences.getString(Constants.Z_PREFKEY_USER_ID, null);
+            if (!(TextUtils.isEmpty(deviceId) || isValidDeviceId(deviceId))) {
+                return deviceId;
+            }
+
+            //TODO check if we can use advertizer id
+            String randomId = deviceDetails.generateUUID();
+            preferences.edit().putString(Constants.Z_PREFKEY_USER_ID, randomId).apply();
+            return randomId;
+
+        }
+
+        private static void startNewSessionIfNeeded(long timestamp) {
+            if (!isSessionOpen) {
+                long lastEndSessionTime = getEndSessionTime();
+                if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
+                    // Sessions close enough, set sessionId to previous sessionId
+
+                    SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+                    long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
+                            -1);
+
+                    if (previousSessionId == -1) {
+                        // Invalid session Id, create new sessionId
+
+
+                        startNewSession(timestamp);
+                    } else {
+                        sessionId = previousSessionId;
+                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                            Log.d(TAG,"starting new session is not required as very close previous session already exists");
+                        }
+                    }
+                } else {
+                    // Sessions not close enough, create new sessionId
+                    startNewSession(timestamp);
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                        Log.d(TAG,"starting new session as previous session was not close enough");
+                    }
+                }
+            } else {
+                long lastEventTime = getLastEventTime();
+                if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
+                    startNewSession(timestamp);
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                        Log.d(TAG,"starting new session as session timedout");
+                    }
+                }
+                else {
+                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                        Log.d(TAG,"Already previous session is open so not starting another session");
+                    }
+                }
+
             }
         }
-    }
 
-
-
-    private static void updateServer() {
-        updateServer(true);
-    }
-
-    private static void updateServerLater(long delayMillis) {
-        if (!updateScheduled.getAndSet(true)) {
-
-            logWorker.postDelayed(new Runnable() {
+        private static void startNewSession(final long timestamp) {
+            // Log session start in events
+            openSession();
+            sessionId = timestamp;
+            SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+            preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
+            JSONObject apiProperties = new JSONObject();
+            try {
+                apiProperties.put("special", START_SESSION_EVENT);
+            } catch (JSONException e) {
+            }
+            logEvent(START_SESSION_EVENT, null, apiProperties, timestamp, false);
+            logWorker.post(new Runnable() {
                 @Override
                 public void run() {
-                    updateScheduled.set(false);
+                    sendEventToServer(START_SESSION_EVENT, timestamp,Constants.Z_START_SESSION_EVENT_LOG_URL,true);
+                }
+            });
+
+        }
+
+        private static void sendEventToServer(final String eventType,final long timestamp,final String url, final boolean header){
+            httpWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    sendEvent(eventType, timestamp,url,header);
+                }
+            });
+        }
+
+        private static void sendEvent(String eventType, long timestamp, String url,boolean header){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"Sending "+eventType+" separately");
+            }
+
+            try {
+                JSONObject postParams = new JSONObject();
+
+                postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+                postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
+                postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
+                postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
+                postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
+                postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
+
+
+                //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
+                Location location = deviceDetails.getMostRecentLocation();
+                if(location != null){
+                    postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(true));
+                    postParams.put("lastLocationLat", CommonUtils.replaceWithJSONNull(location.getLatitude()));
+                    postParams.put("lastLocationLong", CommonUtils.replaceWithJSONNull(location.getLongitude()));
+                }
+                else{
+                    postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(false));
+                }
+                //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
+                //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
+                //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
+
+                //postParams.add(new BasicNameValuePair("lastPurchaseMadeTime", deviceDetails.getVersionName()));
+                //postParams.add(new BasicNameValuePair("lastCustomEventTime", userId));
+                //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
+                //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
+                HttpHelper.doPost(url,postParams);
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+        }
+
+        public static void uploadEvents() {
+            if (!isContextAndApiKeySet("uploadEvents()")) {
+                return;
+            }
+
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
                     updateServer();
                 }
-            }, delayMillis);
+            });
         }
-    }
 
-    private static void openSession() {
-        clearEndSession();
-        isSessionOpen = true;
-    }
-
-    public static void logEvent(String eventType) {
-        logEvent(eventType, null);
-    }
-
-    public static void logEvent(String eventType, JSONObject eventProperties) {
-        checkedLogEvent(eventType, eventProperties, null, System.currentTimeMillis(), true);
-    }
-
-    private static void checkedLogEvent(final String eventType, final JSONObject eventProperties,
-                                        final JSONObject apiProperties, final long timestamp, final boolean checkSession) {
-        if (TextUtils.isEmpty(eventType)) {
-            Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
-            return;
-        }
-        if (!isContextAndApiKeySet("logEvent()")) {
-            return;
-        }
-        runOnLogWorker(new Runnable() {
-            @Override
-            public void run() {
-                logEvent(eventType, eventProperties, apiProperties, timestamp, checkSession);
+        public static void syncDataStore(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
             }
-        });
-    }
-
-    private static long logEvent(String eventType, JSONObject eventProperties,
-                                 JSONObject apiProperties, long timestamp, boolean checkSession) {
-        if (checkSession) {
-            startNewSessionIfNeeded(timestamp);
-        }
-        setLastEventTime(timestamp);
-
-        JSONObject event = new JSONObject();
-        try {
-            event.put("eventName", CommonUtils.replaceWithJSONNull(eventType));
-            event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
-
-            event.put("eventTime", timestamp);
-            //event.put("sessionId",sessionId);
-//            event.put("user_id", (userId == null) ? CommonUtils.replaceWithJSONNull(deviceId)
-//                    : CommonUtils.replaceWithJSONNull(userId));
-//            event.put("device_id", CommonUtils.replaceWithJSONNull(deviceId));
-//            event.put("session_id", sessionId);
-//            event.put("version_name", CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-//            event.put("os_name", CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
-//            event.put("os_version", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
-//            event.put("device_brand", CommonUtils.replaceWithJSONNull(deviceDetails.getBrand()));
-//            event.put("device_manufacturer", CommonUtils.replaceWithJSONNull(deviceDetails.getManufacturer()));
-//            event.put("device_model", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
-//            event.put("carrier", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
-//            event.put("country", CommonUtils.replaceWithJSONNull(deviceDetails.getCountry()));
-//            event.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
-//            event.put("platform", Constants.Z_PLATFORM);
-//
-//            JSONObject library = new JSONObject();
-//            //library.put("name", Constants.LIBRARY);
-//            library.put("version", Constants.Z_VERSION);
-//            event.put("library", library);
-//
-//            apiProperties = (apiProperties == null) ? new JSONObject() : apiProperties;
-//            Location location = deviceDetails.getMostRecentLocation();
-//            if (location != null) {
-//                JSONObject locationJSON = new JSONObject();
-//                locationJSON.put("lat", location.getLatitude());
-//                locationJSON.put("lng", location.getLongitude());
-//                apiProperties.put("location", locationJSON);
-//            }
-//            if (deviceDetails.getAdvertisingId() != null) {
-//                apiProperties.put("androidADID", deviceDetails.getAdvertisingId());
-//            }
-//
-//            event.put("api_properties", apiProperties);
-//            event.put("event_properties", (eventProperties == null) ? new JSONObject()
-//                    : eventProperties);
-            //event.put("user_properties", (userProperties == null) ? new JSONObject()
-            //: userProperties);
-        } catch (JSONException e) {
-            Log.e(TAG, e.toString());
-        }
-
-        return logEvent(event);
-    }
-
-
-
-    private static long logEvent(JSONObject event) {
-        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-        long eventId = dbHelper.addEvent(event.toString());
-
-        if (dbHelper.getEventCount() >= Constants.Z_EVENT_MAX_COUNT) {
-            dbHelper.removeEvents(dbHelper.getNthEventId(Constants.Z_EVENT_REMOVE_BATCH_SIZE));
-        }
-
-        if (dbHelper.getEventCount() >= Constants.Z_EVENT_UPLOAD_THRESHOLD) {
-            updateServer();
-        } else {
-            updateServerLater(Constants.Z_EVENT_UPLOAD_PERIOD_MILLIS);
-        }
-        return eventId;
-    }
-
-    private static void runOnLogWorker(Runnable r) {
-        if (Thread.currentThread() != logWorker) {
-            logWorker.post(r);
-        } else {
-            r.run();
-        }
-    }
-
-
-    private static String getSavedUserId(){
-        return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_USER_ID,null);
-    }
-
-    private static void setUserId(String userId){
-        Zinteract.userId = userId;
-        CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
-        logWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                setUserId();
+            if (!isContextAndApiKeySet("syncDataStore()")) {
+                return;
             }
-        });
-    }
 
-    private static void setUserId(){
-        httpWorker.post(new Runnable() {
-            @Override
-            public void run() {
-                setUserOnServer();
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    _syncDataStore();
+                }
+            });
+        }
+
+        private static void checkAndUpdateDataStore(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"httpWorker is now making server request to update DataStore");
             }
-        });
-    }
 
-    private static void setUserOnServer(){
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-            Log.d(TAG,"Sending new user id to the server.");
+            boolean syncSuccess = false;
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("lastDataStoreSynchedTime",CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
+                String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
+                if(response != null){
+                    final JSONObject jsonResponse = new JSONObject(response);
+                    if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
+                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                            Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
+                        }
+                        syncSuccess = true;
+                        synchingDataStoreCurrently.set(false);
+                        logWorker.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateDataStore(jsonResponse);
+                            }
+                        });
+                    }
+                    else {
+                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                            Log.d(TAG,"DataStore already latest version, not updating local DataStore");
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+
+            if (!syncSuccess) {
+                synchingDataStoreCurrently.set(false);
+            }
+
         }
 
-        try {
-            JSONObject postParams = new JSONObject();
-            postParams.put("oldUserID",getUserId());//TODO
-            HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
-        } catch (Exception e) {
-            // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
-        } finally {
+        private static void updateDataStore(JSONObject newDataStore){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"logWorker id updating local data store with the fetched data store");
+            }
+            try {
+                JSONObject variables = newDataStore.getJSONObject("variables");
+                for(int i = 0; i<variables.names().length(); i++){
+                    setData(variables.names().getString(i),variables.getString(variables.names().getString(i)));
+                }
+                dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
+            } catch (Exception e){
+                Log.e(TAG, "Exception:", e);
+            }
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"DataStore update done, we have latest version now.");
+            }
+
+            synchingDataStoreCurrently.set(false);
         }
-    }
 
-    private synchronized static boolean isContextAndApiKeySet(String methodName) {
-        if (context == null) {
-            Log.e(TAG, "context cannot be null, set context with initialize() before calling "
-                    + methodName);
-            return false;
+        private static void setData(String key, String value){
+            dataStore.setData(context, key, value);
         }
-        if (TextUtils.isEmpty(apiKey)) {
-            Log.e(TAG,
-                    "apiKey cannot be null or empty, set apiKey with initialize() before calling "
-                            + methodName);
-            return false;
+
+        private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"httpWorker is uploading events now - "+events);
+            }
+
+            boolean uploadSuccess = false;
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
+                postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+                postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+                String response = HttpHelper.doPost(url,postParams);
+                if(response !=null){
+                    JSONObject jsonResponse = new JSONObject(response);
+                    if (jsonResponse.getString("status").equals("success")) {
+                        uploadSuccess = true;
+                        logWorker.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                                    Log.d(TAG,"Events upload successful, trying to delete uploaded events");
+                                }
+                                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                                dbHelper.removeEvents(maxId);
+                                uploadingCurrently.set(false);
+                                if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
+                                    if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                                        Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
+                                    }
+                                    logWorker.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            updateServer(false);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+
+            if (!uploadSuccess) {
+                uploadingCurrently.set(false);
+            }
+
         }
-        return true;
+
+        private static void updateServer(boolean limit) {
+            if (!uploadingCurrently.getAndSet(true)) {
+                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                try {
+                    long endSessionId = getEndSessionId();
+                    Pair<Long, JSONArray> pair = dbHelper.getEvents(endSessionId,
+                            limit ? Constants.Z_EVENT_UPLOAD_MAX_BATCH_SIZE : -1);
+                    final long maxId = pair.first;
+                    final JSONArray events = pair.second;
+                    if(events.length() == 0){
+                        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                            Log.d(TAG,"httpWorker tried uploading events but found zero event, hence not making server request");
+                        }
+                        uploadingCurrently.set(false);
+                        return;
+                    }
+                    httpWorker.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                                Log.d(TAG,"Asking httpWorker to upload "+events.length()+" events");
+                            }
+                            makeEventUploadPostRequest(Constants.Z_EVENT_LOG_URL, events.toString(),
+                                    maxId);
+                        }
+                    });
+                } catch (JSONException e) {
+                    uploadingCurrently.set(false);
+                    Log.e(TAG, e.toString());
+                }
+            }
+            else {
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"Already uploading events to the server hence not uploading now");
+                }
+            }
+        }
+
+        private static void _syncDataStore() {
+            if (!synchingDataStoreCurrently.getAndSet(true)) {
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"Asking httpWorker to sync datastore");
+                }
+                httpWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkAndUpdateDataStore();
+                    }
+                });
+            }
+            else {
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"sync datastore is already going on, so not syncing now");
+                }
+            }
+        }
+
+
+
+        private static void updateServer() {
+            updateServer(true);
+        }
+
+        private static void updateServerLater(long delayMillis) {
+            if (!updateScheduled.getAndSet(true)) {
+
+                logWorker.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateScheduled.set(false);
+                        updateServer();
+                    }
+                }, delayMillis);
+            }
+        }
+
+        private static void openSession() {
+            clearEndSession();
+            isSessionOpen = true;
+        }
+
+        public static void logEvent(String eventType) {
+            logEvent(eventType, null);
+        }
+
+        public static void logEvent(String eventType, JSONObject eventProperties) {
+            checkedLogEvent(eventType, eventProperties, null, System.currentTimeMillis(), true);
+        }
+
+        private static void checkedLogEvent(final String eventType, final JSONObject eventProperties,
+                                            final JSONObject apiProperties, final long timestamp, final boolean checkSession) {
+            if (TextUtils.isEmpty(eventType)) {
+                Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
+                return;
+            }
+            if (!isContextAndApiKeySet("logEvent()")) {
+                return;
+            }
+            runOnLogWorker(new Runnable() {
+                @Override
+                public void run() {
+                    logEvent(eventType, eventProperties, apiProperties, timestamp, checkSession);
+                }
+            });
+        }
+
+        private static long logEvent(String eventType, JSONObject eventProperties,
+                                     JSONObject apiProperties, long timestamp, boolean checkSession) {
+            if (checkSession) {
+                startNewSessionIfNeeded(timestamp);
+            }
+            setLastEventTime(timestamp);
+
+            JSONObject event = new JSONObject();
+            try {
+                event.put("eventName", CommonUtils.replaceWithJSONNull(eventType));
+                event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
+
+                event.put("eventTime", timestamp);
+            } catch (JSONException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            return logEvent(event);
+        }
+
+
+
+        private static long logEvent(JSONObject event) {
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            long eventId = dbHelper.addEvent(event.toString());
+
+            if (dbHelper.getEventCount() >= Constants.Z_EVENT_MAX_COUNT) {
+                dbHelper.removeEvents(dbHelper.getNthEventId(Constants.Z_EVENT_REMOVE_BATCH_SIZE));
+            }
+
+            if (dbHelper.getEventCount() >= Constants.Z_EVENT_UPLOAD_THRESHOLD) {
+                updateServer();
+            } else {
+                updateServerLater(Constants.Z_EVENT_UPLOAD_PERIOD_MILLIS);
+            }
+            return eventId;
+        }
+
+        private static void runOnLogWorker(Runnable r) {
+            if (Thread.currentThread() != logWorker) {
+                logWorker.post(r);
+            } else {
+                r.run();
+            }
+        }
+
+
+        private static String getSavedUserId(){
+            return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_USER_ID,null);
+        }
+
+        private static void setUserId(String userId){
+            Zinteract.userId = userId;
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    setUserId();
+                }
+            });
+        }
+
+        private static void setUserId(){
+            httpWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    setUserOnServer();
+                }
+            });
+        }
+
+        private static void setUserOnServer(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"Sending new user id to the server.");
+            }
+
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("oldUserID",getUserId());//TODO
+                HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+        }
+
+        private synchronized static boolean isContextAndApiKeySet(String methodName) {
+            if (context == null) {
+                Log.e(TAG, "context cannot be null, set context with initialize() before calling "
+                        + methodName);
+                return false;
+            }
+            if (TextUtils.isEmpty(apiKey)) {
+                Log.e(TAG,
+                        "apiKey cannot be null or empty, set apiKey with initialize() before calling "
+                                + methodName);
+                return false;
+            }
+            return true;
+        }
+
+        private static String getUUID(){
+            return UUID.randomUUID().toString();//TODO customize it
+        }
+
+        private static void setContext(Context context){
+            Zinteract.context = context;
+        }
+
+        private static void setApiKey(String apiKey){
+            Zinteract.apiKey = apiKey;
+        }
+
+        private static long getLastEventTime() {
+            return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_SESSION_TIME);
+
+
+        }
+
+        private static void setLastEventTime(long timestamp) {
+            SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+            preferences.edit().putLong(Constants.Z_PREFKEY_LAST_SESSION_TIME, timestamp).apply();
+        }
+
+        private static void clearEndSession() {
+            SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+            preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
+                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
+        }
+
+        private static long getEndSessionTime() {
+            return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_TIME);
+
+        }
+
+        private static long getEndSessionId() {
+            return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_ID);
+        }
+
+        private static long getSharedPreferenceValueByKey(String key){
+            SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+            return preferences.getLong(key, -1);
+        }
+
+        private static String getLastCampaignSyncTime(){
+            return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,"");
+        }
+
+        private static void setLastCampaignSyncTime(String lastCampaignSyncTime){
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,lastCampaignSyncTime).apply();
+        }
+
+
     }
-
-    private static String getUUID(){
-        return UUID.randomUUID().toString();//TODO customize it
-    }
-
-    private static void setContext(Context context){
-        Zinteract.context = context;
-    }
-
-    private static void setApiKey(String apiKey){
-        Zinteract.apiKey = apiKey;
-    }
-
-    private static long getLastEventTime() {
-        return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_SESSION_TIME);
-
-
-    }
-
-    private static void setLastEventTime(long timestamp) {
-        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_SESSION_TIME, timestamp).apply();
-    }
-
-    private static void clearEndSession() {
-        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
-                .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
-    }
-
-    private static long getEndSessionTime() {
-        return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_TIME);
-
-    }
-
-    private static long getEndSessionId() {
-        return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_ID);
-    }
-
-    private static long getSharedPreferenceValueByKey(String key){
-        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-        return preferences.getLong(key, -1);
-    }
-
-    private static String getLastCampaignSyncTime(){
-        return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,"");
-    }
-
-    private static void setLastCampaignSyncTime(String lastCampaignSyncTime){
-        CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,lastCampaignSyncTime).apply();
-    }
-
-
-}
