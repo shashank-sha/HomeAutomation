@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class DeviceDetails {
@@ -63,8 +64,20 @@ public class DeviceDetails {
             packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             versionName = packageInfo.versionName;
         } catch (NameNotFoundException e) {
+            versionName = null;
         }
-        versionName = null;
+
+    }
+
+    public static String getApplicationName() {
+        try {
+            int stringId = context.getApplicationInfo().labelRes;
+            return context.getString(stringId);
+        }
+        catch (Exception e){
+            return "";
+        }
+
     }
 
     public String getOSName() {
@@ -237,5 +250,6 @@ public class DeviceDetails {
     public void setLocationListening(boolean locationListening) {
         this.locationListening = locationListening;
     }
+
 
 }

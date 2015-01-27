@@ -10,10 +10,12 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,7 +42,7 @@ public class HttpHelper {
         return httpHelper;
     }
 
-    public static String doPost(String url, List<NameValuePair> postParams){
+    public static String doPost(String url, JSONObject postParams){
 
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"doPost() called");
@@ -48,15 +50,26 @@ public class HttpHelper {
 
         postParams = addRequiredParams(postParams);
 
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+            Log.d(TAG, "Post parameters are: " + postParams.toString());
+        }
+
         HttpResponse response;
         String stringResponse = null;
         HttpPost postRequest = new HttpPost(url);
         try {
-            postRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+            String jsonString = postParams.toString();
+            //postRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+            postRequest.setHeader("Accept", "application/json");
+            postRequest.setHeader("Content-type", "application/json");
+            postRequest.setEntity(new StringEntity(jsonString));
         } catch (UnsupportedEncodingException e) {
             // According to
             // http://stackoverflow.com/questions/5049524/is-java-utf-8-charset-exception-possible,
             // this will never be thrown
+            Log.e(TAG, e.toString());
+        }
+        catch (Exception e){
             Log.e(TAG, e.toString());
         }
         HttpClient client = new DefaultHttpClient();
@@ -87,11 +100,18 @@ public class HttpHelper {
         return stringResponse;
     }
 
-    private static List<NameValuePair> addRequiredParams(List<NameValuePair> postParams){
-        postParams.add(new BasicNameValuePair("apiKey", Zinteract.getApiKey()));
-        postParams.add(new BasicNameValuePair("userId", Zinteract.getUserId()));
-        postParams.add(new BasicNameValuePair("deviceId", Zinteract.getDeviceId()));
-        postParams.add(new BasicNameValuePair("sdkId", Constants.Z_SDK_ID));
+    private static JSONObject addRequiredParams(JSONObject postParams){
+        try {
+            postParams.put("apiKey",CommonUtils.replaceWithJSONNull(Zinteract.getApiKey()));
+            postParams.put("userId",CommonUtils.replaceWithJSONNull(Zinteract.getUserId()));
+
+            postParams.put("deviceId",CommonUtils.replaceWithJSONNull(Zinteract.getDeviceId()));
+            postParams.put("sdkId",CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
+            return postParams;
+        }
+        catch (Exception e){
+            Log.e(TAG,"Exception: "+e);
+        }
         return postParams;
     }
 }

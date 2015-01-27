@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -245,11 +246,10 @@ public class Zinteract {
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
         }
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-        postParams.add(new BasicNameValuePair("lastCampaignSynchedTime", null));//TODO
-
         boolean fetchSuccess = false;
         try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("lastCampaignSynchedTime", null);//TODO
             String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
             //String stringResponse = EntityUtils.toString(response.getEntity());
             if(response != null){
@@ -502,32 +502,36 @@ public class Zinteract {
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"Sending "+eventType+" separately");
         }
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-
-        //postParams.add(new BasicNameValuePair("v", apiVersionString));
-        //postParams.add(new BasicNameValuePair("eventList", events));
-        postParams.add(new BasicNameValuePair("sdkId", Constants.Z_VERSION));
-        postParams.add(new BasicNameValuePair("appVersion", deviceDetails.getVersionName()));//
-        postParams.add(new BasicNameValuePair("appName", deviceDetails.getVersionName()));
-
-        postParams.add(new BasicNameValuePair("OSVersion", deviceDetails.getOSVersion()));
-        postParams.add(new BasicNameValuePair("deviceModel", deviceDetails.getModel()));//
-        postParams.add(new BasicNameValuePair("deviceDataProvider", deviceDetails.getCarrier()));
-        postParams.add(new BasicNameValuePair("language", deviceDetails.getLanguage()));
-        //postParams.add(new BasicNameValuePair("isLocationAvailable", deviceId));
-
-        //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));
-        // postParams.add(new BasicNameValuePair("lastLocation", deviceDetails.getMostRecentLocation().toString()));//
-        //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
-        //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
-        //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
-
-        //postParams.add(new BasicNameValuePair("lastPurchaseMadeTime", deviceDetails.getVersionName()));
-        //postParams.add(new BasicNameValuePair("lastCustomEventTime", userId));
-        //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
-        //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
 
         try {
+            JSONObject postParams = new JSONObject();
+
+            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+            postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
+            postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
+            postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
+            postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
+            postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
+
+
+            //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
+            Location location = deviceDetails.getMostRecentLocation();
+            if(location != null){
+                postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(true));
+                postParams.put("lastLocationLat", CommonUtils.replaceWithJSONNull(location.getLatitude()));
+                postParams.put("lastLocationLong", CommonUtils.replaceWithJSONNull(location.getLongitude()));
+            }
+            else{
+                postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(false));
+            }
+            //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
+            //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
+            //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
+
+            //postParams.add(new BasicNameValuePair("lastPurchaseMadeTime", deviceDetails.getVersionName()));
+            //postParams.add(new BasicNameValuePair("lastCustomEventTime", userId));
+            //postParams.add(new BasicNameValuePair("appLastUpdatedTime", deviceId));
+            //postParams.add(new BasicNameValuePair("lastAlertSentTime", deviceId));
             HttpHelper.doPost(url,postParams);
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
@@ -569,14 +573,12 @@ public class Zinteract {
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is now making server request to update DataStore");
         }
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-
-        postParams.add(new BasicNameValuePair("lastDataStoreSynchedTime", dataStore.getDataStoreVersion(context)));
 
         boolean syncSuccess = false;
         try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("lastDataStoreSynchedTime",CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
             String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
-            //String stringResponse = EntityUtils.toString(response.getEntity());
             if(response != null){
                 final JSONObject jsonResponse = new JSONObject(response);
                 if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
@@ -639,18 +641,14 @@ public class Zinteract {
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"httpWorker is uploading events now - "+events);
         }
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-
-        //postParams.add(new BasicNameValuePair("v", apiVersionString));
-        postParams.add(new BasicNameValuePair("eventList", events));
-        postParams.add(new BasicNameValuePair("sdkId", Constants.Z_VERSION));
-        postParams.add(new BasicNameValuePair("appVersion", deviceDetails.getVersionName()));//
-        postParams.add(new BasicNameValuePair("appName", deviceDetails.getVersionName()));
 
         boolean uploadSuccess = false;
         try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("eventList",CommonUtils.replaceWithJSONNull(events));
+            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+            postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
             String response = HttpHelper.doPost(url,postParams);
-            //String stringResponse = EntityUtils.toString(response.getEntity());
             if(response !=null){
                 JSONObject jsonResponse = new JSONObject(response);
                 if (jsonResponse.getString("status").equals("success")) {
@@ -810,6 +808,7 @@ public class Zinteract {
             event.put("event_type", CommonUtils.replaceWithJSONNull(eventType));
 
             event.put("timestamp", timestamp);
+            //event.put("sessionId",sessionId);
 //            event.put("user_id", (userId == null) ? CommonUtils.replaceWithJSONNull(deviceId)
 //                    : CommonUtils.replaceWithJSONNull(userId));
 //            event.put("device_id", CommonUtils.replaceWithJSONNull(deviceId));
@@ -909,11 +908,10 @@ public class Zinteract {
         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
             Log.d(TAG,"Sending new user id to the server.");
         }
-        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-
-        postParams.add(new BasicNameValuePair("oldUserID", getUserId()));//TODO
 
         try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("oldUserID",getUserId());//TODO
             HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
