@@ -14,6 +14,7 @@ class Constants {
     static final String Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME = Z_NAMESPACE+".userproperties";
     static final String Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME = Z_NAMESPACE+".datastore";
     static final String Z_PREFKEY_USER_ID = Z_NAMESPACE+"userId";
+    static final String Z_PREFKEY_OLD_USER_ID = Z_NAMESPACE+"old_userId";
     static final String Z_PREFKEY_FIRSTTIME_FLAG = Z_NAMESPACE+".firsttime";
 
     //DataStore

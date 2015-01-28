@@ -77,6 +77,14 @@
         }
 
 
+        /**
+         *
+         * Method to initialize Zinteract SDK
+         *
+         * @param context the application context
+         * @param apiKey the api key found at zinteract account
+         *
+         */
         public static void initializeWithContextAndKey(Context context, String apiKey) {
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"initializeWithContextAndKey() called");
@@ -102,7 +110,7 @@
                 userId = getSavedUserId();
                 if(userId == null){
                     userId = getUUID();
-                    setUserId(userId);
+                    CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).apply();
                 }
                 //Send init event if installed for the first time.
                 if(isFirstTimeUse()) {
@@ -119,6 +127,9 @@
         }
 
 
+        /**
+         * Method to enable Zinteract SDK logging, useful for debugging
+         */
         public static void enableDebugging(){
             DEBUG = true;
         }
@@ -186,6 +197,12 @@
             }
 
         }
+
+        /**
+         * This method starts a session during app usage
+         *
+         * @param currentActivity the instance of current activity from which startSession is called
+         */
 
         public static void startSession(Activity currentActivity) {
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
@@ -336,6 +353,9 @@
             }
         }
 
+        /**
+         * This method ends a usage session
+         */
         public static void endSession() {
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"endSession() called");
@@ -377,15 +397,37 @@
                     .postDelayed(endSessionRunnable, Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS + 1000);
         }
 
+        /**
+         * This method is to specify user properties, which can be accessed at Zinteract cloud
+         * and hence can be used to target campaigns based on user properties
+         *
+         * @param key the key paramether for which the value has to be saved, e.g firstname, lastname etc
+         * @param value the value for the key
+         */
         public static void setUserProperty(String key, String value){
 
             dataStore.setUserProperty(context, key, value);
         }
 
+        /**
+         * This method is to get user properties set from the SDK or from the Zinteract cloud
+         *
+         * @param key the key for which value needs to be accessed
+         * @param defaultValue the default value in case the user property for the key has not been set yet
+         * @return the value for the key
+         */
+
         public static String getUserProperty(String key, String defaultValue){
             return dataStore.getUserProperty(context,key,defaultValue);
         }
 
+        /**
+         * This method is to get data store values set from Zinteract cloud
+         *
+         * @param key the key for which value needs to be accessed
+         * @param defaultValue the default value in case the user property for the key has not been set yet
+         * @return the value for the key
+         */
         public static String getData(String key, String defaultValue){
             return dataStore.getData(context, key, defaultValue);
         }
@@ -782,10 +824,21 @@
             isSessionOpen = true;
         }
 
+        /**
+         * Method to log custom events
+         *
+         * @param eventType the type of event e.g click,purchase etc
+         */
         public static void logEvent(String eventType) {
             logEvent(eventType, null);
         }
 
+        /**
+         * Method to log custom events with additional parameters
+         *
+         * @param eventType the type of event e.g click,purchase etc
+         * @param eventProperties additional parameters. e.g for purchase event additional parameters might be- amount,quantity etc
+         */
         public static void logEvent(String eventType, JSONObject eventProperties) {
             checkedLogEvent(eventType, eventProperties, null, System.currentTimeMillis(), true);
         }
@@ -858,9 +911,15 @@
             return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_USER_ID,null);
         }
 
-        private static void setUserId(String userId){
+        /**
+         * Method to set custom user id.
+         *
+         * @param userId the string value to set
+         */
+        public synchronized static void setUserId(String userId){
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_OLD_USER_ID, getUserId()).apply();
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).apply();
             Zinteract.userId = userId;
-            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
             logWorker.post(new Runnable() {
                 @Override
                 public void run() {
@@ -885,7 +944,7 @@
 
             try {
                 JSONObject postParams = new JSONObject();
-                postParams.put("oldUserID",getUserId());//TODO
+                postParams.put("oldUserID",getOldUserId());
                 HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
@@ -954,6 +1013,10 @@
 
         private static String getLastCampaignSyncTime(){
             return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,"");
+        }
+
+        private static String getOldUserId(){
+            return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_OLD_USER_ID,"");
         }
 
         private static void setLastCampaignSyncTime(String lastCampaignSyncTime){
