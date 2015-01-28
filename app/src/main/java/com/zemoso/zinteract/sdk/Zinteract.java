@@ -15,6 +15,8 @@
     import org.json.JSONException;
     import org.json.JSONObject;
 
+    import java.util.HashMap;
+    import java.util.Map;
     import java.util.UUID;
     import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -672,9 +674,11 @@
             }
             try {
                 JSONObject variables = newDataStore.getJSONObject("variables");
+                Map<String,String> values = new HashMap<>();
                 for(int i = 0; i<variables.names().length(); i++){
-                    setData(variables.names().getString(i),variables.getString(variables.names().getString(i)));
+                    values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                 }
+                dataStore.setMultipleData(context,values);
                 dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
                 Log.e(TAG, "Exception:", e);

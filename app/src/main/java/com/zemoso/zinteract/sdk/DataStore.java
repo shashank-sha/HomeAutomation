@@ -30,6 +30,16 @@ public class DataStore extends UserProperties{
         getSharedPreferences(context).edit().putString(key, value).apply();
     }
 
+    static void setMultipleData(Context context,Map<String,String> values){
+        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+        for(Map.Entry<String, String> e : values.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
+            editor.putString(key,value);
+        }
+        editor.apply();
+    }
+
     static void setLastSyncTime(Context context,String value){
         getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, value).apply();
     }
