@@ -24,22 +24,19 @@ public class UserProperties {
 //        return userProperties;
 //    }
 
-    public String getUserProperty(Context context,String key, String defaultValue){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getString(key, defaultValue);
+    protected static String getUserProperty(Context context,String key, String defaultValue){
+        return getSharedPreferences(context).getString(key, defaultValue);
     }
 
-    public void setUserProperty(Context context,String key, String value){
-        SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(key, value).apply();
+    protected static void setUserProperty(Context context,String key, String value){
+        getSharedPreferences(context).edit().putString(key, value).apply();
     }
 
-    public Map<String,?> getAllUserProperties(Context context,String key, String value){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getAll();
+    protected static Map<String,?> getAllUserProperties(Context context,String key, String value){
+        return getSharedPreferences(context).getAll();
     }
 
-    private SharedPreferences getSharedPreferences(Context context){
+    private static SharedPreferences getSharedPreferences(Context context){
         return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME, Context.MODE_PRIVATE);
     }

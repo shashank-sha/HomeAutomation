@@ -22,42 +22,35 @@ public class DataStore extends UserProperties{
         return dataStore;
     }
 
-    public String getData(Context context,String key, String defaultValue){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getString(key, defaultValue);
+    static String getData(Context context,String key, String defaultValue){
+        return getSharedPreferences(context).getString(key, defaultValue);
     }
 
-    public void setData(Context context,String key, String value){
-        SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(key, value).apply();
+    static void setData(Context context,String key, String value){
+        getSharedPreferences(context).edit().putString(key, value).apply();
     }
 
-    public void setLastSyncTime(Context context,String value){
-        SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, value).apply();
+    static void setLastSyncTime(Context context,String value){
+        getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, value).apply();
     }
 
-    public String getLastSyncTime(Context context){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, null);
+    static String getLastSyncTime(Context context){
+        return getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_DATASTORE_SYNC_TIME, null);
     }
 
-    public void setDataStoreVersion(Context context,String value){
-        SharedPreferences preferences = getSharedPreferences(context);
-        preferences.edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, value).apply();
+    static void setDataStoreVersion(Context context,String value){
+        getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, value).apply();
     }
 
-    public String getDataStoreVersion(Context context){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, null);
+    static String getDataStoreVersion(Context context){
+        return getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_DATASTORE_VERSION, null);
     }
 
-    public Map<String,?> getAllData(Context context){
-        SharedPreferences preferences = getSharedPreferences(context);
-        return preferences.getAll();
+    static Map<String,?> getAllData(Context context){
+        return getSharedPreferences(context).getAll();
     }
 
-    private SharedPreferences getSharedPreferences(Context context){
+    static SharedPreferences getSharedPreferences(Context context){
         return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME, Context.MODE_PRIVATE);
     }
