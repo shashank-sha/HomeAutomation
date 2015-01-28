@@ -5,9 +5,7 @@ package com.zemoso.zinteract.sdk;
  */
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.test.ApplicationTestCase;
-import android.test.mock.MockContext;
 import android.util.Log;
 import android.util.Pair;
 
