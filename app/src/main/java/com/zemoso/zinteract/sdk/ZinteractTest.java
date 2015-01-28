@@ -27,7 +27,6 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
 
     public void setUp(){
         createApplication();
-        getContext().getSharedPreferences(Constants.Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME,Context.MODE_PRIVATE).edit().clear().commit();
         getContext().getSharedPreferences(Constants.Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME,Context.MODE_PRIVATE).edit().clear().commit();
 
         getContext().getSharedPreferences(Constants.Z_SHARED_PREFERENCE_FILE_NAME,Context.MODE_PRIVATE).edit().clear().commit();

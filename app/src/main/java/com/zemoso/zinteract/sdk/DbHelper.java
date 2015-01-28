@@ -41,8 +41,15 @@ class DbHelper extends SQLiteOpenHelper {
             + Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, screen_id TEXT, status INTEGER DEFAULT 0,"
             + Constants.Z_DB_PROMOTION_PROMOTION_FIELD_NAME + " TEXT);";
 
+    private static final String CREATE_USERPROPERTIES_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME + " ("
+            + Constants.Z_DB_USER_PROPERTIES_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, propname TEXT, propvalue TEXT, synched INTEGER DEFAULT 0 );";
+
     private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID = "CREATE UNIQUE INDEX campaign_id_idx" +
             " on "+ PROMOTION_TABLE_NAME+" (campaign_id);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_PROPNAME = "CREATE UNIQUE INDEX propname_idx" +
+            " on "+ Constants.Z_DB_USER_PROPERTIES_TABLE_NAME+" (propname);";
 
     private File file;
 
@@ -65,17 +72,21 @@ class DbHelper extends SQLiteOpenHelper {
         // lifetime of the table, even if rows get removed
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
+        db.execSQL(CREATE_USERPROPERTIES_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
-
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PROMOTION_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
+        db.execSQL(CREATE_USERPROPERTIES_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
     }
 
 
@@ -262,6 +273,86 @@ class DbHelper extends SQLiteOpenHelper {
             close();
         }
         return promotion;
+    }
+
+    //User Properties related
+
+    synchronized long addUserProperties(JSONObject userProperties) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+
+            for(int i=0; i < userProperties.length(); i++){
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("propname", userProperties.names().getString(i));
+                contentValues.put("propvalue", userProperties.getString(userProperties.names().getString(i)));
+                result = db.insertWithOnConflict(Constants.Z_DB_USER_PROPERTIES_TABLE_NAME, null, contentValues,5);
+                if (result == -1) {
+                    Log.w(TAG, "addUserProperty Insert failed");
+                }
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "addUserProperty failed", e);
+            // Not much we can do, just start fresh
+            delete();
+        } catch(Exception e){
+            Log.e(TAG,"Exception : "+e);
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    synchronized String getUserProperty(String propname){
+        String value = null;
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.query(Constants.Z_DB_USER_PROPERTIES_TABLE_NAME, null,"propname = ?", new String[]{propname}, null,
+                    null, Constants.Z_DB_USER_PROPERTIES_ID_FIELD_NAME + " DESC", "1");
+
+            while (cursor.moveToNext()) {
+                value = cursor.getString(2);
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getUserProperty failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getUserProperty falied", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return value;
+    }
+
+    synchronized JSONObject getUserProperties(){
+        JSONObject userProperties = new JSONObject();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.query(Constants.Z_DB_USER_PROPERTIES_TABLE_NAME, null,null, null, null,
+                    null, Constants.Z_DB_USER_PROPERTIES_ID_FIELD_NAME + " DESC", null);
+
+            while (cursor.moveToNext()) {
+                String key = cursor.getString(1);
+                String value = cursor.getString(2);
+                userProperties.put(key,value);
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getUserProperties failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getUserProperties falied", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return userProperties;
     }
 
     private void delete() {

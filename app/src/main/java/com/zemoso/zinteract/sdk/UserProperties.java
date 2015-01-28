@@ -13,48 +13,35 @@ import java.util.Map;
  */
 public class UserProperties {
 
-//    private static UserProperties userProperties;
-//
-//    private UserProperties(){
-//
-//    }
-//
-//    public synchronized static UserProperties getUserProperties(){
-//        if(userProperties == null){
-//            userProperties = new UserProperties();
-//        }
-//
-//        return userProperties;
-//    }
     private static final String TAG = "com.zemoso.zinteract.sdk.UserProperties";
 
     protected static String getUserProperty(Context context,String key, String defaultValue){
-        return getSharedPreferences(context).getString(key, defaultValue);
+        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+        String value = dbHelper.getUserProperty(key);
+        if(value == null){
+            return defaultValue;
+        }
+        return value;
     }
 
     protected static void setUserProperty(Context context,String key, String value){
-        getSharedPreferences(context).edit().putString(key, value).apply();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(key,value);
+            setUserProperties(context,jsonObject);
+        }
+        catch (Exception e){
+            Log.e(TAG,"Exception: "+e);
+        }
     }
 
     protected static void setUserProperties(Context context,JSONObject userProperties){
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
-        try{
-            for(int i=0; i < userProperties.length(); i++){
-                editor.putString(userProperties.names().getString(i),userProperties.getString(userProperties.names().getString(i)));
-            }
-            editor.apply();
-        }
-        catch (Exception e){
-            Log.e(TAG,"Exception : "+e);
-        }
+        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+        dbHelper.addUserProperties(userProperties);
     }
 
-    protected static Map<String,?> getAllUserProperties(Context context,String key, String value){
-        return getSharedPreferences(context).getAll();
-    }
-
-    private static SharedPreferences getSharedPreferences(Context context){
-        return context.getSharedPreferences(
-                Constants.Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME, Context.MODE_PRIVATE);
+    protected static JSONObject getAllUserProperties(Context context){
+        DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+        return dbHelper.getUserProperties();
     }
 }

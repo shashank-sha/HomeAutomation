@@ -17,6 +17,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Zinteract.initializeWithContextAndKey(getApplicationContext(),"AndroidAPIKey");
+        Zinteract.setUserProperty("firstname","John");
+        Zinteract.setUserProperty("lastname","Doe");
+        Zinteract.setUserProperty("age","28");
         Zinteract.enableDebugging();
     }
 

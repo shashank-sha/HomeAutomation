@@ -46,6 +46,7 @@
         private static AtomicBoolean uploadingCurrently = new AtomicBoolean(false);
         private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
         private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
+        private static AtomicBoolean updatingUserPropsCurrently = new AtomicBoolean(false);
 
         private static boolean DEBUG = false;
 
@@ -327,6 +328,7 @@
             syncDataStore();
             checkPromotions();
             uploadEvents();
+            sendUserProperties();
         }
 
         private static void syncToServerIfNeeded(long timestamp){
@@ -408,6 +410,7 @@
         public static void setUserProperty(String key, String value){
 
             dataStore.setUserProperty(context, key, value);
+            sendUserProperties(Constants.Z_USER_PROPS_UPLOAD_PERIOD_MILLIS);
         }
 
         /**
@@ -419,6 +422,7 @@
         public static void setUserProperties(JSONObject userproperties){
 
             dataStore.setUserProperties(context, userproperties);
+            sendUserProperties(Constants.Z_USER_PROPS_UPLOAD_PERIOD_MILLIS);
         }
 
         /**
@@ -450,6 +454,62 @@
             // A startSession call within the next MIN_TIME_BETWEEN_SESSIONS_MILLIS seconds
             // will reopen the session.
             isSessionOpen = false;
+        }
+
+        private static void sendUserProperties(){
+            if(!updatingUserPropsCurrently.getAndSet(true)){
+                logWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendUserPropertiesToServer();
+                    }
+                });
+            }
+        }
+
+        private static void sendUserProperties(long delay){
+            if(!updatingUserPropsCurrently.getAndSet(true)){
+                logWorker.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendUserPropertiesToServer();
+                    }
+                }, delay);
+            }
+        }
+
+        private static void sendUserPropertiesToServer(){
+            httpWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    updateUserProperties();
+                }
+            });
+        }
+
+        private static void updateUserProperties(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"httpWorker is uploading user properties now");
+            }
+
+            try {
+                JSONObject postParams = new JSONObject();
+                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                JSONObject userProps = dbHelper.getUserProperties();
+                if(userProps == null){
+                    updatingUserPropsCurrently.set(false);
+                    return;
+                }
+                postParams.put("userProperties",CommonUtils.replaceWithJSONNull(userProps));
+                String response = HttpHelper.doPost(Constants.Z_USER_PROPERTIES_LOG_URL,postParams);
+
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            } finally {
+            }
+            updatingUserPropsCurrently.set(false);
+
         }
 
 

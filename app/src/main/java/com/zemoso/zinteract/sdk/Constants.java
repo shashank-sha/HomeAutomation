@@ -11,7 +11,6 @@ class Constants {
     static final String Z_API_VERSION = "0.1";
     static final String Z_NAMESPACE = Constants.class.getPackage().getName();
     static final String Z_SHARED_PREFERENCE_FILE_NAME = Z_NAMESPACE;
-    static final String Z_SHARED_PREFERENCE_USER_PROPERTIES_FILE_NAME = Z_NAMESPACE+".userproperties";
     static final String Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME = Z_NAMESPACE+".datastore";
     static final String Z_PREFKEY_USER_ID = Z_NAMESPACE+"userId";
     static final String Z_PREFKEY_OLD_USER_ID = Z_NAMESPACE+"old_userId";
@@ -46,6 +45,9 @@ class Constants {
     static final String Z_DB_PROMOTION_ID_FIELD_NAME = "id";
     static final String Z_DB_PROMOTION_PROMOTION_FIELD_NAME = "promotion";
 
+    static final String Z_DB_USER_PROPERTIES_TABLE_NAME = "userproperties";
+    static final String Z_DB_USER_PROPERTIES_ID_FIELD_NAME = "id";
+
 
     //Events related
     static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
@@ -62,5 +64,9 @@ class Constants {
     static final int Z_EVENT_MAX_COUNT = 100;
     static final long Z_EVENT_REMOVE_BATCH_SIZE = 100;
     static final long Z_EVENT_UPLOAD_PERIOD_MILLIS = 15*1000;
+
+    //User Properties
+    static final String Z_USER_PROPERTIES_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendUserProperties";
+    static final long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
 }
