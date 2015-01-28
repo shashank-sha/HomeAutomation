@@ -411,6 +411,17 @@
         }
 
         /**
+         * This method is to specify user properties, which can be accessed at Zinteract cloud
+         * and hence can be used to target campaigns based on user properties
+         *
+         * @param userproperties JSON containing multiple user properties
+         */
+        public static void setUserProperties(JSONObject userproperties){
+
+            dataStore.setUserProperties(context, userproperties);
+        }
+
+        /**
          * This method is to get user properties set from the SDK or from the Zinteract cloud
          *
          * @param key the key for which value needs to be accessed
@@ -677,7 +688,7 @@
                 for(int i = 0; i<variables.names().length(); i++){
                     values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                 }
-                dataStore.setMultipleData(context,values);
+                dataStore.setData(context,values);
                 dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
                 Log.e(TAG, "Exception:", e);

@@ -30,7 +30,7 @@ public class DataStore extends UserProperties{
         getSharedPreferences(context).edit().putString(key, value).apply();
     }
 
-    static void setMultipleData(Context context,Map<String,String> values){
+    static void setData(Context context,Map<String,String> values){
         SharedPreferences.Editor editor = getSharedPreferences(context).edit();
         for(Map.Entry<String, String> e : values.entrySet()) {
             String key = e.getKey();

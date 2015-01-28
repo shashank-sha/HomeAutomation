@@ -2,6 +2,9 @@ package com.zemoso.zinteract.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -23,6 +26,7 @@ public class UserProperties {
 //
 //        return userProperties;
 //    }
+    private static final String TAG = "com.zemoso.zinteract.sdk.UserProperties";
 
     protected static String getUserProperty(Context context,String key, String defaultValue){
         return getSharedPreferences(context).getString(key, defaultValue);
@@ -30,6 +34,19 @@ public class UserProperties {
 
     protected static void setUserProperty(Context context,String key, String value){
         getSharedPreferences(context).edit().putString(key, value).apply();
+    }
+
+    protected static void setUserProperties(Context context,JSONObject userProperties){
+        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+        try{
+            for(int i=0; i < userProperties.length(); i++){
+                editor.putString(userProperties.names().getString(i),userProperties.getString(userProperties.names().getString(i)));
+            }
+            editor.apply();
+        }
+        catch (Exception e){
+            Log.e(TAG,"Exception : "+e);
+        }
     }
 
     protected static Map<String,?> getAllUserProperties(Context context,String key, String value){
