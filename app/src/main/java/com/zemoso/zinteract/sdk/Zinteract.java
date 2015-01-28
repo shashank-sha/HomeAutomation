@@ -279,7 +279,6 @@
                 JSONObject postParams = new JSONObject();
                 postParams.put("lastCampaignSynchedTime", CommonUtils.replaceWithJSONNull(getLastCampaignSyncTime()));
                 String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
-                //String stringResponse = EntityUtils.toString(response.getEntity());
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
 
