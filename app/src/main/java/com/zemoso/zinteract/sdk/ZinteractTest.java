@@ -3,6 +3,7 @@ package com.zemoso.zinteract.sdk;
 /**
  * Created by praveen on 28/01/15.
  */
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.test.ApplicationTestCase;
@@ -32,6 +33,7 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
         getContext().getSharedPreferences(Constants.Z_SHARED_PREFERENCE_FILE_NAME,Context.MODE_PRIVATE).edit().clear().commit();
         dbHelper = DbHelper.getDatabaseHelper(getContext());
         Zinteract.initializeWithContextAndKey(getContext(),"TestAndroidAPIKey");
+        Zinteract.enableDebugging();
     }
 
     public void tearDown(){
@@ -78,5 +80,22 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
             Log.e(TAG, "Exception :" + e);
         }
 
+    }
+
+    public void testDownloadPromotionsAndDataStore(){
+        //TODO use mocked API response
+        try {
+            Zinteract.syncDataStore();
+            Zinteract.checkPromotions();
+            Thread.sleep(20000);
+            JSONObject promotion = dbHelper.getPromotionforScreen("ViewController4");
+            assertNotNull(promotion);
+            assertEquals("app",Zinteract.getData("text","default"));
+            assertEquals("55",Zinteract.getData("price","default"));
+            assertEquals("66",Zinteract.getData("quantity","default"));
+        }
+        catch (Exception e){
+            Log.e(TAG, "Exception :" + e);
+        }
     }
 }

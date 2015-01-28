@@ -244,7 +244,7 @@
             });
         }
 
-        private static void checkPromotions(){
+        public static void checkPromotions(){
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"checkPromotions() called");
             }
