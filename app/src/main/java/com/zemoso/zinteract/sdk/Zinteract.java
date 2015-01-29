@@ -645,7 +645,7 @@
                 else{
                     postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(false));
                 }
-                //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));
+                //postParams.add(new BasicNameValuePair("isPushEnabled", deviceDetails.getVersionName()));//TODO
                 //postParams.add(new BasicNameValuePair("appLastOpenedTime", userId));
                 //postParams.add(new BasicNameValuePair("lastReceivedCampaignTime", deviceId));
 
