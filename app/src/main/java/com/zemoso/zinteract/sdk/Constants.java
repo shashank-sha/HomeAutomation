@@ -69,4 +69,8 @@ class Constants {
     static final String Z_USER_PROPERTIES_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendUserProperties";
     static final long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
+
+    //Push Notification
+    static final String Z_PUSH_DEVICE_TOKEN_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendDeviceToken";
+
 }

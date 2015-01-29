@@ -157,10 +157,10 @@
 
         private static void showPromotion(Activity currentActivity){
             String screen_id = currentActivity.getLocalClassName();
-            if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity4")){
+            if("com.zemoso.zinteract.ZinteractSampleApp.Activity4".equals(screen_id)){
                 screen_id = "ViewController4";
             }
-            else if(screen_id.equals("com.zemoso.zinteract.ZinteractSampleApp.Activity5")){
+            else if("com.zemoso.zinteract.ZinteractSampleApp.Activity5".equals(screen_id)){
                 screen_id = "ViewController5";
             }
 
@@ -706,7 +706,7 @@
                 String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
-                    if (jsonResponse.getString("status").equals("OUT_OF_SYNCH")) {
+                    if ("OUT_OF_SYNCH".equals(jsonResponse.getString("status"))) {
                         if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                             Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
                         }
@@ -778,7 +778,7 @@
                 String response = HttpHelper.doPost(url,postParams);
                 if(response !=null){
                     JSONObject jsonResponse = new JSONObject(response);
-                    if (jsonResponse.getString("status").equals("success")) {
+                    if ("success".equals(jsonResponse.getString("status"))) {
                         uploadSuccess = true;
                         logWorker.post(new Runnable() {
                             @Override
