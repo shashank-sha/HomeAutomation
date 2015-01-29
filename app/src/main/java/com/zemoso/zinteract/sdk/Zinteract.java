@@ -35,7 +35,7 @@
 
 
 
-        private static DeviceDetails deviceDetails;
+        static DeviceDetails deviceDetails;
 
         private static long sessionId = -1;
         private static boolean isSessionOpen = false;
@@ -296,7 +296,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
 
             if (!fetchSuccess) {
@@ -320,7 +319,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
         }
 
@@ -506,7 +504,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
             updatingUserPropsCurrently.set(false);
 
@@ -631,7 +628,6 @@
             try {
                 JSONObject postParams = new JSONObject();
 
-                postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
                 postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
                 postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
@@ -661,7 +657,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
         }
 
@@ -729,7 +724,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
 
             if (!syncSuccess) {
@@ -773,7 +767,6 @@
             try {
                 JSONObject postParams = new JSONObject();
                 postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
-                postParams.put("appVersion",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
                 String response = HttpHelper.doPost(url,postParams);
                 if(response !=null){
@@ -808,7 +801,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
 
             if (!uploadSuccess) {
@@ -1023,7 +1015,6 @@
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 Log.e(TAG, "Exception:", e);
-            } finally {
             }
         }
 

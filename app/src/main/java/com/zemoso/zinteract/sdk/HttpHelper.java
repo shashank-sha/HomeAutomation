@@ -102,6 +102,7 @@ public class HttpHelper {
 
             postParams.put("deviceId", CommonUtils.replaceWithJSONNull(Zinteract.getDeviceId()));
             postParams.put("sdkId", CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
+            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getVersionName()));
             return postParams;
         }
         catch (Exception e){
