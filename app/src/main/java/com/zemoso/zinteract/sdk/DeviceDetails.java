@@ -68,6 +68,17 @@ public class DeviceDetails {
 
     }
 
+    public static int getAppVersionCode() {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
     public static String getApplicationName() {
         try {
             int stringId = context.getApplicationInfo().labelRes;

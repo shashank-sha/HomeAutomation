@@ -15,6 +15,12 @@ class Constants {
     static final String Z_PREFKEY_USER_ID = Z_NAMESPACE+"userId";
     static final String Z_PREFKEY_OLD_USER_ID = Z_NAMESPACE+"old_userId";
     static final String Z_PREFKEY_FIRSTTIME_FLAG = Z_NAMESPACE+".firsttime";
+    static final String Z_PREFKEY_GCM_REGISTRATION_ID = Z_NAMESPACE+".gcm_registration_id";
+    static final String Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME = Z_NAMESPACE+".gcm_registration_id_sync_time";
+    static final long Z_GCM_REGISTRATION_ID_RENEWAL_PERIOD = 7*24*3600*1000;//7 days
+
+
+    static final String Z_PREFKEY_APP_VERSION = Z_NAMESPACE+".app_version";
 
     //DataStore
     static final String Z_PREFKEY_LAST_DATASTORE_SYNC_TIME = Z_NAMESPACE+".last_datastore_sync_time";

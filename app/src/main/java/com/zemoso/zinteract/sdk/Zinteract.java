@@ -9,12 +9,16 @@
     import android.util.Log;
     import android.util.Pair;
 
+    import com.google.android.gms.common.ConnectionResult;
+    import com.google.android.gms.common.GooglePlayServicesUtil;
+    import com.google.android.gms.gcm.GoogleCloudMessaging;
     import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
     import org.json.JSONArray;
     import org.json.JSONException;
     import org.json.JSONObject;
 
+    import java.io.IOException;
     import java.util.HashMap;
     import java.util.Map;
     import java.util.UUID;
@@ -30,6 +34,8 @@
         private static String apiKey;
         private static String userId;
         private static String deviceId;
+        private static String googleApiProjectNumber;
+
 
         private static final DataStore dataStore = DataStore.getDataStore();
 
@@ -92,10 +98,26 @@
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"initializeWithContextAndKey() called");
             }
-            initialize(context, apiKey);
+            initialize(context, apiKey,null);
         }
 
-        private synchronized static void initialize(Context context, String apiKey) {
+        /**
+         *
+         * Method to initialize Zinteract SDK
+         *
+         * @param context the application context
+         * @param apiKey the api key found at zinteract account
+         * @param googleApiProjectNumber the Google API Project Number for Push Notifications
+         *
+         */
+        public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber) {
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"initializeWithContextAndKey() called");
+            }
+            initialize(context, apiKey,googleApiProjectNumber);
+        }
+
+        private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
             if (context == null) {
                 Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
                 return;
@@ -115,6 +137,11 @@
                     userId = getUUID();
                     CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).apply();
                 }
+
+                if(googleApiProjectNumber != null){
+                    Zinteract.googleApiProjectNumber = googleApiProjectNumber;
+                }
+
                 //Send init event if installed for the first time.
                 if(isFirstTimeUse()) {
                     setFirstTimeFalse();
@@ -127,6 +154,106 @@
                 }
 
             }
+        }
+
+        private static void registerForPushNotifications(){
+            if(googleApiProjectNumber == null){
+                return;
+            }
+            if (checkPlayServices()) {
+
+                if (getRegistrationId().isEmpty()) {
+                    logWorker.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            registerInBackground();
+                        }
+                    });
+
+                }
+            } else {
+                Log.i(TAG, "No valid Google Play Services APK found.");
+            }
+        }
+
+        private static void registerInBackground(){
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"registerInBackground() called");
+            }
+            try {
+                GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+
+                String regid = gcm.register(googleApiProjectNumber);
+                saveRegistrationId(regid);
+                if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                    Log.d(TAG,"Recieved registration id from GCM: "+regid);
+                }
+
+                // You should send the registration ID to your server over HTTP,
+                // so it can use GCM/HTTP or CCS to send messages to your app.
+                // The request to your server should be authenticated if your app
+                // is using accounts.
+                httpWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendRegistrationIdToBackend();
+                    }
+                });
+            } catch (IOException ex) {
+                Log.e(TAG,"Exception :"+ex);
+            }
+        }
+
+        private static void sendRegistrationIdToBackend(){
+            String deviceToken = getRegistrationId();
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"httpWorker is sending deviceToken now");
+            }
+
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("deviceToken",CommonUtils.replaceWithJSONNull(deviceToken));
+                String response = HttpHelper.doPost(Constants.Z_PUSH_DEVICE_TOKEN_LOG_URL,postParams);
+
+            } catch (Exception e) {
+                // Just log any other exception so things don't crash on upload
+                Log.e(TAG, "Exception:", e);
+            }
+        }
+
+        private static boolean checkPlayServices() {
+            int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+            if (resultCode != ConnectionResult.SUCCESS) {
+                if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                    Log.e(TAG,"Google Play services is not installed");
+                } else {
+                    Log.i(TAG, "This device is not supported for Push Notifications.");
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private static String getRegistrationId() {
+            final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
+            String registrationId = prefs.getString(Constants.Z_PREFKEY_GCM_REGISTRATION_ID, "");
+            if (registrationId.isEmpty()) {
+                return "";
+            }
+            // Check if app was updated; if so, it must clear the registration ID
+            // since the existing regID is not guaranteed to work with the new
+            // app version.
+            int registeredVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION, Integer.MIN_VALUE);
+            int currentVersion = deviceDetails.getAppVersionCode();
+            if (registeredVersion != currentVersion) {
+                return "";
+            }
+            long currenttime = System.currentTimeMillis();
+            long last_saved_time = CommonUtils.getSharedPreferences(context).getLong(Constants.Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME,0);
+            if(currenttime - last_saved_time > Constants.Z_GCM_REGISTRATION_ID_RENEWAL_PERIOD){
+                return "";
+            }
+            return registrationId;
         }
 
 
@@ -327,6 +454,7 @@
             checkPromotions();
             uploadEvents();
             sendUserProperties();
+            registerForPushNotifications();
         }
 
         private static void syncToServerIfNeeded(long timestamp){
@@ -633,6 +761,7 @@
                 postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
                 postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
                 postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
+                postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(getRegistrationId()));
 
 
                 //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
@@ -1086,6 +1215,14 @@
 
         private static void setLastCampaignSyncTime(String lastCampaignSyncTime){
             CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,lastCampaignSyncTime).apply();
+        }
+
+        private static void saveRegistrationId(String registrationId){
+            SharedPreferences.Editor editor = CommonUtils.getSharedPreferences(context).edit();
+            editor.putString(Constants.Z_PREFKEY_GCM_REGISTRATION_ID, registrationId);
+            editor.putInt(Constants.Z_PREFKEY_APP_VERSION, deviceDetails.getAppVersionCode());
+            editor.putLong(Constants.Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME,System.currentTimeMillis());
+            editor.commit();
         }
 
 
