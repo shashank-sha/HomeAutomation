@@ -23,4 +23,9 @@
 
     <style name="ButtonBarButton" />
 
+    <style name="NoActionBar" parent="@android:style/Theme.Dialog">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>
