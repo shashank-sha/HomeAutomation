@@ -1,6 +1,10 @@
     package com.zemoso.zinteract.sdk;
 
     import android.app.Activity;
+    import android.app.Application;
+    import android.app.DialogFragment;
+    import android.app.Fragment;
+    import android.app.FragmentTransaction;
     import android.content.Context;
     import android.content.Intent;
     import android.content.SharedPreferences;
@@ -71,6 +75,17 @@
 
         private Zinteract(){
 
+        }
+
+        static void registerZinteractActivityLifecycleCallbacks(){
+            if(android.os.Build.VERSION.SDK_INT >= 16) { //Only available for API >=16
+                if (context.getApplicationContext() instanceof Application) {
+                    final Application app = (Application) context.getApplicationContext();
+                    app.registerActivityLifecycleCallbacks((new ZinteractActivityLifecycleCallbacks()));
+                } else {
+                    Log.i(TAG, "Context is not an Application.");
+                }
+            }
         }
 
         static String getApiKey(){
@@ -152,6 +167,8 @@
                         }
                     });
                 }
+
+                registerZinteractActivityLifecycleCallbacks();
 
             }
         }
@@ -282,7 +299,7 @@
                     false).apply();
         }
 
-        private static void showPromotion(Activity currentActivity){
+        static void showPromotion(final Activity currentActivity){
             String screen_id = currentActivity.getLocalClassName();
             if("com.zemoso.zinteract.ZinteractSampleApp.Activity4".equals(screen_id)){
                 screen_id = "ViewController4";
@@ -294,7 +311,7 @@
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
 
             dbHelper.removeSeenPromotions();
-            JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
+            final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
 
             if(promotion.length() == 0 || promotion == null){
                 if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
@@ -304,23 +321,25 @@
             }
 
             try {
-                String campaignId = promotion.getString("promoId");
+                final String campaignId = promotion.getString("promoId");
+                final String title = promotion.getString("name");
 
-                Intent inApp = new Intent(context,InAppMessage.class);
-                inApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                inApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                inApp.putExtra("title", promotion.getString("name"));
-                inApp.putExtra("message", promotion.getString("subject"));
-                inApp.putExtra("campaignId", campaignId);
-                context.startActivity(inApp);
+                final String message = promotion.getString("subject");
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentTransaction ft = currentActivity.getFragmentManager().beginTransaction();
+                        Fragment prev = currentActivity.getFragmentManager().findFragmentByTag("dialog");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
 
-                //Run the below code in InApp Activity onStop function
-                //dbHelper.markPromotionAsSeen(campaignId);
-                //JSONObject promotionEvent = new JSONObject();
-                //promotionEvent.put("campaignId", campaignId);
-                //logEvent("promotion", promotionEvent);
-
-
+                        // Create and show the dialog.
+                        DialogFragment newFragment = InAppNotification.newInstance(8,campaignId,title,message);
+                        newFragment.show(ft, "dialog");
+                    }
+                });
             }
             catch (Exception e){
                 Log.e(TAG,"Exception: "+e);
@@ -328,20 +347,37 @@
 
         }
 
+        static void _startSession(final Activity activity){
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    startSession();
+                    showPromotion(activity);
+                }
+            });
+        }
+
+        static void _endSession(){
+            logWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    endSession();
+                }
+            });
+        }
+
         /**
          * This method starts a session during app usage
          *
-         * @param currentActivity the instance of current activity from which startSession is called
          */
 
-        public static void startSession(Activity currentActivity) {
+        static void startSession() {
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"startSession() called");
             }
             if (!isContextAndApiKeySet("startSession()")) {
                 return;
             }
-            showPromotion(currentActivity);
             final long now = System.currentTimeMillis();
 
             runOnLogWorker(new Runnable() {
@@ -396,6 +432,11 @@
                     }
                 });
             }
+        }
+
+        static void markPromotionAsSeen(String campaignId){
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            dbHelper.markPromotionAsSeen(campaignId);
         }
 
         private static void fetchPromotions(){
@@ -485,7 +526,7 @@
         /**
          * This method ends a usage session
          */
-        public static void endSession() {
+        static void endSession() {
             if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                 Log.d(TAG,"endSession() called");
             }

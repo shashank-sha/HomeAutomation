@@ -44,14 +44,12 @@ public class Activity4 extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.startSession(this);
         Zinteract.logEvent("view screen4");
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        Zinteract.endSession();
     }
 
     public void sendToActivity5(View view)

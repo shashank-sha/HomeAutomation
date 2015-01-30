@@ -48,14 +48,12 @@ public class Activity3 extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.startSession(this);
         Zinteract.logEvent("view screen3");
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        Zinteract.endSession();
     }
 
     public void sendToActivity4(View view)

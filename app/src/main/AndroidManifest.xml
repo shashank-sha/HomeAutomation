@@ -43,11 +43,6 @@
             android:name="com.zemoso.zinteract.ZinteractSampleApp.Activity5"
             android:label="@string/title_activity_activity5" >
         </activity>
-        <activity
-            android:name="com.zemoso.zinteract.sdk.InAppMessage"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/NoActionBar" >
-        </activity>
     </application>
 
 </manifest>
