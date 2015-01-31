@@ -1,12 +1,9 @@
 package com.zemoso.zinteract.sdk;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONObject;
-
-import java.util.Map;
 
 /**
  * Created by praveen on 21/01/15.

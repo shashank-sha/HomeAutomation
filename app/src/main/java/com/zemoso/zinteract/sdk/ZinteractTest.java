@@ -3,7 +3,6 @@ package com.zemoso.zinteract.sdk;
 /**
  * Created by praveen on 28/01/15.
  */
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.test.ApplicationTestCase;

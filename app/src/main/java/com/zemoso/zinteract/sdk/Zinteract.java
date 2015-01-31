@@ -6,7 +6,6 @@
     import android.app.Fragment;
     import android.app.FragmentTransaction;
     import android.content.Context;
-    import android.content.Intent;
     import android.content.SharedPreferences;
     import android.location.Location;
     import android.text.TextUtils;
@@ -230,7 +229,7 @@
             try {
                 JSONObject postParams = new JSONObject();
                 postParams.put("deviceToken",CommonUtils.replaceWithJSONNull(deviceToken));
-                String response = HttpHelper.doPost(Constants.Z_PUSH_DEVICE_TOKEN_LOG_URL,postParams);
+                HttpHelper.doPost(Constants.Z_PUSH_DEVICE_TOKEN_LOG_URL,postParams);
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
@@ -537,13 +536,8 @@
             runOnLogWorker(new Runnable() {
                 @Override
                 public void run() {
-                    JSONObject apiProperties = new JSONObject();
-                    try {
-                        apiProperties.put("special", END_SESSION_EVENT);
-                    } catch (JSONException e) {
-                    }
                     if (isSessionOpen) {
-                        long eventId = logEvent(END_SESSION_EVENT, null, apiProperties, timestamp,
+                        long eventId = logEvent(END_SESSION_EVENT, null, null, timestamp,
                                 false);
 
                         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
@@ -668,7 +662,7 @@
                     return;
                 }
                 postParams.put("userProperties",CommonUtils.replaceWithJSONNull(userProps));
-                String response = HttpHelper.doPost(Constants.Z_USER_PROPERTIES_LOG_URL,postParams);
+                HttpHelper.doPost(Constants.Z_USER_PROPERTIES_LOG_URL,postParams);
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
@@ -765,12 +759,7 @@
             sessionId = timestamp;
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
-            JSONObject apiProperties = new JSONObject();
-            try {
-                apiProperties.put("special", START_SESSION_EVENT);
-            } catch (JSONException e) {
-            }
-            logEvent(START_SESSION_EVENT, null, apiProperties, timestamp, false);
+            logEvent(START_SESSION_EVENT, null, null, timestamp, false);
             logWorker.post(new Runnable() {
                 @Override
                 public void run() {

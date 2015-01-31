@@ -52,23 +52,12 @@ public class HttpHelper {
         HttpResponse response;
         String stringResponse = null;
         HttpPost postRequest = new HttpPost(url);
+        HttpClient client = new DefaultHttpClient();
         try {
             String jsonString = postParams.toString();
-            //postRequest.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
             postRequest.setHeader("Accept", "application/json");
             postRequest.setHeader("Content-type", "application/json");
             postRequest.setEntity(new StringEntity(jsonString));
-        } catch (UnsupportedEncodingException e) {
-            // According to
-            // http://stackoverflow.com/questions/5049524/is-java-utf-8-charset-exception-possible,
-            // this will never be thrown
-            Log.e(TAG, e.toString());
-        }
-        catch (Exception e){
-            Log.e(TAG, e.toString());
-        }
-        HttpClient client = new DefaultHttpClient();
-        try {
             response = client.execute(postRequest);
             stringResponse = EntityUtils.toString(response.getEntity());
         } catch (org.apache.http.conn.HttpHostConnectException e) {

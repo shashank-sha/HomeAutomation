@@ -14,9 +14,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if (!activity.isTaskRoot()) {
-            return; // No checks, no nothing.
-        }
+//        if (!activity.isTaskRoot()) {
+//            return; // No checks, no nothing.
+//        }
 
     }
 
