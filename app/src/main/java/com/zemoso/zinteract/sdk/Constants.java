@@ -7,6 +7,7 @@ class Constants {
     static final String Z_PLATFORM = "Android";
     static final String Z_VERSION = "0.1";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
+    static final String Z_BASE_URL = "http://54.187.236.113/";
 
     static final String Z_API_VERSION = "0.1";
     static final String Z_NAMESPACE = Constants.class.getPackage().getName();
@@ -25,7 +26,8 @@ class Constants {
     //DataStore
     static final String Z_PREFKEY_LAST_DATASTORE_SYNC_TIME = Z_NAMESPACE+".last_datastore_sync_time";
     static final String Z_PREFKEY_LAST_DATASTORE_VERSION = Z_NAMESPACE+".last_datastore_version";
-    static final String Z_DATASTORE_SYNCH_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchDatastore";
+    //static final String Z_DATASTORE_SYNCH_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchDatastore";
+    static final String Z_DATASTORE_SYNCH_URL = Z_BASE_URL+"fetchDatastore";
 
 
 
@@ -58,13 +60,19 @@ class Constants {
     //Events related
     static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
     static final int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
-    static final String Z_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sendEvent";
-    static final String Z_SET_USER_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/changeUser";
-    static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sessionStart";
-    static final String Z_INIT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/init";
+    //static final String Z_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sendEvent";
+    static final String Z_EVENT_LOG_URL = Z_BASE_URL+"sendEvent";
+
+    //static final String Z_SET_USER_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/changeUser";
+    static final String Z_SET_USER_URL = Z_BASE_URL+"changeUser";
+    //static final String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sessionStart";
+    static final String Z_START_SESSION_EVENT_LOG_URL = Z_BASE_URL+"sessionStart";
+    //static final String Z_INIT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/init";
+    static final String Z_INIT_LOG_URL = Z_BASE_URL+"init";
 
     //Promotions related
-    static final String Z_PROMOTION_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchPromo";
+    //static final String Z_PROMOTION_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchPromo";
+    static final String Z_PROMOTION_URL = Z_BASE_URL+"fetchPromo";
     static final String Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME = Z_NAMESPACE+".lastcampaignsynctime";
 
     static final int Z_EVENT_MAX_COUNT = 100;
@@ -72,7 +80,8 @@ class Constants {
     static final long Z_EVENT_UPLOAD_PERIOD_MILLIS = 15*1000;
 
     //User Properties
-    static final String Z_USER_PROPERTIES_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendUserProperties";
+    //static final String Z_USER_PROPERTIES_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendUserProperties";
+    static final String Z_USER_PROPERTIES_LOG_URL = Z_BASE_URL+"sendUserProperties";
     static final long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
 }
