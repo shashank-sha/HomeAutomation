@@ -204,36 +204,8 @@
                 if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
                 }
-
-                // You should send the registration ID to your server over HTTP,
-                // so it can use GCM/HTTP or CCS to send messages to your app.
-                // The request to your server should be authenticated if your app
-                // is using accounts.
-                httpWorker.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendRegistrationIdToBackend();
-                    }
-                });
             } catch (IOException ex) {
                 Log.e(TAG,"Exception :"+ex);
-            }
-        }
-
-        private static void sendRegistrationIdToBackend(){
-            String deviceToken = getRegistrationId();
-            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
-                Log.d(TAG,"httpWorker is sending deviceToken now");
-            }
-
-            try {
-                JSONObject postParams = new JSONObject();
-                postParams.put("deviceToken",CommonUtils.replaceWithJSONNull(deviceToken));
-                HttpHelper.doPost(Constants.Z_PUSH_DEVICE_TOKEN_LOG_URL,postParams);
-
-            } catch (Exception e) {
-                // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
             }
         }
 
