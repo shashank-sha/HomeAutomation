@@ -293,7 +293,7 @@
             }
 
             try {
-                final String campaignId = promotion.getString("promoId");
+                final String campaignId = promotion.getString("campaignId");
                 final String title = promotion.getString("name");
 
                 final String message = promotion.getString("subject");
@@ -449,7 +449,7 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
-                    dbHelper.addPromotion(promotion.toString(), promotion.getString("promoId"), promotion.getString("screenId"));
+                    dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                 }
 
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
