@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by praveen on 21/01/15.
  */
@@ -30,5 +34,15 @@ public class CommonUtils {
     static SharedPreferences getSharedPreferences(Context context){
         return context.getSharedPreferences(
                 Constants.Z_SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
+    }
+
+    static String getCurrentDateTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.Z_DATE_TIME_FORMAT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(new Date(0));
+    }
+
+    static String getCurrentDateTime(long timestamp){
+        return new SimpleDateFormat(Constants.Z_DATE_TIME_FORMAT).format(new Date(timestamp));
     }
 }

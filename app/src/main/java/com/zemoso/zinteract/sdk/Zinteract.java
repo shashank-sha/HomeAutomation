@@ -23,6 +23,7 @@
 
     import java.io.IOException;
     import java.util.HashMap;
+    import java.util.Locale;
     import java.util.Map;
     import java.util.UUID;
     import java.util.concurrent.atomic.AtomicBoolean;
@@ -764,6 +765,8 @@
                 postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
                 postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
                 postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(getRegistrationId()));
+                postParams.put("sessionId", CommonUtils.replaceWithJSONNull(sessionId));
+                postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
 
 
                 //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
@@ -790,6 +793,7 @@
                 Log.e(TAG, "Exception:", e);
             }
         }
+
 
         public static void uploadEvents() {
             if (!isContextAndApiKeySet("uploadEvents()")) {
@@ -1068,8 +1072,10 @@
             try {
                 event.put("eventName", CommonUtils.replaceWithJSONNull(eventType));
                 event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
+                event.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
 
-                event.put("eventTime", timestamp);
+
+                event.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime(timestamp)));
             } catch (JSONException e) {
                 Log.e(TAG, e.toString());
             }

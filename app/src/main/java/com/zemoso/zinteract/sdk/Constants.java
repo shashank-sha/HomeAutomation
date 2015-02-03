@@ -9,6 +9,8 @@ class Constants {
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     static final String Z_BASE_URL = "http://54.187.236.113/";
 
+    static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm Z";
+
     static final String Z_API_VERSION = "0.1";
     static final String Z_NAMESPACE = Constants.class.getPackage().getName();
     static final String Z_SHARED_PREFERENCE_FILE_NAME = Z_NAMESPACE;
@@ -33,9 +35,10 @@ class Constants {
 
     //session related
     static final long Z_SESSION_TIMEOUT = 30*1000;//in milliseconds
-    static final String Z_SESSION_START_EVENT = "session_start";
-    static final String Z_INIT_EVENT = "init";
-    static final String Z_SESSION_END_EVENT = "session_end";
+    static final String Z_SESSION_START_EVENT = "zmobile.session_started";
+    static final String Z_INIT_EVENT = "zmobile.app_init";
+    static final String Z_SESSION_END_EVENT = "zmobile.session_ended";
+    static final String Z_CAMPAIGN_VIEWED_EVENT = "zmobile.campaign_viewed";
     static final long Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS = 15 * 1000; // 15s
     static final String Z_PREFKEY_LAST_SESSION_TIME = Z_NAMESPACE+".last_session_time";
     static final String Z_PREFKEY_LAST_END_SESSION_TIME = Z_NAMESPACE+".last_end_session_time";

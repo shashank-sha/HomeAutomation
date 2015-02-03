@@ -104,7 +104,7 @@ public class InAppNotification extends DialogFragment {
             Zinteract.markPromotionAsSeen(campaignId);
             JSONObject promotionEvent = new JSONObject();
             promotionEvent.put("campaignId", campaignId);
-            Zinteract.logEvent("promotion", promotionEvent);
+            Zinteract.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }
         catch (Exception e){
             Log.e(TAG, "Exception: " + e);
