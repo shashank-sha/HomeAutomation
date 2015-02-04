@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import android.content.Context;
@@ -38,6 +39,7 @@ public class DeviceDetails {
     private static final String manufacturer = Build.MANUFACTURER;
     private static final String model =Build.MODEL;
     private static String carrier;
+    private static String ostz = TimeZone.getDefault().getDisplayName();
     private static final String language = Locale.getDefault().getLanguage();
 
     // Cached properties, since fetching these take time
@@ -51,6 +53,10 @@ public class DeviceDetails {
     public void getadditionalDetails(){
         setVersionName();
         setCarrier();
+    }
+
+    public static String getOstz(){
+        return ostz;
     }
 
     public String getVersionName() {

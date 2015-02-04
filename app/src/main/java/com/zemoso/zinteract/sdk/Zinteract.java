@@ -766,14 +766,15 @@
                 postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(getRegistrationId()));
                 postParams.put("sessionId", CommonUtils.replaceWithJSONNull(sessionId));
                 postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
+                postParams.put("ostz", CommonUtils.replaceWithJSONNull(deviceDetails.getOstz()));
 
 
                 //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
                 Location location = deviceDetails.getMostRecentLocation();
                 if(location != null){
                     postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(true));
-                    postParams.put("lastLocationLat", CommonUtils.replaceWithJSONNull(location.getLatitude()));
-                    postParams.put("lastLocationLong", CommonUtils.replaceWithJSONNull(location.getLongitude()));
+                    postParams.put("lastglat", CommonUtils.replaceWithJSONNull(location.getLatitude()));
+                    postParams.put("lastglong", CommonUtils.replaceWithJSONNull(location.getLongitude()));
                 }
                 else{
                     postParams.put("isLocationAvailable",CommonUtils.replaceWithJSONNull(false));
