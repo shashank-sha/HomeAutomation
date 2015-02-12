@@ -23,6 +23,7 @@ public class InAppNotification extends DialogFragment {
     private static String title;
     private static String message;
     private static final String TAG = "com.zemoso.zinteract.sdk.inAppNotification";
+    private static JSONObject promotionEvent = new JSONObject();
 
     /**
      * Create a new instance of InAppNotification, providing "num"
@@ -45,27 +46,27 @@ public class InAppNotification extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNum = getArguments().getInt("num");
+
 
         // Pick a style based on the num.
         int style = DialogFragment.STYLE_NORMAL, theme = 0;
-        switch ((mNum-1)%6) {
-            case 1: style = DialogFragment.STYLE_NO_TITLE; break;
-            case 2: style = DialogFragment.STYLE_NO_FRAME; break;
-            case 3: style = DialogFragment.STYLE_NO_INPUT; break;
-            case 4: style = DialogFragment.STYLE_NORMAL; break;
-            case 5: style = DialogFragment.STYLE_NORMAL; break;
-            case 6: style = DialogFragment.STYLE_NO_TITLE; break;
-            case 7: style = DialogFragment.STYLE_NO_FRAME; break;
-            case 8: style = DialogFragment.STYLE_NORMAL; break;
-        }
-        switch ((mNum-1)%6) {
-            case 4: theme = android.R.style.Theme_Holo; break;
-            case 5: theme = android.R.style.Theme_Holo_Light_Dialog; break;
-            case 6: theme = android.R.style.Theme_Holo_Light; break;
-            case 7: theme = android.R.style.Theme_Holo_Light_Panel; break;
-            case 8: theme = android.R.style.Theme_Holo_Light; break;
-        }
+//        switch ((mNum-1)%6) {
+//            case 1: style = DialogFragment.STYLE_NO_TITLE; break;
+//            case 2: style = DialogFragment.STYLE_NO_FRAME; break;
+//            case 3: style = DialogFragment.STYLE_NO_INPUT; break;
+//            case 4: style = DialogFragment.STYLE_NORMAL; break;
+//            case 5: style = DialogFragment.STYLE_NORMAL; break;
+//            case 6: style = DialogFragment.STYLE_NO_TITLE; break;
+//            case 7: style = DialogFragment.STYLE_NO_FRAME; break;
+//            case 8: style = DialogFragment.STYLE_NORMAL; break;
+//        }
+//        switch ((mNum-1)%6) {
+//            case 4: theme = android.R.style.Theme_Holo; break;
+//            case 5: theme = android.R.style.Theme_Holo_Light_Dialog; break;
+//            case 6: theme = android.R.style.Theme_Holo_Light; break;
+//            case 7: theme = android.R.style.Theme_Holo_Light_Panel; break;
+//            case 8: theme = android.R.style.Theme_Holo_Light; break;
+//        }
         setStyle(style, theme);
     }
 
@@ -75,22 +76,81 @@ public class InAppNotification extends DialogFragment {
         campaignId = getArguments().getString("campaignId");
         title = getArguments().getString("title");
         message = getArguments().getString("message");
-        View v = inflater.inflate(R.layout.activity_in_app_message, container, false);
+        mNum = getArguments().getInt("num");
+        View v = null;
+        if(mNum == 1){
+            v = inflater.inflate(R.layout.activity_in_app_message, container, false);
+            Button button = (Button)v.findViewById(R.id.close_button);
+            button.setOnClickListener(closeHhandler);
+        }
+        else if(mNum == 2){
+            v = inflater.inflate(R.layout.activity_in_app_rating, container, false);
+            Button askLaterButton = (Button)v.findViewById(R.id.ask_later);
+            askLaterButton.setOnClickListener(askMeLater);
+
+            Button dontAskButton = (Button)v.findViewById(R.id.dont_ask);
+            dontAskButton.setOnClickListener(dontAskMeAgain);
+
+            Button rateItButton = (Button)v.findViewById(R.id.close_button);
+            rateItButton.setOnClickListener(rateItHhandler);
+        }
+        else {
+            v = inflater.inflate(R.layout.activity_in_app_message, container, false);
+        }
+
         View tv = v.findViewById(R.id.title);
         ((TextView)tv).setText(title);
 
         View mv = v.findViewById(R.id.textView2);
         ((TextView)mv).setText(message);
 
-        Button button = (Button)v.findViewById(R.id.close_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+
 
         return v;
     }
+
+    View.OnClickListener askMeLater = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                promotionEvent.put("response","ask_me_later");
+            }
+            catch (Exception e){
+                Log.e(TAG, "Exception: " + e);
+            }
+
+            dismiss();
+        }
+    };
+
+    View.OnClickListener dontAskMeAgain = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                promotionEvent.put("response","dont_ask_me_again");
+            }
+            catch (Exception e){
+                Log.e(TAG, "Exception: " + e);
+            }
+            dismiss();
+        }
+    };
+
+    View.OnClickListener closeHhandler = new View.OnClickListener() {
+        public void onClick(View v) {
+            dismiss();
+        }
+    };
+
+    View.OnClickListener rateItHhandler = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                promotionEvent.put("response","rate");
+            }
+            catch (Exception e){
+                Log.e(TAG, "Exception: " + e);
+            }
+            dismiss();
+        }
+    };
 
     @Override
     public void dismiss() {
@@ -102,7 +162,6 @@ public class InAppNotification extends DialogFragment {
         super.onPause();
         try {
             Zinteract.markPromotionAsSeen(campaignId);
-            JSONObject promotionEvent = new JSONObject();
             promotionEvent.put("campaignId", campaignId);
             Zinteract.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }

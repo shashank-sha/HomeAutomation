@@ -295,6 +295,7 @@
             try {
                 final String campaignId = promotion.getString("campaignId");
                 final String title = promotion.getString("name");
+                final String campaign_type = promotion.getString("type");
 
                 final String message = promotion.getString("subject");
                 currentActivity.runOnUiThread(new Runnable() {
@@ -308,7 +309,14 @@
                         ft.addToBackStack(null);
 
                         // Create and show the dialog.
-                        DialogFragment newFragment = InAppNotification.newInstance(8,campaignId,title,message);
+                        DialogFragment newFragment = new DialogFragment();
+                        if("Info".equals(campaign_type)) {
+                            newFragment = InAppNotification.newInstance(1,campaignId,title,message);
+                        }
+                        else if("Rating".equals(campaign_type)){
+                            newFragment = InAppNotification.newInstance(2,campaignId,title,message);
+                        }
+
                         newFragment.show(ft, "dialog");
                     }
                 });
