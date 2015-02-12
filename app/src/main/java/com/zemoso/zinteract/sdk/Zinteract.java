@@ -200,6 +200,7 @@
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 
                 String regid = gcm.register(googleApiProjectNumber);
+                setUserProperty("deviceToken",regid);
                 saveRegistrationId(regid);
                 if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
@@ -763,7 +764,11 @@
                 postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
                 postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
                 postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
-                postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(getRegistrationId()));
+                String deviceToken = getRegistrationId();
+                if(deviceToken != null && deviceToken.length() > 5){
+                    postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(deviceToken));
+                }
+
                 postParams.put("sessionId", CommonUtils.replaceWithJSONNull(sessionId));
                 postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
                 postParams.put("ostz", CommonUtils.replaceWithJSONNull(deviceDetails.getOstz()));
