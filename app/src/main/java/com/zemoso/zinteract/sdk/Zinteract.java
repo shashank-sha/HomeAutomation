@@ -168,7 +168,7 @@
                 }
 
                 registerZinteractActivityLifecycleCallbacks();
-
+                isInitialzed = true;
             }
         }
 
@@ -671,20 +671,27 @@
 
         private static boolean isValidDeviceId(String deviceId){
             //Filter invalid device ids like empty string etc
+            if(deviceId == null){
+                return false;
+            }
             return true;
         }
 
-        private static String initializeDeviceId() {
+        private static synchronized String initializeDeviceId() {
 
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-            String deviceId = preferences.getString(Constants.Z_PREFKEY_USER_ID, null);
+            String deviceId = preferences.getString(Constants.Z_PREFKEY_DEVICE_ID, null);
             if (!(TextUtils.isEmpty(deviceId) || isValidDeviceId(deviceId))) {
                 return deviceId;
             }
 
+            if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+                Log.d(TAG,"DeviceId has to be created");
+            }
+
             //TODO check if we can use advertizer id
             String randomId = deviceDetails.generateUUID();
-            preferences.edit().putString(Constants.Z_PREFKEY_USER_ID, randomId).apply();
+            preferences.edit().putString(Constants.Z_PREFKEY_DEVICE_ID, randomId).commit();
             return randomId;
 
         }
@@ -777,8 +784,11 @@
                     postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(deviceToken));
                 }
 
-                postParams.put("sessionId", CommonUtils.replaceWithJSONNull(sessionId));
-                postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
+                JSONObject eventParams = new JSONObject();
+                eventParams.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
+
+                postParams.put("eventParams", CommonUtils.replaceWithJSONNull(eventParams));
+                //postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
                 postParams.put("ostz", CommonUtils.replaceWithJSONNull(deviceDetails.getOstz()));
 
 
@@ -1133,8 +1143,8 @@
          * @param userId the string value to set
          */
         public synchronized static void setUserId(String userId){
-            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_OLD_USER_ID, getUserId()).apply();
-            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).apply();
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_OLD_USER_ID, getUserId()).commit();
+            CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
             Zinteract.userId = userId;
             logWorker.post(new Runnable() {
                 @Override
