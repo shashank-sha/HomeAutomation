@@ -7,8 +7,8 @@ class Constants {
     static final String Z_PLATFORM = "Android";
     static final String Z_VERSION = "0.1";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
-    static final String Z_BASE_URL = "http://192.168.1.19/";
-
+    //static final String Z_BASE_URL = "http://192.168.1.19/";
+    static final String Z_BASE_URL = "http://54.149.107.122/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     static final String Z_API_VERSION = "0.1";
@@ -75,7 +75,7 @@ class Constants {
     static final String Z_INIT_LOG_URL = Z_BASE_URL+"init";
 
     //Promotions related
-    //static final String Z_PROMOTION_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchPromo";
+    //static final String Z_PROMOTION_URL = "http://private-9d06c-zinteractapi.apiary-mock.com/fetchPromo";
     static final String Z_PROMOTION_URL = Z_BASE_URL+"fetchPromo";
     static final String Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME = Z_NAMESPACE+".lastcampaignsynctime";
 

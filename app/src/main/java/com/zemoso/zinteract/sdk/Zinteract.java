@@ -316,6 +316,9 @@
                         else if("Rating".equals(campaign_type)){
                             newFragment = InAppNotification.newInstance(2,campaignId,title,message);
                         }
+                        else {
+                            newFragment = InAppNotification.newInstance(1,campaignId,title,message);
+                        }
 
                         newFragment.show(ft, "dialog");
                     }
@@ -747,6 +750,7 @@
             sessionId = timestamp;
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
+
             logEvent(START_SESSION_EVENT, null, null, timestamp, false);
             logWorker.post(new Runnable() {
                 @Override
@@ -1094,6 +1098,10 @@
             JSONObject event = new JSONObject();
             try {
                 event.put("eventName", CommonUtils.replaceWithJSONNull(eventType));
+                if(eventProperties == null){
+                    eventProperties = new JSONObject();
+                }
+                eventProperties.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
                 event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
                 event.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
 
