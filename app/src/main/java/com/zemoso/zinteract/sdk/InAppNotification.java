@@ -112,7 +112,9 @@ public class InAppNotification extends DialogFragment {
     View.OnClickListener askMeLater = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                promotionEvent.put("response","ask_me_later");
+                JSONObject j = new JSONObject();
+                j.put("campaignId", campaignId);
+                Zinteract.logEvent(Constants.Z_CAMPAIGN_SHOW_LATER_EVENT, j);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -125,7 +127,9 @@ public class InAppNotification extends DialogFragment {
     View.OnClickListener dontAskMeAgain = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                promotionEvent.put("response","dont_ask_me_again");
+                JSONObject k = new JSONObject();
+                k.put("campaignId", campaignId);
+                Zinteract.logEvent(Constants.Z_CAMPAIGN_DONOT_SHOW_EVENT, k);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);

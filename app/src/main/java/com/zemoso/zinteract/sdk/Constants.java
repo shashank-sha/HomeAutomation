@@ -40,6 +40,8 @@ class Constants {
     static final String Z_INIT_EVENT = "zmobile.app_init";
     static final String Z_SESSION_END_EVENT = "zmobile.session_ended";
     static final String Z_CAMPAIGN_VIEWED_EVENT = "zmobile.campaign_viewed";
+    static final String Z_CAMPAIGN_SHOW_LATER_EVENT = "zmobile.campaign_later";
+    static final String Z_CAMPAIGN_DONOT_SHOW_EVENT = "zmobile.campaign_dont_show";
     static final long Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS = 15 * 1000; // 15s
     static final String Z_PREFKEY_LAST_SESSION_TIME = Z_NAMESPACE+".last_session_time";
     static final String Z_PREFKEY_LAST_END_SESSION_TIME = Z_NAMESPACE+".last_end_session_time";

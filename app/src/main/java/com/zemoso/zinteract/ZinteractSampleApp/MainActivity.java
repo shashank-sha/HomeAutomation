@@ -20,7 +20,7 @@ public class MainActivity extends ActionBarActivity {
         //Zinteract.initializeWithContextAndKey(getApplicationContext(),"ios67","914500168484");
         Zinteract.setUserProperty("fname","John");
         Zinteract.setUserProperty("lname","Doe");
-        Zinteract.setUserProperty("age","28");
+        Zinteract.setUserProperty("age","39");
         Zinteract.enableDebugging();
     }
 
