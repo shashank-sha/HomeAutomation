@@ -144,8 +144,9 @@
 
                 setContext(context.getApplicationContext());
                 setApiKey(apiKey);
+                deviceDetails = new DeviceDetails(context);
                 initializeDeviceDetails();
-
+                deviceId = initializeDeviceId();
                 userId = getSavedUserId();
                 if(userId == null){
                     userId = getUUID();
@@ -658,12 +659,12 @@
 
 
         private static void initializeDeviceDetails() {
-            deviceDetails = new DeviceDetails(context);
+
             runOnLogWorker(new Runnable() {
 
                 @Override
                 public void run() {
-                    deviceId = initializeDeviceId();
+
                     deviceDetails.getadditionalDetails();
                     if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
                         Log.d(TAG,"Device details initialization finished");
@@ -684,7 +685,7 @@
 
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             String deviceId = preferences.getString(Constants.Z_PREFKEY_DEVICE_ID, null);
-            if (!(TextUtils.isEmpty(deviceId) || isValidDeviceId(deviceId))) {
+            if (deviceId != null) {
                 return deviceId;
             }
 

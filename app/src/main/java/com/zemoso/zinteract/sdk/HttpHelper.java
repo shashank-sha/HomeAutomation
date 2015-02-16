@@ -65,7 +65,7 @@ public class HttpHelper {
             // "No internet connection found, unable to upload events");
         } catch (java.net.UnknownHostException e) {
             // Log.w(TAG,
-            // "No internet connection found, unable to upload events");
+            // "No internet connection found, unable to upload events");N
         } catch (ClientProtocolException e) {
             Log.e(TAG, e.toString());
         } catch (IOException e) {
@@ -80,6 +80,9 @@ public class HttpHelper {
             if (client.getConnectionManager() != null) {
                 client.getConnectionManager().shutdown();
             }
+        }
+        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+            Log.d(TAG, "Post Response is: " + stringResponse);
         }
         return stringResponse;
     }
