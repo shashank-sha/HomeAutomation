@@ -147,7 +147,9 @@ public class InAppNotification extends DialogFragment {
     View.OnClickListener rateItHhandler = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                promotionEvent.put("response","rate");
+                JSONObject f = new JSONObject();
+                f.put("campaignId", campaignId);
+                Zinteract.logEvent(Constants.Z_CAMPAIGN_RATE_EVENT, f);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
