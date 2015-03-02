@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 /**
  * Created by praveen on 19/01/15.

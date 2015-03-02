@@ -1,8 +1,6 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 import android.util.Log;
-
-import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,7 +12,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Created by praveen on 21/01/15.
@@ -23,7 +20,7 @@ public class HttpHelper {
 
     private static HttpHelper httpHelper;
 
-    private static final String TAG = "com.zemoso.zinteract.sdk.HttpHelper";
+    private static final String TAG = "com.zemosolabs.zinteract.sdk.HttpHelper";
 
 
     private HttpHelper(){
@@ -39,13 +36,13 @@ public class HttpHelper {
 
     static String doPost(String url, JSONObject postParams){
 
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+        if(Zinteract.isDebuggingOn()){
             Log.d(TAG,"doPost() called");
         }
 
         postParams = addRequiredParams(postParams);
 
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+        if(Zinteract.isDebuggingOn()){
             Log.d(TAG, "Post parameters are: " + postParams.toString());
         }
 
@@ -81,7 +78,7 @@ public class HttpHelper {
                 client.getConnectionManager().shutdown();
             }
         }
-        if(BuildConfig.DEBUG && Zinteract.isDebuggingOn()){
+        if(Zinteract.isDebuggingOn()){
             Log.d(TAG, "Post Response is: " + stringResponse);
         }
         return stringResponse;

@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;

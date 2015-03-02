@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zemoso.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.Zinteract;
 
 
 public class Activity3 extends ActionBarActivity {

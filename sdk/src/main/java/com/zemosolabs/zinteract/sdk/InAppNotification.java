@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.zemoso.zinteract.ZinteractSampleApp.R;
 
 import org.json.JSONObject;
 
@@ -22,7 +20,7 @@ public class InAppNotification extends DialogFragment {
     private static String campaignId;
     private static String title;
     private static String message;
-    private static final String TAG = "com.zemoso.zinteract.sdk.inAppNotification";
+    private static final String TAG = "com.zemosolabs.zinteract.sdk.inAppNotification";
     private static JSONObject promotionEvent = new JSONObject();
 
     /**
@@ -78,7 +76,7 @@ public class InAppNotification extends DialogFragment {
         message = getArguments().getString("message");
         mNum = getArguments().getInt("num");
         View v = null;
-        if(mNum == 1){
+        /*if(mNum == 1){
             v = inflater.inflate(R.layout.activity_in_app_message, container, false);
             Button button = (Button)v.findViewById(R.id.close_button);
             button.setOnClickListener(closeHhandler);
@@ -102,7 +100,7 @@ public class InAppNotification extends DialogFragment {
         ((TextView)tv).setText(title);
 
         View mv = v.findViewById(R.id.textView2);
-        ((TextView)mv).setText(message);
+        ((TextView)mv).setText(message);*/
 
 
 

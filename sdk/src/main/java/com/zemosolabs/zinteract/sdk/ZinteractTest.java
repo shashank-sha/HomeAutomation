@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 /**
  * Created by praveen on 28/01/15.
@@ -20,7 +20,7 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
         super(Application.class);
     }
 
-    private static final String TAG = "com.zemoso.zinteract.sdk.ZinteractTest";
+    private static final String TAG = "com.zemosolabs.zinteract.sdk.ZinteractTest";
 
     private DbHelper dbHelper;
 

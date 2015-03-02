@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,7 +10,7 @@ import org.json.JSONObject;
  */
 public class UserProperties {
 
-    private static final String TAG = "com.zemoso.zinteract.sdk.UserProperties";
+    private static final String TAG = "com.zemosolabs.zinteract.sdk.UserProperties";
 
     protected static String getUserProperty(Context context,String key, String defaultValue){
         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);

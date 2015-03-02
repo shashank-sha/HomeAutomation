@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk;
+package com.zemosolabs.zinteract.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by praveen on 21/01/15.
@@ -36,11 +35,12 @@ public class CommonUtils {
                 Constants.Z_SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
     }
 
-    static String getCurrentDateTime(){
+    /*static String getCurrentDateTime(){
         SimpleDateFormat sdf = new SimpleDateFormat(Constants.Z_DATE_TIME_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(new Date(0));
-    }
+
+        return sdf.format(new Date(System.currentTimeMillis()));
+    }*/
 
     static String getCurrentDateTime(long timestamp){
         return new SimpleDateFormat(Constants.Z_DATE_TIME_FORMAT).format(new Date(timestamp));

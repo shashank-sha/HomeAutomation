@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.zemoso.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.Zinteract;
 
 
 public class Activity5 extends ActionBarActivity {

@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk.util;
+package com.zemosolabs.zinteract.sdk.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

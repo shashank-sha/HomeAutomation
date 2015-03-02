@@ -1,4 +1,4 @@
-package com.zemoso.zinteract.sdk.util;
+package com.zemosolabs.zinteract.sdk.util;
 
 import android.app.Activity;
 import android.os.Build;
