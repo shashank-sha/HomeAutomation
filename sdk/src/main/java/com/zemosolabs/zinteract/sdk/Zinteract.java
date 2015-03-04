@@ -7,6 +7,8 @@
     import android.app.FragmentTransaction;
     import android.content.Context;
     import android.content.SharedPreferences;
+    import android.content.pm.ActivityInfo;
+    import android.content.pm.PackageManager;
     import android.location.Location;
     import android.text.TextUtils;
     import android.util.Log;
@@ -15,6 +17,7 @@
     import com.google.android.gms.common.ConnectionResult;
     import com.google.android.gms.common.GooglePlayServicesUtil;
     import com.google.android.gms.gcm.GoogleCloudMessaging;
+    import com.zemosolabs.zinteract.interfaces.ZinteractInAppNotification;
 
     import org.json.JSONArray;
     import org.json.JSONException;
@@ -31,7 +34,7 @@
      */
     public class Zinteract {
 
-        private static final String TAG = "com.zemosolabs.zinteract.sdk.zinteract";
+        private static final String TAG = "com.zemos.zint.sdk.zint";
         private static Context context;
         private static String apiKey;
         private static String userId;
@@ -66,6 +69,10 @@
         private static Worker logWorker = new Worker("logWorker");
         private static Worker httpWorker = new Worker("httpWorker");
 
+
+        private static String currentActivityName;
+        private static String currentActivityLabel;
+
         static {
             logWorker.start();
             httpWorker.start();
@@ -84,6 +91,11 @@
                     Log.i(TAG, "Context is not an Application.");
                 }
             }
+        }
+
+        static void updateActivityDetails(String label, String name){
+            currentActivityLabel = label;
+            currentActivityName = name;
         }
 
         static String getApiKey(){
@@ -272,13 +284,14 @@
         }
 
         static void showPromotion(final Activity currentActivity){
-            String screen_id = currentActivity.getLocalClassName();
-            if("com.zemoso.zinteract.ZinteractSampleApp.Activity4".equals(screen_id)){
-                screen_id = "ViewController4";
+            //The developer has to label all his activities where he needs to show promotions.
+            //android:label is a optional attribute for all activities. Using the same as screen id
+            //would work.
+            String screen_id =currentActivityLabel ;
+            if(screen_id==null){
+                return;
             }
-            else if("com.zemoso.zinteract.ZinteractSampleApp.Activity5".equals(screen_id)){
-                screen_id = "ViewController5";
-            }
+            Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
 
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
 
@@ -307,25 +320,39 @@
                             ft.remove(prev);
                         }
                         ft.addToBackStack(null);
-
+                        boolean customInAppNotificationAvailable = false;
                         // Create and show the dialog.
-                        DialogFragment newFragment = new DialogFragment();
+                        ZinteractInAppNotification newNotification = null;
+                        if(customInAppNotificationAvailable){
+                            //newNotification = new CustomInAppNotification();
+                        }
+                        else{
+                            try {
+                                newNotification = (ZinteractInAppNotification) Class.forName("com.zemosolabs.zinteract.sdk.DefaultInAppNotification").newInstance();
+                            } catch (InstantiationException e) {
+                                Log.e(TAG,"Exception: "+ e);
+                            } catch (IllegalAccessException e) {
+                                Log.e(TAG,"Exception: "+ e);
+                            } catch (ClassNotFoundException e) {
+                                Log.e(TAG,"Exception: "+ e);
+                            }
+                        }
                         if("Info".equals(campaign_type)) {
-                            newFragment = InAppNotification.newInstance(1,campaignId,title,message);
+                            newNotification.customize(1, campaignId, title, message);
                         }
                         else if("Rating".equals(campaign_type)){
-                            newFragment = InAppNotification.newInstance(2,campaignId,title,message);
+                            newNotification.customize(2, campaignId, title, message);
                         }
                         else {
-                            newFragment = InAppNotification.newInstance(1,campaignId,title,message);
+                            newNotification.customize(1, campaignId, title, message);
                         }
 
-                        newFragment.show(ft, "dialog");
+                        newNotification.show(ft, "dialog");
                     }
                 });
             }
             catch (Exception e){
-                Log.e(TAG,"Exception: "+e);
+                Log.e(TAG,"Exception in showProm: "+e);
             }
 
         }
@@ -415,6 +442,16 @@
                     }
                 });
             }
+        }
+        public static void updatePromotionAsSeen(String campaignId){
+            markPromotionAsSeen(campaignId);
+            JSONObject promotionEvent = new JSONObject();
+            try {
+                promotionEvent.put("campaignId",campaignId);
+            } catch (JSONException e) {
+                Log.e(TAG,"Exception: "+e);
+            }
+            logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }
 
         static void markPromotionAsSeen(String campaignId){
@@ -694,7 +731,7 @@
 
             //TODO check if we can use advertizer id
             String randomId = deviceDetails.generateUUID();
-            preferences.edit().putString(Constants.Z_PREFKEY_DEVICE_ID, randomId).commit();
+            preferences.edit().putString(Constants.Z_PREFKEY_DEVICE_ID, randomId).apply();
             return randomId;
 
         }

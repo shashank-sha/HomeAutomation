@@ -2,7 +2,10 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.FragmentManager;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by praveen on 30/01/15.
@@ -10,13 +13,20 @@ import android.os.Bundle;
 public class ZinteractActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
     public ZinteractActivityLifecycleCallbacks() {
+
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {
-//        if (!activity.isTaskRoot()) {
-//            return; // No checks, no nothing.
-//        }
+    public void onActivityStarted(final Activity activity) {
+        PackageManager pm = activity.getPackageManager();
+        String name = activity.getComponentName().getClassName();
+        String label = null;
+        try {
+            label = pm.getActivityInfo(activity.getComponentName(),0).loadLabel(pm).toString();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        Zinteract.updateActivityDetails(label,name);
 
     }
 
@@ -30,7 +40,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
     }
 
     @Override
-    public void onActivityDestroyed(Activity activity) { }
+    public void onActivityDestroyed(Activity activity) {
+
+    }
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) { }
