@@ -1,15 +1,10 @@
-package com.zemosolabs.zinteract.interfaces;
+package com.zemosolabs.zinteract.user_interfaces;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.zemosolabs.zinteract.sdk.Zinteract;
-
-import org.json.JSONObject;
 
 /**
  * Created by vedaprakash on 3/3/15.
@@ -22,8 +17,8 @@ public abstract class ZinteractInAppNotification extends DialogFragment {
     private final String TAG = "customInAppNotification";
 
     /**
-     * Create a new instance of InAppNotification, providing "num"
-     * as an argument.
+     * Customize InAppNotification, providing "num","campaignId","title","message"
+     * as arguments.
      */
     public static void customize(int num, String campaignId, String title, String message) {
         ZinteractInAppNotification.campaignId = campaignId;
@@ -40,6 +35,7 @@ public abstract class ZinteractInAppNotification extends DialogFragment {
         int style = DialogFragment.STYLE_NORMAL, theme = 0;
         setStyle(style, theme);
     }
+    //use the string fields title and message in the views where title and message need to be displayed.
     @Override
     public abstract View onCreateView(LayoutInflater inflater, ViewGroup container,
                                       Bundle savedInstanceState);
@@ -54,6 +50,5 @@ public abstract class ZinteractInAppNotification extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        Zinteract.updatePromotionAsSeen(campaignId);
     }
 }

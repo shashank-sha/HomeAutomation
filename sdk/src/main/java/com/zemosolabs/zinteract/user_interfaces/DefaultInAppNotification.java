@@ -1,4 +1,4 @@
-package com.zemosolabs.zinteract.sdk;
+package com.zemosolabs.zinteract.user_interfaces;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.zemosolabs.zinteract.R;
-import com.zemosolabs.zinteract.interfaces.ZinteractInAppNotification;
+import com.zemosolabs.zinteract.sdk.Zinteract;
 
 import org.json.JSONObject;
 
@@ -69,7 +69,7 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
             try {
                 JSONObject j = new JSONObject();
                 j.put("campaignId", campaignId);
-                Zinteract.logEvent(Constants.Z_CAMPAIGN_SHOW_LATER_EVENT, j);
+                Zinteract.logEvent("ViewEventLater", j);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -84,7 +84,8 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
             try {
                 JSONObject k = new JSONObject();
                 k.put("campaignId", campaignId);
-                Zinteract.logEvent(Constants.Z_CAMPAIGN_DONOT_SHOW_EVENT, k);
+                Zinteract.logEvent("DoNotAskMeAgain", k);
+                Zinteract.updatePromotionAsSeen(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -95,6 +96,7 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
 
     View.OnClickListener closeHhandler = new View.OnClickListener() {
         public void onClick(View v) {
+            Zinteract.updatePromotionAsSeen(campaignId);
             dismiss();
         }
     };
@@ -104,7 +106,8 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
             try {
                 JSONObject f = new JSONObject();
                 f.put("campaignId", campaignId);
-                Zinteract.logEvent(Constants.Z_CAMPAIGN_RATE_EVENT, f);
+                Zinteract.logEvent("RateItClicked", f);
+                Zinteract.updatePromotionAsSeen(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);

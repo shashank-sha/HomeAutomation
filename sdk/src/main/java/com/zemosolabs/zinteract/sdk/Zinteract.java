@@ -2,13 +2,10 @@
 
     import android.app.Activity;
     import android.app.Application;
-    import android.app.DialogFragment;
     import android.app.Fragment;
     import android.app.FragmentTransaction;
     import android.content.Context;
     import android.content.SharedPreferences;
-    import android.content.pm.ActivityInfo;
-    import android.content.pm.PackageManager;
     import android.location.Location;
     import android.text.TextUtils;
     import android.util.Log;
@@ -17,7 +14,7 @@
     import com.google.android.gms.common.ConnectionResult;
     import com.google.android.gms.common.GooglePlayServicesUtil;
     import com.google.android.gms.gcm.GoogleCloudMessaging;
-    import com.zemosolabs.zinteract.interfaces.ZinteractInAppNotification;
+    import com.zemosolabs.zinteract.user_interfaces.ZinteractInAppNotification;
 
     import org.json.JSONArray;
     import org.json.JSONException;
@@ -77,6 +74,8 @@
             logWorker.start();
             httpWorker.start();
         }
+
+        private static ZinteractInAppNotification customDialogFragment = null;
 
         private Zinteract(){
 
@@ -283,6 +282,10 @@
                     false).apply();
         }
 
+        public static void setCustomDialogFragment(ZinteractInAppNotification customDialogFrag){
+            customDialogFragment = customDialogFrag;
+        }
+
         static void showPromotion(final Activity currentActivity){
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
@@ -320,15 +323,13 @@
                             ft.remove(prev);
                         }
                         ft.addToBackStack(null);
-                        boolean customInAppNotificationAvailable = false;
-                        // Create and show the dialog.
                         ZinteractInAppNotification newNotification = null;
-                        if(customInAppNotificationAvailable){
-                            //newNotification = new CustomInAppNotification();
+                        if(customDialogFragment!=null){
+                            newNotification = customDialogFragment;
                         }
                         else{
                             try {
-                                newNotification = (ZinteractInAppNotification) Class.forName("com.zemosolabs.zinteract.sdk.DefaultInAppNotification").newInstance();
+                                newNotification = (ZinteractInAppNotification) Class.forName("com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification").newInstance();
                             } catch (InstantiationException e) {
                                 Log.e(TAG,"Exception: "+ e);
                             } catch (IllegalAccessException e) {
