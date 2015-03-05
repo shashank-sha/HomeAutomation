@@ -76,6 +76,9 @@
         }
 
         private static ZinteractInAppNotification customDialogFragment = null;
+        private static String classNameOfCustomDialogFragment = null;
+        private static String classNameOfDefaultDialogFragment = "com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification";
+
 
         private Zinteract(){
 
@@ -139,6 +142,14 @@
                 Log.d(TAG,"initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,googleApiProjectNumber);
+        }
+
+        public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber,String classNameOfCustomDialogFrag) {
+            if(Zinteract.isDebuggingOn()){
+                Log.d(TAG,"initializeWithContextAndKey() called");
+            }
+            initialize(context, apiKey,googleApiProjectNumber);
+            classNameOfCustomDialogFragment = classNameOfCustomDialogFrag;
         }
 
         private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
@@ -327,14 +338,17 @@
                         if(customDialogFragment!=null){
                             newNotification = customDialogFragment;
                         }
+                        else if(classNameOfCustomDialogFragment!=null){
+                            try {
+                                newNotification = (ZinteractInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
+                            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                                Log.e(TAG,"Exception: "+ e);
+                            }
+                        }
                         else{
                             try {
-                                newNotification = (ZinteractInAppNotification) Class.forName("com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification").newInstance();
-                            } catch (InstantiationException e) {
-                                Log.e(TAG,"Exception: "+ e);
-                            } catch (IllegalAccessException e) {
-                                Log.e(TAG,"Exception: "+ e);
-                            } catch (ClassNotFoundException e) {
+                                newNotification = (ZinteractInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
+                            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                                 Log.e(TAG,"Exception: "+ e);
                             }
                         }
