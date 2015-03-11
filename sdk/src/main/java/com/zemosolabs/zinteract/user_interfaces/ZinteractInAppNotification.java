@@ -1,31 +1,34 @@
 package com.zemosolabs.zinteract.user_interfaces;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+
+import com.zemosolabs.zinteract.sdk.Zinteract;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by vedaprakash on 3/3/15.
  */
 public abstract class ZinteractInAppNotification extends DialogFragment {
-    protected static int mNum;
-    protected static String campaignId;
-    protected static String title;
-    protected static String message;
-    private final String TAG = "customInAppNotification";
 
-    /**
-     * Customize InAppNotification, providing "num","campaignId","title","message"
+
+     /**
+     * Customize InAppNotification, providing Context "context",String "campaignId",JSONOjbect "template"
      * as arguments.
+     *
+     * JSONObject template structure:
+     *
+     *
      */
-    public static void customize(int num, String campaignId, String title, String message) {
-        ZinteractInAppNotification.campaignId = campaignId;
-        ZinteractInAppNotification.title = title;
-        ZinteractInAppNotification.message = message;
-        ZinteractInAppNotification.mNum = num;
-    }
+    public abstract void customize(Context context, String campaignId, JSONObject template);
 
     //Include super.onCreate() if overriding this method in the concrete class.
     @Override

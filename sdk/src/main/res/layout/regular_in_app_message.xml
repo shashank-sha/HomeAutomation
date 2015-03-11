@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    tools:context="com.zemosolabs.zinteract.sdk.InAppMessage"
+    android:layout_gravity="center">
+    <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:id="@+id/img_container_regular"
+            android:contentDescription="@string/image_name" />
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/title_text_default"
+            android:id="@+id/title_regular"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:paddingTop="3dp"
+            android:gravity="center"
+            android:textColor="#000" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/message_text_default"
+            android:layout_gravity="center"
+            android:id="@+id/message_regular"
+            android:fontFamily="sans-serif-light"
+            android:textStyle="normal"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="#000"/>
+
+    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/dismiss_button_text_default"
+            android:id="@+id/dismiss_button_regular"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:background="@drawable/blue_button_bg"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:layout_gravity="bottom" />
+</LinearLayout>

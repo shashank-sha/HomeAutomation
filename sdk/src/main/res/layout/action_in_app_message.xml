@@ -1,0 +1,96 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    tools:context="com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification"
+    android:layout_gravity="center"
+    android:background="@drawable/white_card_bg">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:id="@+id/img_container_action"
+        android:contentDescription="@string/image_name" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/title_text_default"
+        android:id="@+id/title_action"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingTop="3dp"
+        android:gravity="center"
+        android:textColor="#000"
+        android:background="@color/white"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/message_text_default"
+        android:layout_gravity="center"
+        android:id="@+id/message_action"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
+        android:paddingBottom="5dp"
+        android:paddingTop="3dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="#000"
+        android:background="@color/white"/>
+
+    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@color/lightgrey" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_button_bg">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/dismiss_button_text_default"
+            android:id="@+id/action_button_action"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textAlignment="center"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="3dp"
+            android:gravity="center"
+            android:textColor="#00f"
+            android:background="@drawable/white_button_bg"
+            android:layout_gravity="bottom"
+            android:layout_alignParentRight="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/dismiss_button_text_default"
+            android:id="@+id/dismiss_button_action"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="#000"
+            android:background="@drawable/white_button_bg"
+            android:layout_gravity="bottom"
+            android:layout_alignBottom="@+id/action_button_action"
+            android:layout_toLeftOf="@+id/action_button_action"
+            android:layout_toStartOf="@+id/action_button_action"/>
+
+    </RelativeLayout>
+</LinearLayout>
