@@ -14,7 +14,6 @@
     import com.google.android.gms.common.ConnectionResult;
     import com.google.android.gms.common.GooglePlayServicesUtil;
     import com.google.android.gms.gcm.GoogleCloudMessaging;
-    import com.zemosolabs.zinteract.user_interfaces.ZinteractInAppNotification;
 
     import org.json.JSONArray;
     import org.json.JSONException;

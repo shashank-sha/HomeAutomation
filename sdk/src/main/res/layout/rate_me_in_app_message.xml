@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="300dp"
     android:orientation="vertical"
     android:layout_height="wrap_content"
     android:padding="1dp"
@@ -8,7 +8,7 @@
     android:layout_gravity="center"
     android:background="@drawable/black_card_bg">
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center"
@@ -22,7 +22,7 @@
         android:id="@+id/img_container_rate_me"
         android:contentDescription="@string/image_name" />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
 
@@ -38,7 +38,7 @@
         android:background="@color/white"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/message_text_default"
@@ -56,7 +56,7 @@
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/dismiss_button_text_default"
@@ -72,7 +72,7 @@
         android:textColor="#fff"
         android:layout_gravity="bottom"/>
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/dismiss_button_text_default"
@@ -87,7 +87,7 @@
         android:textColor="#fff"
         android:layout_gravity="bottom" />
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/dismiss_button_text_default"

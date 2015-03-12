@@ -1,4 +1,4 @@
-package com.zemosolabs.zinteract.user_interfaces;
+package com.zemosolabs.zinteract.sdk;
 
 import android.app.DialogFragment;
 import android.content.Context;
@@ -21,10 +21,27 @@ public abstract class ZinteractInAppNotification extends DialogFragment {
 
 
      /**
-     * Customize InAppNotification, providing Context "context",String "campaignId",JSONOjbect "template"
-     * as arguments.
+     * <p>Customize InAppNotification, providing Context "context",String "campaignId",JSONOjbect "template"
+     * as arguments.</p>
      *
-     * JSONObject template structure:
+     * <p>JSONObject template structure:</p>
+     * <p>"template": {
+     *      "title": "Season sale! Heavy discounts!!!",
+     *      "message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!",
+     *      "imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg",
+     *      "onClickUrl": "http://www.google.com",
+     *      "templateType": "REGULAR",
+     *      "definition": {
+     *          "actionType": "SHARE|LINK|RATE|NONE",
+     *          "actionButton": {
+     *              "url": "http://www.facebook.com"
+     *              "shareText": "This app is awesome!!! Check it out!"
+     *              "buttonText": "LIKE US|SHARE|RATE US"
+     *          }
+     *          "dismissButtonText": "GOT IT|CANCEL|DON'T ASK ME AGAIN",
+     *          "remindLaterButtonText: "REMIND ME LATER",
+     *       }
+     *    }</p>
      *
      *
      */

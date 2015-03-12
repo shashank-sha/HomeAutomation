@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="300dp"
     android:orientation="vertical"
     android:layout_height="wrap_content"
     tools:context="com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification"
@@ -15,7 +15,7 @@
         android:id="@+id/img_container_action"
         android:contentDescription="@string/image_name" />
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/title_text_default"
@@ -30,7 +30,7 @@
         android:background="@color/white"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/message_text_default"
@@ -51,7 +51,7 @@
         android:layout_height="1dip"
         android:background="@color/lightgrey" />
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/white_button_bg">
 
@@ -67,7 +67,7 @@
             android:textAlignment="center"
             android:paddingRight="5dp"
             android:paddingEnd="5dp"
-            android:paddingLeft="3dp"
+            android:paddingLeft="5dp"
             android:gravity="center"
             android:textColor="#00f"
             android:background="@drawable/white_button_bg"
@@ -89,8 +89,7 @@
             android:background="@drawable/white_button_bg"
             android:layout_gravity="bottom"
             android:layout_alignBottom="@+id/action_button_action"
-            android:layout_toLeftOf="@+id/action_button_action"
-            android:layout_toStartOf="@+id/action_button_action"/>
+            android:layout_toLeftOf="@+id/action_button_action"/>
 
     </RelativeLayout>
 </LinearLayout>

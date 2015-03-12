@@ -2,10 +2,8 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.FragmentManager;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 
 /**
  * Created by praveen on 30/01/15.
@@ -54,6 +52,5 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityStopped(Activity activity) { }
-
 
 }

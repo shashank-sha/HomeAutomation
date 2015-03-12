@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="300dp"
     android:orientation="vertical"
     android:layout_height="wrap_content"
     tools:context="com.zemosolabs.zinteract.sdk.InAppMessage"
@@ -13,7 +13,7 @@
             android:id="@+id/img_container_regular"
             android:contentDescription="@string/image_name" />
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/title_text_default"
@@ -27,7 +27,7 @@
             android:textColor="#000" />
 
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/message_text_default"
@@ -44,7 +44,7 @@
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
     <Button
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/dismiss_button_text_default"
