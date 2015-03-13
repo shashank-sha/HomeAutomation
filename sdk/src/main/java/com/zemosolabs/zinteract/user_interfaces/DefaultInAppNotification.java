@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,6 @@ import android.widget.TextView;
 
 import com.zemosolabs.zinteract.R;
 import com.zemosolabs.zinteract.sdk.Zinteract;
-import com.zemosolabs.zinteract.sdk.ZinteractInAppNotification;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +57,7 @@ import java.util.Locale;
  * <p>    } </p>
  * <p>   } </p>
  */
-public class DefaultInAppNotification extends ZinteractInAppNotification {
+public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.ZinteractInAppNotification {
 
     private Context context;
     private String campaignId;
@@ -65,6 +65,7 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
     private String message;
     private String templateType;
     private String imageUrl;
+    private String imageBase64;
     private String onClickUrl;
     private String actionType;
     private String dismissButtonText;
@@ -72,7 +73,7 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
     private String actionButtonText;
     private String remindButtonText;
     private String shareText;
-    private boolean DEBUGGING_MODE = true;
+    private boolean DEBUGGING_MODE = false;
 
     private static final String TAG = "InAppNotification";
 
@@ -91,6 +92,7 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
             shareText = "This App is awesome! Check it out";
             actionButtonText = "GO";
             remindButtonText = "REMIND ME LATER";
+            imageBase64 = context.getString(R.string.base64ImageStringTest);
             return;
         }
         try {
@@ -390,7 +392,9 @@ public class DefaultInAppNotification extends ZinteractInAppNotification {
                 connection.setDoInput(true);
                 connection.connect();
                 InputStream input = connection.getInputStream();
+                //byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeStream(input);
+                //Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
                 Rect rect = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
                 Rect bottomRect = new Rect(0,bitmap.getHeight()/2,bitmap.getWidth(),bitmap.getHeight());

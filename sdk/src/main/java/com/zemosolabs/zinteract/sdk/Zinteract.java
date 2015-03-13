@@ -306,7 +306,7 @@
             }
             Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
 
-           /* DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
 
             dbHelper.removeSeenPromotions();
             final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
@@ -316,16 +316,12 @@
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
                 return;
-            }*/
+            }
 
             try {
-                final String campaignId = "12345678";// promotion.getString("campaignId");
-                final JSONObject template = new JSONObject();//promotion.getJSONObject("template");
+                final String campaignId = promotion.getString("campaignId");
+                final JSONObject template = promotion.getJSONObject("template");
 
-                /*String title = promotion.getString("name");
-                final String campaign_type = promotion.getString("type");
-
-                final String message = promotion.getString("subject");*/
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
