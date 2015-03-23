@@ -19,7 +19,6 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemoso.zinteract.ZinteractSampleApp.R;
-import com.zemosolabs.zinteract.sdk.*;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -70,8 +69,6 @@ public class TestInAppMessages {
 
     static final int numOfScreens = 5;
 
-    boolean firstTime = true;
-
     JSONArray allPromotions;
 
     ArrayList<JSONObject> promotionsForMainActivity = new ArrayList<JSONObject>();
@@ -80,8 +77,11 @@ public class TestInAppMessages {
     ArrayList<JSONObject> promotionsForActivity4 = new ArrayList<JSONObject>();
     ArrayList<JSONObject> promotionsForActivity5 = new ArrayList<JSONObject>();
 
-    ArrayList<Activity> pausedActivities = new ArrayList<Activity>();
-
+    ActivityController mainActivityController;
+    ActivityController activity2Controller;
+    ActivityController activity3Controller;
+    ActivityController activity4Controller;
+    ActivityController activity5Controller;
 
     ProtocolVersion httpProtocolVersion;
     HttpResponse simpleSuccessResponse;
@@ -166,8 +166,7 @@ public class TestInAppMessages {
     }
 
     @Test
-    public void testPromotions(){
-
+    public void testUIStructureAndDismissClicks(){
         setupPromotionsInitially();
         while (inAppPromosPending()) {
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("UIdismiss", screenLabel1);
@@ -176,6 +175,11 @@ public class TestInAppMessages {
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("UIdismiss", screenLabel4);
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("UIdismiss", screenLabel5);
         }
+        executeAllTasksOnWorkers();
+    }
+
+    @Test
+    public void testNeutralButtonClicks(){
 
         setupPromotionsInitially();
         printSizesOfArrayLists();
@@ -184,7 +188,11 @@ public class TestInAppMessages {
         resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("neutral",screenLabel3);
         resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("neutral",screenLabel4);
         resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("neutral",screenLabel5);
+        executeAllTasksOnWorkers();
+    }
 
+    @Test
+    public void testActionButtonClicks(){
 
         setupPromotionsInitially();
         printSizesOfArrayLists();
@@ -230,9 +238,13 @@ public class TestInAppMessages {
 
     void setupPromotionsInitially(){
         setUpPromotionsScreenWise();
-        ActivityController<MainActivity> controller = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume();
-        controller.destroy();
-        MainActivity activity = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume().get();
+        if(mainActivityController==null) {
+            mainActivityController = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume();
+        }
+        else{
+            mainActivityController.destroy();
+            mainActivityController = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume();
+        }
 
         instantiateLogAndHttpWorkers();
         executeAfterResumeLogAndHttpTasks();
@@ -244,7 +256,7 @@ public class TestInAppMessages {
 
         Robolectric.runUiThreadTasks();
 
-        activity.onPause();
+        mainActivityController.pause();
 
     }
     private void validateDb(){
@@ -296,7 +308,14 @@ public class TestInAppMessages {
         System.out.println("ResumeActivityDoAction: "+"Creating the corresponding activity");
         switch(screenLabel){
             case screenLabel1:
-                currentActivity  = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume().visible().get();
+                if(mainActivityController==null){
+                    mainActivityController = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume().visible();
+                }
+                else{
+                    mainActivityController.resume().visible();
+
+                }
+                currentActivity  = (MainActivity)mainActivityController.get();
 
                 nextActivity = Activity2.class;
                 nextButtonId = R.id.button1to2;
@@ -308,8 +327,13 @@ public class TestInAppMessages {
                 promotion = promotionsForMainActivity.get(0);
                 break;
             case screenLabel2:
-                currentActivity= Robolectric.buildActivity(Activity2.class).attach().create().start().resume().visible().get();
-
+                if(activity2Controller==null){
+                    activity2Controller = Robolectric.buildActivity(Activity2.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity2Controller.resume().visible();
+                }
+                currentActivity  = (Activity2)activity2Controller.get();
                 nextActivity = Activity3.class;
                 nextButtonId = R.id.button2to3;
                 if(promotionsForActivity2.isEmpty()){
@@ -320,7 +344,13 @@ public class TestInAppMessages {
                 promotion = promotionsForActivity2.get(0);
                 break;
             case screenLabel3:
-                currentActivity = Robolectric.buildActivity(Activity3.class).attach().create().start().resume().visible().get();
+                if(activity3Controller==null){
+                    activity3Controller = Robolectric.buildActivity(Activity3.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity3Controller.resume().visible();
+                }
+                currentActivity  = (Activity3)activity3Controller.get();
 
                 nextActivity = Activity4.class;
                 nextButtonId = R.id.button3to4;
@@ -332,7 +362,13 @@ public class TestInAppMessages {
                 promotion = promotionsForActivity3.get(0);
                 break;
             case screenLabel4:
-                currentActivity = Robolectric.buildActivity(Activity4.class).attach().create().start().resume().visible().get();
+                if(activity4Controller==null){
+                    activity4Controller = Robolectric.buildActivity(Activity4.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity4Controller.resume().visible();
+                }
+                currentActivity  = (Activity4)activity4Controller.get();
 
                 nextActivity = Activity5.class;
                 nextButtonId = R.id.button4to5;
@@ -344,7 +380,13 @@ public class TestInAppMessages {
                 promotion = promotionsForActivity4.get(0);
                 break;
             case screenLabel5:
-                currentActivity = Robolectric.buildActivity(Activity5.class).attach().create().start().resume().visible().get();
+                if(activity5Controller==null){
+                    activity5Controller = Robolectric.buildActivity(Activity5.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity5Controller.resume().visible();
+                }
+                currentActivity  = (Activity5)activity5Controller.get();
 
                 nextActivity = MainActivity.class;
                 nextButtonId = R.id.button5to1;
@@ -395,9 +437,10 @@ public class TestInAppMessages {
         currentActivity.findViewById(nextButtonId).performClick();
         intent = Robolectric.shadowOf(Robolectric.shadowOf(currentActivity).getNextStartedActivity());
         assertEquals(intent.getIntentClass(),nextActivity);
-        if(!pausedActivities.contains(currentActivity)){
-            pausedActivities.add(0,currentActivity);
-        }
+        executeAfterResumeLogAndHttpTasks();
+        /*sharedPreferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
+                .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();*/
+
     }
 
     private void validateUIStructurefor(JSONObject promotion, String label){
@@ -504,22 +547,26 @@ public class TestInAppMessages {
         try {
             JSONObject template = promotion.getJSONObject("template");
             Uri actionUri;
+            String shareText;
             String action;
             switch (template.getJSONObject("definition").getString("actionType").toLowerCase()) {
                 case "link":
                     actionButtonId = R.id.action_button_action;
-                    actionUri = Uri.parse(template.getJSONObject("definition").getString("url"));
+                    actionUri = Uri.parse(template.getJSONObject("definition").getJSONObject("actionButton").getString("url"));
                     action = Intent.ACTION_VIEW;
+                    shareText =null;
                     break;
                 case "share":
                     actionButtonId = R.id.action_button_action;
-                    actionUri = Uri.parse(template.getJSONObject("definition").getString("shareText"));
+                    shareText = template.getJSONObject("definition").getJSONObject("actionButton").getString("shareText");
                     action = Intent.ACTION_SEND;
+                    actionUri = null;
                     break;
                 case "rate":
                     actionButtonId = R.id.action_button_rate_me;
                     actionUri = Uri.parse("market://details?id=?" + Robolectric.application.getPackageName());
                     action = Intent.ACTION_VIEW;
+                    shareText = null;
                     break;
                 default:
                     dismissButtonId = R.id.dismiss_button_regular;
@@ -532,7 +579,12 @@ public class TestInAppMessages {
             currentlyUsedArrayListOfPromotions.remove(0);
             intent = Robolectric.shadowOf(Robolectric.shadowOf(currentActivity).getNextStartedActivity());
             assertEquals(intent.getAction(), action);
-            assertEquals(intent.getData(), actionUri);
+            if(template.getJSONObject("definition").getString("actionType").toLowerCase()=="share"){
+                assertEquals(intent.getExtras().getString(Intent.EXTRA_TEXT), shareText);
+            }
+            else {
+                assertEquals(intent.getData(),actionUri);
+            }
             System.out.println("VALIDATE ACTIONCLICK: "+"Dismiss Clicked on "+label);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -658,6 +710,14 @@ public class TestInAppMessages {
         httpWorker = (HandlerThread)getThreadByName("httpWorker");
         logWorkingLooper = Robolectric.shadowOf(logWorker.getLooper());
         httpWorkingLooper = Robolectric.shadowOf(httpWorker.getLooper());
+    }
+
+    private void executeAllTasksOnWorkers(){
+        logWorkingLooper.idle(Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS);
+        httpWorkingLooper.idle(Constants.Z_EVENT_UPLOAD_PERIOD_MILLIS);
+        logWorkingLooper.idle(Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS);
+        httpWorkingLooper.idle(Constants.Z_EVENT_UPLOAD_PERIOD_MILLIS);
+        logWorkingLooper.idle();
     }
 
     private void executeTasksOnLogWorker(){
