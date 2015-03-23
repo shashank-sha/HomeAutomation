@@ -23,6 +23,8 @@
             android:textStyle="bold"
             android:textSize="14sp"
             android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:paddingLeft="3dp"
             android:gravity="center"
             android:textColor="#000" />
 
@@ -35,8 +37,7 @@
             android:id="@+id/message_regular"
             android:fontFamily="sans-serif-light"
             android:textStyle="normal"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp"
+            android:padding="3dp"
             android:textSize="14sp"
             android:gravity="center"
             android:textColor="#000"/>

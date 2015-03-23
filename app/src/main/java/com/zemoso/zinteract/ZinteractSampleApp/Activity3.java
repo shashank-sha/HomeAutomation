@@ -1,5 +1,6 @@
 package com.zemoso.zinteract.ZinteractSampleApp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
 
-public class Activity3 extends ActionBarActivity {
+public class Activity3 extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

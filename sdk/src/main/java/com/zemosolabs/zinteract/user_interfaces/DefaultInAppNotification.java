@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -83,7 +84,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         if (DEBUGGING_MODE) {
             templateType = "REGULAR";
             title = "Test Title";
-            message = "This message is a test message. Let's see how the UI reacts when the message exceeds more than one line ";
+            message = "<h2>Try me!</h2><p><b>Hello</b></p><p>textAngular is a super cool WYSIWYG Text Editor directive for AngularJS</p><p><b>Features:</b></p><ol><li>Automatic Seamless Two-Way-Binding</li><li> <font color=\"#0000EE\">Super Easy <b>Theming</b> Options</font></li><li>Simple Editor Instance Creation</li><li>Safely Parses Html for Custom Toolbar Icons</li><li>Doesn't Use an iFrame</li><li>Works with Firefox, Chrome, and IE8+</li></ol><p><b>Code at GitHub:</b> <a href=\"https://github.com/fraywing/textAngular\">Here</a> </p>";
             imageUrl = "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg";
             onClickUrl = "http://www.google.com";
             actionType = "SHARE";
@@ -92,7 +93,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             shareText = "This App is awesome! Check it out";
             actionButtonText = "GO";
             remindButtonText = "REMIND ME LATER";
-            imageBase64 = context.getString(R.string.base64ImageStringTest);
+//            imageBase64 = context.getString(R.string.base64ImageStringTest);
             return;
         }
         try {
@@ -115,12 +116,12 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             } else title = "dTITLE";
             if(template.has("definition") && template.get("definition") != JSONObject.NULL) {
                 definition = template.getJSONObject("definition");
-                if(definition.has("action") && definition.get("action") != JSONObject.NULL) {
-                    actionType = definition.getString("action");
+                if(definition.has("actionType") && definition.get("actionType") != JSONObject.NULL) {
+                    actionType = definition.getString("actionType");
                 }else actionType = "NONE";
                 if(definition.has("dismissButtonText") && definition.get("dismissButtonText") != JSONObject.NULL) {
                     dismissButtonText = definition.getString("dismissButtonText");
-                }else dismissButtonText = "dCANCEL";
+                }else dismissButtonText = "CANCEL";
                 JSONObject actionButton;
                 if (definition.has("actionButton") && definition.get("actionButton") != JSONObject.NULL) {
                     actionButton = definition.getJSONObject("actionButton");
@@ -132,22 +133,22 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
 
                             if (actionButton.has("text") && actionButton.get("text") != JSONObject.NULL) {
                                 actionButtonText = actionButton.getString("text");
-                            } else actionButtonText = "dGO";
+                            } else actionButtonText = "GO";
                             break;
                         case "RATE":
-                            if (actionButton.has("text") && actionButton.get("text") != JSONObject.NULL) {
-                                actionButtonText = actionButton.getString("text");
+                            if (actionButton.has("buttonText") && actionButton.get("buttonText") != JSONObject.NULL) {
+                                actionButtonText = actionButton.getString("buttonText");
                             } else actionButtonText = "dRate Us";
-                            if (definition.has("remindButtonText") && definition.get("remindButtonText") != JSONObject.NULL) {
-                                remindButtonText = definition.getString("remindButtonText");
+                            if (definition.has("remindLaterButtonText") && definition.get("remindLaterButtonText") != JSONObject.NULL) {
+                                remindButtonText = definition.getString("remindLaterButtonText");
                             } else remindButtonText = "dRemind Me Later";
                             break;
                         case "SHARE":
                             if (actionButton.has("shareText") && actionButton.get("shareText") != JSONObject.NULL) {
                                 shareText = actionButton.getString("shareText");
                             } else shareText = "dSHARE OUR APP WITH YOUR FRIENDS";
-                            if (actionButton.has("text") && actionButton.get("text") != JSONObject.NULL) {
-                                actionButtonText = actionButton.getString("text");
+                            if (actionButton.has("buttonText") && actionButton.get("buttonText") != JSONObject.NULL) {
+                                actionButtonText = actionButton.getString("buttonText");
                             } else actionButtonText = "dSHARE";
                             break;
                         default:
@@ -171,13 +172,16 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         int style = DialogFragment.STYLE_NO_TITLE, theme = 0;
         setStyle(style, theme);
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setCancelable(false);
         Log.i("inside Notification","control came here");
         View v = null;
+        View mv = null;
         getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         if(actionType.toUpperCase(Locale.US).equals("NONE")){
             v = inflater.inflate(R.layout.regular_in_app_message, container, false);
@@ -198,24 +202,27 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             if(imageUrl!=null){
                 Log.i("Image","ImgView updating");
                 new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
+                if(onClickUrl!=null){
+                    imgView.setOnClickListener(imageClickHandler);
+                }
             }
             else{
                 Log.i("Image","ImgView made invisible");
                 imgView.setVisibility(View.GONE);
             }
 
-            View mv = v.findViewById(R.id.message_regular);
-            ((TextView)mv).setText(message);
+            mv = v.findViewById(R.id.message_regular);
+
         }
 
         else if(actionType.toUpperCase(Locale.US).equals("RATE")) {
 
             v = inflater.inflate(R.layout.rate_me_in_app_message, container, false);
-            Button askLaterButton = (Button) v.findViewById(R.id.remind_later_button_rate_me);
+            Button askLaterButton = (Button) v.findViewById(R.id.neutral_button_rate_me);
             askLaterButton.setOnClickListener(askMeLater);
             Button dontAskButton = (Button) v.findViewById(R.id.dismiss_button_rate_me);
             dontAskButton.setOnClickListener(closeHandler);
-            Button rateItButton = (Button) v.findViewById(R.id.rate_button_rate_me);
+            Button rateItButton = (Button) v.findViewById(R.id.action_button_rate_me);
             rateItButton.setOnClickListener(rateMeEventHandler);
             Log.i("RateMeButton", "Updating");
             rateItButton.setText(actionButtonText);
@@ -233,13 +240,16 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             if (imageUrl != null) {
                 Log.i("Image", "ImgView updating");
                 new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
+                if(onClickUrl!=null){
+                    imgView.setOnClickListener(imageClickHandler);
+                }
             } else {
                 Log.i("Image", "ImgView made invisible");
                 imgView.setVisibility(View.GONE);
             }
 
-            View mv = v.findViewById(R.id.message_rate_me);
-            ((TextView) mv).setText(message);
+            mv = v.findViewById(R.id.message_rate_me);
+
         }
         else if(actionType.toUpperCase(Locale.US).equals("SHARE")||actionType.toUpperCase(Locale.US).equals("LINK")) {
             v = inflater.inflate(R.layout.action_in_app_message, container, false);
@@ -248,6 +258,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             dismissButton.setText(dismissButtonText);
             dismissButton.setOnClickListener(closeHandler);
             Button actionButton = (Button) v.findViewById(R.id.action_button_action);
+
             Log.i("ActionButton", "Updating");
             actionButton.setText(actionButtonText);
             actionButton.setOnClickListener(actionEventHandler);
@@ -271,9 +282,11 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 imgView.setVisibility(View.GONE);
             }
 
-            View mv = v.findViewById(R.id.message_action);
-            ((TextView) mv).setText(message);
+            mv = v.findViewById(R.id.message_action);
+
+
         }
+        ((TextView)mv).setText(Html.fromHtml(message),TextView.BufferType.SPANNABLE);
         Log.i("Message","Message Updated");
         return v;
     }
@@ -281,7 +294,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
     View.OnClickListener imageClickHandler = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(actionButtonUrl));
+                Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
                 try{
                     Log.i("InAppIMAGE:","CLICKED");
                     startActivity(openImageLinkInBrowser);

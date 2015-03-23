@@ -12,8 +12,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Screen 2"
-        android:id="@+id/button"
+        android:text="Screen two"
+        android:id="@+id/button1to2"
         android:layout_centerVertical="true"
         android:onClick="sendToActivity2"
         android:layout_centerHorizontal="true" />

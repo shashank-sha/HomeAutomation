@@ -1,5 +1,6 @@
 package com.zemoso.zinteract.ZinteractSampleApp;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -9,11 +10,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
 
-public class Activity2 extends ActionBarActivity {
+public class Activity2 extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,11 @@ public class Activity2 extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
+        TextView tV = (TextView)findViewById(R.id.userSpecificText);
+        String userFName = Zinteract.getUserProperty("fname","Friend");
+        String userLName = Zinteract.getUserProperty("lname","");
+        String message = "Hello " + userFName + " " + userLName+"!!!"+" How are you doing?";
+        tV.setText(message);
         Zinteract.logEvent("view screen2");
     }
 

@@ -111,6 +111,14 @@
             return deviceId;
         }
 
+        public static void deriveDeviceidFromUserid(){
+
+        }
+
+        public static void doNotCaptureEventsAutomaticallyExceptForCampaignTracking(){
+
+        }
+
 
         /**
          *
@@ -300,6 +308,7 @@
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
             //would work.
+
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 return;
@@ -307,7 +316,6 @@
             Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
 
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-
             dbHelper.removeSeenPromotions();
             final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
 
@@ -315,10 +323,12 @@
                 if(Zinteract.isDebuggingOn()){
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
+
                 return;
             }
 
             try {
+
                 final String campaignId = promotion.getString("campaignId");
                 final JSONObject template = promotion.getJSONObject("template");
 
@@ -425,6 +435,7 @@
             if(Zinteract.isDebuggingOn()){
                 Log.d(TAG,"checkPromotions() called");
             }
+
             logWorker.post(new Runnable() {
                 @Override
                 public void run() {
@@ -468,9 +479,11 @@
             }
             boolean fetchSuccess = false;
             try {
+
                 JSONObject postParams = new JSONObject();
                 postParams.put("lastCampaignSynchedTime", CommonUtils.replaceWithJSONNull(getLastCampaignSyncTime()));
                 String response = HttpHelper.doPost(Constants.Z_PROMOTION_URL,postParams);
+
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
 
@@ -813,6 +826,7 @@
         private static void sendEvent(String eventType, long timestamp, String url,boolean header){
             if(Zinteract.isDebuggingOn()){
                 Log.d(TAG,"Sending "+eventType+" separately");
+
             }
 
             try {

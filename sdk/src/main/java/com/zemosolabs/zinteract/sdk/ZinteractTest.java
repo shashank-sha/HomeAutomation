@@ -15,12 +15,15 @@ import org.json.JSONObject;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
+
 public class ZinteractTest extends ApplicationTestCase<Application> {
     public ZinteractTest() {
         super(Application.class);
     }
 
     private static final String TAG = "com.zemosolabs.zinteract.sdk.ZinteractTest";
+
+    private static final String promotionsForScreensJSON = "[{\"campaignId\": \"campaign1\",\"screenId\": \"SampleApp\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\", \"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": { \"actionType\": \"LINK\", \"actionButton\": {\"url\": \"http://www.flipkart.com\",\"buttonText\": \"GO\"},\"dismissButtonText\": \"NO THANKS\"}}},{\"campaignId\": \"campaign2\",\"screenId\": \"Activity2\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!! JUST RATE OUR APP\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\", \"onClickUrl\": \"http://www.google.com\", \"templateType\": \"REGULAR\", \"definition\": {\"actionType\": \"LINK\", \"actionButton\": {\"buttonText\": \"RATE US\"},\"dismissButtonText\": \"DON'T ASK ME AGAIN\",\"remindLaterButtonText: \"REMIND ME LATER\"}}},\"campaignId\": \"campaign3\",\"screenId\": \"Activity3\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Invite your friends now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\": \"SHARE\",\"actionButton\": {\"shareText\": \"This app is awesome!!! Check it out! Use promocode:sdeidk\",\"buttonText\": \"INVITE\"},\"dismissButtonText\": \"NO THANKS\"}}},{\"campaignId\": \"campaign4\",\"screenId\": \"Activity4\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\":\"NONE\",\"dismissButtonText\": \"GOT IT\"}}}]";
 
     private DbHelper dbHelper;
 
@@ -78,6 +81,19 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
             Log.e(TAG, "Exception :" + e);
         }
 
+    }
+    public void testShowingPromotionsStoredInDb(){
+        try{
+            JSONArray promotions = new JSONArray(promotionsForScreensJSON);
+            for(int i =0; i < promotions.length(); i++){
+                JSONObject promotion = promotions.getJSONObject(i);
+                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+            }
+            Thread.sleep(5000);
+
+        }catch (Exception e){
+            Log.e(TAG,"Exception: " +e);
+        }
     }
 
     public void testDownloadPromotionsAndDataStore(){

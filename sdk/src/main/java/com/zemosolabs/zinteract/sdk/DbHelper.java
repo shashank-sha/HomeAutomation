@@ -214,6 +214,7 @@ class DbHelper extends SQLiteOpenHelper {
             if (result == -1) {
                 Log.w(TAG, "Insert failed");
             }
+
         } catch (SQLiteException e) {
             Log.e(TAG, "addPromotion failed", e);
             // Not much we can do, just start fresh
@@ -228,6 +229,7 @@ class DbHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(PROMOTION_TABLE_NAME, "status = 1", null);
+
         } catch (SQLiteException e) {
             Log.e(TAG, "removePromotion failed", e);
         } finally {
