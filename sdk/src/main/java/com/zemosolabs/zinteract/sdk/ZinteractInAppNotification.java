@@ -25,24 +25,22 @@ public abstract class ZinteractInAppNotification extends DialogFragment {
      * as arguments.</p>
      *
      * <p>JSONObject template structure:</p>
-     * <p>"template": {
-     *      "title": "Season sale! Heavy discounts!!!",
-     *      "message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!",
-     *      "imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg",
-     *      "onClickUrl": "http://www.google.com",
-     *      "templateType": "REGULAR",
-     *      "definition": {
-     *          "actionType": "SHARE|LINK|RATE|NONE",
-     *          "actionButton": {
-     *              "url": "http://www.facebook.com"
-     *              "shareText": "This app is awesome!!! Check it out!"
-     *              "buttonText": "LIKE US|SHARE|RATE US"
-     *          }
-     *          "dismissButtonText": "GOT IT|CANCEL|DON'T ASK ME AGAIN",
-     *          "remindLaterButtonText: "REMIND ME LATER",
-     *       }
-     *    }</p>
-     *
+     * <p>"template": { </p>
+     * <p>     "title": "Season sale! Heavy discounts!!!", </p>
+     * <p>     "message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!", </p>
+     * <p>     "imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg", </p>
+     * <p>     "onClickUrl": "http://www.google.com", </p>
+     * <p>     "definition": { </p>
+     * <p>         "actionType": "SHARE|LINK|RATE|NONE", </p>
+     * <p>         "actionButton": { </p>
+     * <p>             "url": "http://www.facebook.com" </p>
+     * <p>             "shareText": "This app is awesome!!! Check it out!" </p>
+     * <p>             "buttonText": "LIKE US|SHARE|RATE US" </p>
+     * <p>          } </p>
+     * <p>         "dismissButtonText": "GOT IT|CANCEL|DON'T ASK ME AGAIN", </p>
+     * <p>         "remindLaterButtonText: "REMIND ME LATER", </p>
+     * <p>      } </p>
+     * <p> } </p>
      *
      */
     public abstract void customize(Context context, String campaignId, JSONObject template);

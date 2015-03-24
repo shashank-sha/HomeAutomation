@@ -45,7 +45,6 @@ import java.util.Locale;
  * <p>     "message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!", </p>
  * <p>     "imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg", </p>
  * <p>     "onClickUrl": "http://www.google.com", </p>
- * <p>     "templateType": "REGULAR", </p>
  * <p>     "definition": { </p>
  * <p>         "actionType": "SHARE|LINK|RATE|NONE", </p>
  * <p>         "actionButton": { </p>
