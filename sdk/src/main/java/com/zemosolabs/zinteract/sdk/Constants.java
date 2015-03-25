@@ -8,7 +8,7 @@ class Constants {
     static final String Z_VERSION = "0.1";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     //static String Z_BASE_URL = "http://192.168.1.19/";
-    static String Z_BASE_URL = "http://api.zemosolabs.com";
+    static String Z_BASE_URL = "http://api.zemosolabs.com/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     //static final String Z_API_VERSION = "0.1";

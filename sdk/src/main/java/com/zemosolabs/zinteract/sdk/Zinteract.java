@@ -513,7 +513,12 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
-                    dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+//Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
+                    if(promotion.has("screenId")&&promotion.getString("screenId")!=JSONObject.NULL){
+                        dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"),promotion.getString("screenId"));
+                    }else {
+                        dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                    }
                 }
 
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));

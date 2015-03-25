@@ -26,7 +26,8 @@
             android:paddingRight="3dp"
             android:paddingLeft="3dp"
             android:gravity="center"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:background="@color/white"/>
 
     <TextView
             android:layout_width="fill_parent"
@@ -40,7 +41,8 @@
             android:padding="3dp"
             android:textSize="14sp"
             android:gravity="center"
-            android:textColor="#000"/>
+            android:textColor="#000"
+            android:background="@color/white"/>
 
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
