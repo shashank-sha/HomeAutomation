@@ -252,6 +252,16 @@
             return true;
         }
 
+        static void sendSnapshot(final JSONObject snapShot){
+            httpWorker.post(new Runnable(){
+
+                @Override
+                public void run() {
+                    HttpHelper.doPost(Constants.Z_SEND_SNAPSHOT_URL,snapShot);
+                }
+            });
+        }
+
         private static String getRegistrationId() {
             final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
             String registrationId = prefs.getString(Constants.Z_PREFKEY_GCM_REGISTRATION_ID, "");
@@ -989,6 +999,8 @@
                 JSONObject postParams = new JSONObject();
                 postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
+                /*ScreenCapture.getInstance().createNewFile();
+                ScreenCapture.getInstance().writeToFile(postParams.toString());*/
                 String response = HttpHelper.doPost(url,postParams);
                 if(response !=null){
                     JSONObject jsonResponse = new JSONObject(response);

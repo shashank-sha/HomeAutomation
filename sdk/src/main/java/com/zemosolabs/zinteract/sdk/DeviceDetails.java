@@ -21,7 +21,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 public class DeviceDetails {
 
@@ -39,7 +41,7 @@ public class DeviceDetails {
     private static final String manufacturer = Build.MANUFACTURER;
     private static final String model =Build.MODEL;
     private static String carrier;
-    private static String ostz = TimeZone.getDefault().getDisplayName();
+    private static int ostzOffset = TimeZone.getDefault().getRawOffset();
     private static final String language = Locale.getDefault().getLanguage();
 
     // Cached properties, since fetching these take time
@@ -55,8 +57,8 @@ public class DeviceDetails {
         setCarrier();
     }
 
-    public static String getOstz(){
-        return ostz;
+    public static int getOstz(){
+        return ostzOffset;
     }
 
     public String getVersionName() {
@@ -267,5 +269,16 @@ public class DeviceDetails {
         this.locationListening = locationListening;
     }
 
+    int getScreenDensity(){
+        return DisplayMetrics.DENSITY_DEFAULT;
+    }
+    String getScreenResolution() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+        return screenHeight+" X "+screenWidth;
+    }
 
 }
