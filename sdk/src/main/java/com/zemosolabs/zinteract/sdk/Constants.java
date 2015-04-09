@@ -47,6 +47,7 @@ class Constants {
     static final String Z_PREFKEY_LAST_SESSION_TIME = Z_NAMESPACE+".last_session_time";
     static final String Z_PREFKEY_LAST_END_SESSION_TIME = Z_NAMESPACE+".last_end_session_time";
     static final String Z_PREFKEY_LAST_END_SESSION_ID = Z_NAMESPACE+".last_end_session_id";
+    static final String Z_PREFKEY_LAST_END_SESSION_EVENT_ID = Z_NAMESPACE+".last_end_session_event_id";
 
 
     //DB related constants

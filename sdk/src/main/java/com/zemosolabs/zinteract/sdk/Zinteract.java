@@ -216,6 +216,7 @@
                     });
 
                 }
+                Log.i("gcmClientId",getRegistrationId());
             } else {
                 Log.i(TAG, "No valid Google Play Services APK found.");
             }
@@ -229,6 +230,7 @@
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 
                 String regid = gcm.register(googleApiProjectNumber);
+                Log.i("gcmClientId",regid);
                 setUserProperty("deviceToken",regid);
                 saveRegistrationId(regid);
                 if(Zinteract.isDebuggingOn()){
@@ -241,6 +243,7 @@
 
         private static boolean checkPlayServices() {
             int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+            Log.i("resultCode",Integer.valueOf(resultCode).toString()+";" +Integer.valueOf(ConnectionResult.SUCCESS).toString());
             if (resultCode != ConnectionResult.SUCCESS) {
                 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                     Log.e(TAG,"Google Play services is not installed");
@@ -593,7 +596,7 @@
                                 false);
 
                         SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
-                        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, eventId)
+                        preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID, eventId)
                                 .putLong(Constants.Z_PREFKEY_LAST_END_SESSION_TIME, timestamp)
                                 .apply();
                     }
@@ -776,13 +779,14 @@
                     SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
                     long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
                             -1);
-
+                    Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                     if (previousSessionId == -1) {
                         // Invalid session Id, create new sessionId
 
 
                         startNewSession(timestamp);
                     } else {
+                        Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                         sessionId = previousSessionId;
                         if(Zinteract.isDebuggingOn()){
                             Log.d(TAG,"starting new session is not required as very close previous session already exists");
@@ -1172,6 +1176,7 @@
                 if(eventProperties == null){
                     eventProperties = new JSONObject();
                 }
+                Log.i("sessionId","In Log Event is "+Long.valueOf(sessionId).toString());
                 eventProperties.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
                 event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
                 event.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
@@ -1298,7 +1303,7 @@
         private static void clearEndSession() {
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
-                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
+                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID).apply();
         }
 
         private static long getEndSessionTime() {
@@ -1307,7 +1312,7 @@
         }
 
         private static long getEndSessionId() {
-            return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_ID);
+            return getSharedPreferenceValueByKey(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID);
         }
 
         private static long getSharedPreferenceValueByKey(String key){

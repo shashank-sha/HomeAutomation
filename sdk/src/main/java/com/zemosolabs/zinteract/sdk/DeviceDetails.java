@@ -57,8 +57,20 @@ public class DeviceDetails {
         setCarrier();
     }
 
-    public static int getOstz(){
-        return ostzOffset;
+    public static String getOstz(){
+        StringBuilder sB = new StringBuilder();
+        if(ostzOffset>0){
+            sB.append("+");
+        }else{
+            sB.append("-");
+        }
+        int hours = ostzOffset/(3600*1000);
+        int mins = (ostzOffset%(3600*1000))/(60*1000);
+        sB.append(String.format("%02d",hours));
+        sB.append(String.format("%02d",mins));
+        String offset = sB.toString();
+        Log.i("ostzOffset",offset);
+        return offset;
     }
 
     public String getVersionName() {

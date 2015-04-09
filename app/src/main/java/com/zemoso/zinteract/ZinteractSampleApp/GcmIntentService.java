@@ -40,14 +40,14 @@ public class GcmIntentService extends IntentService {
              */
             if (GoogleCloudMessaging.
                     MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-                sendNotification("Send error: " + extras.toString());
+                /*sendNotification("Send error: " + extras.toString());*/
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_DELETED.equals(messageType)) {
-                sendNotification("Deleted messages on server: " +
-                        extras.toString());
+                /*sendNotification("Deleted messages on server: " +
+                        extras.toString());*/
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                sendNotification(extras.getString("message"));
+                sendNotification(extras);
 
             }
         }
@@ -58,7 +58,7 @@ public class GcmIntentService extends IntentService {
     // Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with
     // a GCM message.
-    private void sendNotification(String msg) {
+    private void sendNotification(Bundle bundle) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 /*        Intent notificationIntent = new Intent(this,SplashScreen.class);
@@ -70,9 +70,9 @@ public class GcmIntentService extends IntentService {
         notificationCount++;
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher)
-        .setContentText(msg);
+        .setContentText(bundle.getString("message"));
         //TODO: getTitle from the Bundle sent by GCM
-        mBuilder.setContentTitle("SampleApp");
+        mBuilder.setContentTitle(bundle.getString("title"));
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }
