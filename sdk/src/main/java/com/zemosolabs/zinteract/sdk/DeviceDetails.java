@@ -4,6 +4,7 @@ package com.zemosolabs.zinteract.sdk;
  * Created by praveen on 19/01/15.
  */
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class DeviceDetails {
 
 
     private static String versionName;
-    private static final String osName = "android";
+    private static final String osFamily= "android";
     private static final String osVersion = Build.VERSION.RELEASE;
     private static final String brand = Build.BRAND;
     private static final String manufacturer = Build.MANUFACTURER;
@@ -111,7 +112,24 @@ public class DeviceDetails {
     }
 
     public String getOSName() {
+        String osName="";
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        for(Field field:fields){
+            try {
+                if(field.getInt(new Object())==Build.VERSION.SDK_INT){
+                    osName = field.getName();
+                    break;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i("osName",osName);
         return osName;
+    }
+
+    public String getOsFamily() {
+        return osFamily;
     }
 
     public String getOSVersion() {

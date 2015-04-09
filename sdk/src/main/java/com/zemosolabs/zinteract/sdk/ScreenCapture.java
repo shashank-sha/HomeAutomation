@@ -46,6 +46,7 @@ class ScreenCapture {
         viewsInAPage = new JSONObject();
         try {
             viewsInAPage.put("osName",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOSName()));
+            viewsInAPage.put("osFamily",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOsFamily()));
             viewsInAPage.put("osVersion",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOSVersion()));
             viewsInAPage.put("brand",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getBrand()));
             viewsInAPage.put("manufacturer",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getManufacturer()));

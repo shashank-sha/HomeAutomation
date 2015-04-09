@@ -853,6 +853,8 @@
 
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
                 postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
+                postParams.put("OSName",CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
+                postParams.put("OSFamily",CommonUtils.replaceWithJSONNull(deviceDetails.getOsFamily()));
                 postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
                 postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
                 postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
