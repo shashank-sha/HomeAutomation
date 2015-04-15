@@ -610,6 +610,7 @@
                 public void run() {
                     clearEndSession();
                     uploadEvents();
+
                 }
             };
             logWorker
@@ -773,6 +774,7 @@
         private static void startNewSessionIfNeeded(long timestamp) {
             if (!isSessionOpen) {
                 long lastEndSessionTime = getEndSessionTime();
+
                 if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
                     // Sessions close enough, set sessionId to previous sessionId
 
@@ -780,12 +782,14 @@
                     long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
                             -1);
                     Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
+
                     if (previousSessionId == -1) {
                         // Invalid session Id, create new sessionId
 
 
                         startNewSession(timestamp);
                     } else {
+
                         Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                         sessionId = previousSessionId;
                         if(Zinteract.isDebuggingOn()){
@@ -1125,7 +1129,7 @@
         }
 
         private static void openSession() {
-            clearEndSession();
+            //clearEndSession();
             isSessionOpen = true;
         }
 
@@ -1305,7 +1309,8 @@
         private static void clearEndSession() {
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
-                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID).apply();
+                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID)
+                    .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
         }
 
         private static long getEndSessionTime() {

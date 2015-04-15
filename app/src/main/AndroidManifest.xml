@@ -57,7 +57,9 @@
             android:name=".Activity5"
             android:label="@string/title_activity_activity5" >
         </activity>
-
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="259c6147fe5af935761b4406bf86454b410cc03c" />
     </application>
 
 </manifest>

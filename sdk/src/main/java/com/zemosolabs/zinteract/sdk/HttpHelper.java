@@ -60,6 +60,11 @@ public class HttpHelper {
             postRequest.setEntity(new StringEntity(jsonString));
             response = client.execute(postRequest);
             stringResponse = EntityUtils.toString(response.getEntity());
+            if(Zinteract.isDebuggingOn()){
+                if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
+                    Log.i("HttpResponse",stringResponse);
+                }
+            }
         } catch (org.apache.http.conn.HttpHostConnectException e) {
             // Log.w(TAG,
             // "No internet connection found, unable to upload events");

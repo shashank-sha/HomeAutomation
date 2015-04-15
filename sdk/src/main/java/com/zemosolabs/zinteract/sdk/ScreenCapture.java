@@ -55,7 +55,7 @@ class ScreenCapture {
             viewsInAPage.put("language",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getLanguage()));
             viewsInAPage.put("editingSessionId",CommonUtils.replaceWithJSONNull(editSessionId));
             viewsInAPage.put("appName",CommonUtils.replaceWithJSONNull(packageName));
-            viewsInAPage.put("screenName",CommonUtils.replaceWithJSONNull(ZinteractActivityLifecycleCallbacks.currentActivity));
+            viewsInAPage.put("screenName",CommonUtils.replaceWithJSONNull(ZinteractActivityLifecycleCallbacks.currentActivity.getClass().getCanonicalName()));
 
         } catch (JSONException e) {
             e.printStackTrace();

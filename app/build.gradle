@@ -1,4 +1,20 @@
+buildscript {
+    repositories {
+        maven { url 'http://download.crashlytics.com/maven' }
+    }
+
+    dependencies {
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+    }
+}
+
 apply plugin: 'com.android.application'
+
+apply plugin: 'crashlytics'
+
+repositories {
+    maven { url 'http://download.crashlytics.com/maven' }
+}
 
 android {
     compileSdkVersion 21
@@ -37,11 +53,12 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':sdk')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.google.android.gms:play-services:6.5.87'
     //testing
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:2.4'
+    compile project(':sdk')
+    compile 'com.crashlytics.android:crashlytics:1.+'
 }

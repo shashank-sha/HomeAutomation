@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.crashlytics.android.Crashlytics;
 
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
@@ -15,6 +16,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Crashlytics.start(this);
         setContentView(R.layout.activity_main);
         Zinteract.initializeWithContextAndKey(getApplicationContext(),"43eb-a23d-0106af662c83","914500168484");
         //Zinteract.initializeWithContextAndKey(getApplicationContext(),"ios67","914500168484");
@@ -49,6 +51,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onResume(){
+        Zinteract.logEvent("view screen1");
         super.onResume();
 
     }
@@ -60,6 +63,7 @@ public class MainActivity extends Activity {
 
     public void sendToActivity2(View view)
     {
+        Zinteract.logEvent("clicked to view screen2");
         Intent intent = new Intent(MainActivity.this, Activity2.class);
         startActivity(intent);
     }
