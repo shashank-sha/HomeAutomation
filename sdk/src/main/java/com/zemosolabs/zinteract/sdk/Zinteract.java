@@ -36,8 +36,6 @@
         private static String userId;
         private static String deviceId;
         private static String googleApiProjectNumber;
-        private static ScreenEditor UIEditor;
-
 
         private static final DataStore dataStore = DataStore.getDataStore();
 
@@ -199,11 +197,7 @@
 
                 registerZinteractActivityLifecycleCallbacks();
                 isInitialzed = true;
-                fetchChangesInUI();
             }
-        }
-        private static void fetchChangesInUI(){
-
         }
 
         private static void registerForPushNotifications(){
@@ -435,7 +429,7 @@
                     }
                     //startSession() can be called in every activity by developer, hence upload events and sync datastore
                     // only if it is a new session
-                    syncToServerIfNeeded(now);
+                    //syncToServerIfNeeded(now);
                     startNewSessionIfNeeded(now);
 
                     openSession();
@@ -531,11 +525,17 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
+                    if(promotion.getString("type").equals("abtest")){
+                        Log.i("ABTEST","GOT ABTEST");
+                        dbHelper.addABTest(promotion.toString(),promotion.getString("campaignId"),promotion.getString("screenId"));
+                    }else if(promotion.getString("type").equals("promotion")) {
+                        Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
-                    if(promotion.has("screenId")&&promotion.getString("screenId")!=JSONObject.NULL){
-                        dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"),promotion.getString("screenId"));
-                    }else {
-                        dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                        if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                        } else {
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                        }
                     }
                 }
 
@@ -557,7 +557,7 @@
             registerForPushNotifications();
         }
 
-        private static void syncToServerIfNeeded(long timestamp){
+        /*private static void syncToServerIfNeeded(long timestamp){
             if (!isSessionOpen) {
                 long lastEndSessionTime = getEndSessionTime();
                 if (timestamp - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
@@ -569,18 +569,23 @@
 
                     if (previousSessionId == -1) {
                         sync();
+                        Log.i("syncing", "1st case");
                     }
                 } else {
                     // Sessions not close enough, create new sessionId
                     sync();
+                    Log.i("syncing","2nd case");
                 }
             } else {
+
                 long lastEventTime = getLastEventTime();
+                Log.i("syncing","just before 3rd case syncing"+sessionId+" "+(timestamp-lastEventTime));
                 if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
                     sync();
+                    Log.i("syncing","3rd case");
                 }
             }
-        }
+        }*/
 
         /**
          * This method ends a usage session
@@ -615,6 +620,7 @@
                 public void run() {
                     clearEndSession();
                     uploadEvents();
+                    Log.i("EndSessionRunnable","Executed"+sessionId);
 
                 }
             };
@@ -791,18 +797,20 @@
                     if (previousSessionId == -1) {
                         // Invalid session Id, create new sessionId
 
-
+                        sync();
                         startNewSession(timestamp);
                     } else {
 
                         Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                         sessionId = previousSessionId;
+                        Log.i("sessionId","updated at startNewSessionIfNeeded");
                         if(Zinteract.isDebuggingOn()){
                             Log.d(TAG,"starting new session is not required as very close previous session already exists");
                         }
                     }
                 } else {
                     // Sessions not close enough, create new sessionId
+                    sync();
                     startNewSession(timestamp);
                     if(Zinteract.isDebuggingOn()){
                         Log.d(TAG,"starting new session as previous session was not close enough");
@@ -811,9 +819,10 @@
             } else {
                 long lastEventTime = getLastEventTime();
                 if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
+                    sync();
                     startNewSession(timestamp);
                     if(Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"starting new session as session timedout");
+                        Log.d(TAG,"starting new session as session timed out");
                     }
                 }
                 else {
@@ -828,7 +837,9 @@
         private static void startNewSession(final long timestamp) {
             // Log session start in events
             openSession();
+
             sessionId = timestamp;
+            Log.i("sessionId","updated at startNewSession()");
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
 
@@ -1316,6 +1327,7 @@
             preferences.edit().remove(Constants.Z_PREFKEY_LAST_END_SESSION_TIME)
                     .remove(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID)
                     .remove(Constants.Z_PREFKEY_LAST_END_SESSION_ID).apply();
+            sessionId=-1;
         }
 
         private static long getEndSessionTime() {
@@ -1350,17 +1362,5 @@
             editor.putInt(Constants.Z_PREFKEY_APP_VERSION, deviceDetails.getAppVersionCode());
             editor.putLong(Constants.Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME,System.currentTimeMillis());
             editor.commit();
-        }
-
-
-        public static void editScreens(Activity activity) {
-
-            UIEditor = ScreenEditor.getInstance(activity);
-            UIEditor.edit();
-
-        }
-
-        public static void stopEditing() {
-            UIEditor.purge();
         }
     }

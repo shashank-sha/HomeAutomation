@@ -27,6 +27,7 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
+    private static final String A_B_TEST_TABLE_NAME = Constants.Z_DB_A_B_TEST_TABLE_NAME;
 
     private static final String ID_FIELD = Constants.Z_DB_EVENT_ID_FIELD_NAME;
     private static final String EVENT_FIELD = Constants.Z_DB_EVENT_EVENTS_FIELD_NAME;
@@ -51,6 +52,13 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String CREATE_UNIQUE_INDEX_ON_PROPNAME = "CREATE UNIQUE INDEX propname_idx" +
             " on "+ Constants.Z_DB_USER_PROPERTIES_TABLE_NAME+" (propname);";
 
+    private static final String CREATE_ABTEST_TABLE = "CREATE TABLE IF NOT EXISTS "
+            +A_B_TEST_TABLE_NAME + "(" + Constants.Z_DB_A_B_TEST_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, screen_id TEXT, "
+            +Constants.Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME + " MEDIUMTEXT);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_SCREEN_ID = "CREATE UNIQUE INDEX screen_idx" +
+            " on "+ Constants.Z_DB_A_B_TEST_TABLE_NAME+" (screen_id);";
+
     private File file;
 
     static DbHelper getDatabaseHelper(Context context) {
@@ -73,8 +81,10 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
+        db.execSQL(CREATE_ABTEST_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
     }
 
     @Override
@@ -82,11 +92,14 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PROMOTION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + A_B_TEST_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
+        db.execSQL(CREATE_ABTEST_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
     }
 
 
@@ -366,4 +379,53 @@ class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    synchronized long addABTest(String change, String campaign_id, String screen_id) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Constants.Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME, change);
+            contentValues.put("campaign_id", campaign_id);
+            contentValues.put("screen_id", screen_id);
+
+            result = db.insertWithOnConflict(A_B_TEST_TABLE_NAME, null, contentValues,5);
+            if (result == -1) {
+                Log.w(TAG, "Insert failed");
+            }
+
+        } catch (SQLiteException e) {
+            Log.e(TAG, "addPromotion failed", e);
+            // Not much we can do, just start fresh
+            delete();
+        } finally {
+            close();
+        }
+        return result;
+    }
+    synchronized JSONObject getABTestForScreen(String screen_id){
+        JSONObject promotion = new JSONObject();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+             cursor = db.query(A_B_TEST_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
+                    null, Constants.Z_DB_A_B_TEST_ID_FIELD_NAME + " DESC", "1");
+
+            while (cursor.moveToNext()) {
+                String p = cursor.getString(3);
+
+                promotion = new JSONObject(p);
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getABTestForScreen failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getABTestForScreen falied", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return promotion;
+    }
 }

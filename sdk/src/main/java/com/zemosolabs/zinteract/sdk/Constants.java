@@ -61,6 +61,10 @@ class Constants {
     static final String Z_DB_PROMOTION_ID_FIELD_NAME = "id";
     static final String Z_DB_PROMOTION_PROMOTION_FIELD_NAME = "promotion";
 
+    static final String Z_DB_A_B_TEST_TABLE_NAME="abtest";
+    static final String Z_DB_A_B_TEST_ID_FIELD_NAME = "id";
+    static final String Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME = "changes";
+
     static final String Z_DB_USER_PROPERTIES_TABLE_NAME = "userproperties";
     static final String Z_DB_USER_PROPERTIES_ID_FIELD_NAME = "id";
 

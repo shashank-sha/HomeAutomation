@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ScreenEditor{
     private View rootView;
     private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
     private boolean globalLayoutChangedbyMe;
+    private File file;
 
     private ScreenEditor(Activity activity){
         currentActivity = activity;
@@ -104,17 +106,19 @@ public class ScreenEditor{
 
     private JSONArray getChangesFor(Activity activity){
         String activityName = activity.getClass().getCanonicalName();
-        JSONArray jsonArray = null;
         JSONArray toSendJSONArray = new JSONArray();
+        DbHelper dbHelper = DbHelper.getDatabaseHelper(currentActivity.getApplicationContext());
+        JSONObject abTestForScreen = dbHelper.getABTestForScreen(activityName);
         try {
-            jsonArray = new JSONArray(readFile());
+            toSendJSONArray = abTestForScreen.getJSONObject("template").getJSONArray("changes");
+            /* jsonArray = new JSONArray(readFile());
             for(int i=0;i<jsonArray.length();i++){
-                String obtainedActivityName = jsonArray.getJSONObject(i).getString("activity");
+                String obtainedActivityName = jsonArray.getJSONObject(i).getString("screenId");
                 if(obtainedActivityName.equalsIgnoreCase(activityName)){
-                    toSendJSONArray = (jsonArray.getJSONObject(i).getJSONArray("changes"));
+                    toSendJSONArray = (jsonArray.getJSONObject(i).getJSONObject("template").getJSONArray("changes"));
                     Log.i("ScreenEditor getChanges","Changes for the Activity Found");
                 }
-            }
+            }*/
         } catch (JSONException e) {
             Log.e("ScreenEditor", e.getMessage());
         }

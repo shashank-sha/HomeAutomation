@@ -16,6 +16,8 @@ import java.util.List;
 public class ZinteractActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
     private static ArrayList<Activity> activities = new ArrayList<Activity>();
     static Activity currentActivity;
+    private ScreenEditor UIEditor;
+
     public ZinteractActivityLifecycleCallbacks() {
 
     }
@@ -38,7 +40,7 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
         }
 
         Zinteract._endSession();
-        Zinteract.stopEditing();
+        UIEditor.purge();
     }
 
     @Override
@@ -67,7 +69,8 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
         TripleTapListener tripleTapListener = new TripleTapListener();
         activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
         Zinteract._startSession(activity);
-        Zinteract.editScreens(activity);
+        UIEditor = ScreenEditor.getInstance(activity);
+        UIEditor.edit();
 
     }
 
