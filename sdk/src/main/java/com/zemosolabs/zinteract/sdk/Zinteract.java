@@ -36,6 +36,7 @@
         private static String userId;
         private static String deviceId;
         private static String googleApiProjectNumber;
+        private static ScreenEditor UIEditor;
 
 
         private static final DataStore dataStore = DataStore.getDataStore();
@@ -177,7 +178,7 @@
                 deviceId = initializeDeviceId();
                 userId = getSavedUserId();
                 if(userId == null){
-                    userId = getUUID();
+                    userId = deviceId;
                     CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).apply();
                 }
 
@@ -198,7 +199,11 @@
 
                 registerZinteractActivityLifecycleCallbacks();
                 isInitialzed = true;
+                fetchChangesInUI();
             }
+        }
+        private static void fetchChangesInUI(){
+
         }
 
         private static void registerForPushNotifications(){
@@ -1348,4 +1353,14 @@
         }
 
 
+        public static void editScreens(Activity activity) {
+
+            UIEditor = ScreenEditor.getInstance(activity);
+            UIEditor.edit();
+
+        }
+
+        public static void stopEditing() {
+            UIEditor.purge();
+        }
     }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import com.crashlytics.android.Crashlytics;
 
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
@@ -66,5 +65,9 @@ public class MainActivity extends Activity {
         Zinteract.logEvent("clicked to view screen2");
         Intent intent = new Intent(MainActivity.this, Activity2.class);
         startActivity(intent);
+    }
+    public void show(View view){
+        findViewById(R.id.visibleText).setVisibility(View.VISIBLE);
+        findViewById(R.id.hiddenText).setVisibility(View.VISIBLE);
     }
 }

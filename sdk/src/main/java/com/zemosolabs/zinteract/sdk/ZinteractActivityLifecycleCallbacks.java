@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
         }
 
         Zinteract._endSession();
+        Zinteract.stopEditing();
     }
 
     @Override
@@ -64,6 +67,8 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
         TripleTapListener tripleTapListener = new TripleTapListener();
         activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
         Zinteract._startSession(activity);
+        Zinteract.editScreens(activity);
+
     }
 
     @Override

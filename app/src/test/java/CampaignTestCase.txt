@@ -1,6 +1,7 @@
 [{
 	"campaignId": "campaign1",
 	"screenId": "com.zemoso.zinteract.ZinteractSampleApp.MainActivity",
+	"type":"promotion",
 	"template":{
 			"title": "Season sale! Heavy discounts!!!", 
 			"message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!", 
@@ -19,6 +20,7 @@
   {
 	"campaignId": "campaign2",
 	"screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity2",
+	"type":"promotion",
 	"template":{
 			"title": "Season sale! Heavy discounts!!!",
 			"message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!! JUST RATE OUR APP", 
@@ -35,6 +37,7 @@
   {
 	"campaignId": "campaign3",
 	"screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity3",
+	"type":"promotion",
 	"template": {
 			"title": "Season sale! Heavy discounts!!!",
 			"message": "Invite your friends now and save a loot of money and use that money to buy some more stuff!!!",
@@ -51,6 +54,7 @@
   {
 	"campaignId": "campaign4",
 	"screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity4",
+	"type":"promotion",
 	"template": {
 			"title": "Season sale! Heavy discounts!!!",
 			"message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!",

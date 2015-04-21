@@ -84,9 +84,7 @@ public abstract class TestBaseClass {
         try {
             success.put("status", "success");
             simpleSuccessResponse.setEntity(new StringEntity(success.toString()));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (UnsupportedEncodingException|JSONException e) {
             e.printStackTrace();
         }
 

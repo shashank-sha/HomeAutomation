@@ -1,10 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.zemoso.zinteract.ZinteractSampleApp.Activity2">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.zemoso.zinteract.ZinteractSampleApp.BlankFragment">
 
     <TextView android:text="@string/hello_world"
         android:layout_width="wrap_content"
@@ -32,15 +30,6 @@
         android:layout_alignParentStart="true"
         android:onClick="sendToActivity1"
         android:clickable="true" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragment"
-        android:id="@+id/showFragmentButton"
-        android:layout_alignTop="@+id/button2to3"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:onClick="showFragment"
-        android:clickable="true" />
+
 
 </RelativeLayout>

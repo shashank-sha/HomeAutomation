@@ -3,6 +3,7 @@ package com.zemoso.zinteract.ZinteractSampleApp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -48,13 +49,14 @@ public class Activity2 extends Activity {
 
     @Override
     public void onResume(){
-        super.onResume();
+
         TextView tV = (TextView)findViewById(R.id.userSpecificText);
         String userFName = Zinteract.getUserProperty("fname","Friend");
         String userLName = Zinteract.getUserProperty("lname","");
         String message = "Hello " + userFName + " " + userLName+"!!!"+" How are you doing?";
         tV.setText(message);
         Zinteract.logEvent("view screen2");
+        super.onResume();
     }
 
     @Override
@@ -74,5 +76,11 @@ public class Activity2 extends Activity {
         Zinteract.logEvent("clicked to view screen1");
         Intent intent = new Intent(Activity2.this, MainActivity.class);
         startActivity(intent);
+    }
+
+    public void showFragment(View view) {
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        BlankFragment frag = new BlankFragment();
+        fTrans.replace(android.R.id.content,frag).commit();
     }
 }

@@ -41,7 +41,7 @@ class ScreenCapture {
     }
     public void initialize(){
         currentActivity = ZinteractActivityLifecycleCallbacks.currentActivity;
-        rootView = currentActivity.getWindow().getDecorView();
+        rootView = currentActivity.getWindow().getDecorView().getRootView();
         String packageName = currentActivity.getPackageName();
         viewsInAPage = new JSONObject();
         try {
@@ -71,7 +71,7 @@ class ScreenCapture {
     public void writeViewToFile(){
         try {
             JSONObject screenDetails = new JSONObject();
-            screenDetails.put("hierarchyAndProps",buildHierarchy(rootView));
+            screenDetails.put("hierarchyAndProps",buildHierarchy(rootView,-1));
             screenDetails.put("screenshot",retrieveSnapshotOfView(rootView));
             screenDetails.put("screenshotType","png");
             viewsInAPage.put("screenDetails",screenDetails);
@@ -81,12 +81,13 @@ class ScreenCapture {
         createNewFile();
         Zinteract.sendSnapshot(viewsInAPage);
     }
-    private JSONObject buildHierarchy(View view){
+    private JSONObject buildHierarchy(View view,int index){
         JSONObject viewHierarchy = new JSONObject();
         try {
 
             viewHierarchy.putOpt("contentDescription",view.getContentDescription());
             viewHierarchy.put("id",view.getId());
+            viewHierarchy.put("index",index);
             Class<?> viewClass = view.getClass();
             JSONArray classes = new JSONArray();
             while(viewClass!=Object.class){
@@ -102,7 +103,7 @@ class ScreenCapture {
                 ViewGroup vg = (ViewGroup)view;
                 int size = (vg).getChildCount();
                 for(int i=0; i<size; i++){
-                    childrenViews.put(buildHierarchy(vg.getChildAt(i)));
+                    childrenViews.put(buildHierarchy(vg.getChildAt(i),i));
                 }
                 viewHierarchy.put("children",childrenViews);
             }

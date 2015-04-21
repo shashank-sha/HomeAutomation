@@ -9,6 +9,8 @@
     <string name="title_activity_activity4">Activity4</string>
     <string name="title_activity_activity5">Activity5</string>
     <string name="title_activity_in_app_message">InAppMessage</string>
+    <string name="visibleTextString">Visible text</string>
+    <string name="hiddenTextString">Hidden text</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content"></string>
 
