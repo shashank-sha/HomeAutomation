@@ -9,11 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 import static android.util.Log.*;
 
@@ -185,7 +183,7 @@ public class Change {
     @Override
     public String toString() {
         String details="Activity: "+currentActivity.getClass().getCanonicalName()+"\nChangeJSON: "+change;
-        return super.toString();
+        return super.toString()+"\n"+details;
     }
 
     private class ViewElement {

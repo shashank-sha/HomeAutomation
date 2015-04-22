@@ -6,16 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import com.zemosolabs.zinteract.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
@@ -111,35 +106,11 @@ public class ScreenEditor{
         JSONObject abTestForScreen = dbHelper.getABTestForScreen(activityName);
         try {
             toSendJSONArray = abTestForScreen.getJSONObject("template").getJSONArray("changes");
-            /* jsonArray = new JSONArray(readFile());
-            for(int i=0;i<jsonArray.length();i++){
-                String obtainedActivityName = jsonArray.getJSONObject(i).getString("screenId");
-                if(obtainedActivityName.equalsIgnoreCase(activityName)){
-                    toSendJSONArray = (jsonArray.getJSONObject(i).getJSONObject("template").getJSONArray("changes"));
-                    Log.i("ScreenEditor getChanges","Changes for the Activity Found");
-                }
-            }*/
         } catch (JSONException e) {
             Log.e("ScreenEditor", e.getMessage());
         }
 
         return toSendJSONArray;
-    }
-
-    private String readFile(){
-        StringBuilder stringBuilder = null;
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(currentActivity.getResources().openRawResource(R.raw.view_change_json_request)));
-            String line;
-            stringBuilder = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-        }catch(IOException e){
-            Log.i("ScreenEditor read","Reading failed" );
-            Log.e("ScreenEditor read", e.getMessage());
-        }
-        return stringBuilder.toString();
     }
 
     public void purge(){
