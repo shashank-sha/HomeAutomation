@@ -71,7 +71,9 @@ public class ScreenEditor{
 
     private void makeChanges() {
         for(Change change:changes){
-            change.make();
+            if(change.valid) {
+                change.make();
+            }
         }
         Log.i("ScreenEditor makeChng","Made changes to the screen");
     }
@@ -113,7 +115,7 @@ public class ScreenEditor{
         return toSendJSONArray;
     }
 
-    public void purge(){
+    void purge(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
             Log.i("Remove GlobalLayoutList", "Jelly Bean or higher");

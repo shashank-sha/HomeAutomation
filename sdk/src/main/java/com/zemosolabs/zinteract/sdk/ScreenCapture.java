@@ -29,7 +29,6 @@ import java.util.List;
  */
 class ScreenCapture {
     private Activity currentActivity;
-    private Bitmap rootViewScreenshot;
     private View rootView;
     private static ScreenCapture instance;
     private JSONObject viewsInAPage;
@@ -39,7 +38,7 @@ class ScreenCapture {
     private ScreenCapture(){
 
     }
-    public void initialize(){
+    void initialize(){
         currentActivity = ZinteractActivityLifecycleCallbacks.currentActivity;
         rootView = currentActivity.getWindow().getDecorView().getRootView();
         String packageName = currentActivity.getPackageName();
@@ -61,14 +60,14 @@ class ScreenCapture {
             e.printStackTrace();
         }
     }
-    public static ScreenCapture  getInstance(){
+    static ScreenCapture  getInstance(){
         if(instance==null){
            return instance = new ScreenCapture();
         }
         return instance;
     }
 
-    public void writeViewToFile(){
+    void writeViewToFile(){
         try {
             JSONObject screenDetails = new JSONObject();
             screenDetails.put("hierarchyAndProps",buildHierarchy(rootView,-1));

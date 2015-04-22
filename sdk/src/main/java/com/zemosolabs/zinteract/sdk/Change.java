@@ -23,29 +23,32 @@ public class Change {
     private JSONObject change;
     private ArrayList<ViewElement> Hierarchy = new ArrayList<ViewElement>();
     private Activity currentActivity;
+    boolean valid=false;
     private String viewName;
-    public Change(JSONObject change,Activity activity){
+    Change(JSONObject change,Activity activity){
         this.change = change;
         this.currentActivity=activity;
     }
-    public boolean prepare(){
+    boolean prepare(){
+        valid = true;
         View rootView = currentActivity.getWindow().getDecorView().getRootView();
         updateHierarchy();
         ViewElement rootElement = Hierarchy.remove(0);
         viewName = rootElement.viewClassName;
         if(!(rootView instanceof ViewGroup)){
-            return false;
+            valid=false;
         }
         find(rootElement, (ViewGroup) rootView,rootElement.index);
         if(viewOfConcern==null){
-            return false;
+            valid=false;
         }
         if(!pathValid()){
             Log.i("Path invalid",this.viewName);
             viewOfConcern=null;
-            return false;
+            valid=false;
         }
-        return true;
+
+        return valid;
     }
 
     private boolean pathValid() {
@@ -71,7 +74,7 @@ public class Change {
         return true;
     }
 
-    public void make() {
+    void make() {
         if(viewOfConcern==null){
             Log.i("make","view of concern is null. returning without making this change");
             return;

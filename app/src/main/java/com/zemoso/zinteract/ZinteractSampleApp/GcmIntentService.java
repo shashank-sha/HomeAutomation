@@ -71,7 +71,6 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher)
         .setContentText(bundle.getString("message"));
-        //TODO: getTitle from the Bundle sent by GCM
         mBuilder.setContentTitle(bundle.getString("title"));
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
