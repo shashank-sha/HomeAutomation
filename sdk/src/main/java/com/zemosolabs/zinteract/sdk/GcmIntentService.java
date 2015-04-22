@@ -1,8 +1,7 @@
-package com.zemoso.zinteract.ZinteractSampleApp;
+package com.zemosolabs.zinteract.sdk;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +9,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.zemosolabs.zinteract.R;
+
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
@@ -68,8 +69,14 @@ public class GcmIntentService extends IntentService {
                 notificationIntent, 0);
         */
         notificationCount++;
+        Integer iconId = getResources().getIdentifier("ic_launcher","drawable","com.zemoso.zinteract.ZinteractSampleApp");
+
+        if(iconId==0){
+            iconId= R.drawable.ic_launcher;
+            Log.i("Icon for notification","Not found in the app Resources");
+        }
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_launcher)
+                new NotificationCompat.Builder(this).setSmallIcon(iconId)
         .setContentText(bundle.getString("message"));
         mBuilder.setContentTitle(bundle.getString("title"));
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

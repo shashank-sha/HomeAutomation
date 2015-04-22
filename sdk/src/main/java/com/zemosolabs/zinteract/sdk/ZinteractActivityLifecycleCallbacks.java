@@ -4,11 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by praveen on 30/01/15.

@@ -97,4 +97,5 @@ class Constants {
     static String Z_USER_PROPERTIES_LOG_URL = Z_BASE_URL+"sendUserProperties";
     static long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
+    static final String packageName = "com.zemosolabs.zinteract.sdk";
 }
