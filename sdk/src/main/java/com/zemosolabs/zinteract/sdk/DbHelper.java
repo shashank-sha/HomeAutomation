@@ -23,7 +23,7 @@ import android.util.Pair;
 class DbHelper extends SQLiteOpenHelper {
 
     private static DbHelper instance;
-    private static final String TAG = "com.zemoso.zinteract.DbHelper";
+    private static final String TAG = "com.zemoso.zint.DbHelpr";
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
@@ -402,7 +402,7 @@ class DbHelper extends SQLiteOpenHelper {
         }
         return result;
     }
-    synchronized JSONObject getABTestForScreen(String screen_id){
+    synchronized JSONObject getScreenFixesFor(String screen_id){
         JSONObject promotion = new JSONObject();
         Cursor cursor = null;
         try {
@@ -416,9 +416,9 @@ class DbHelper extends SQLiteOpenHelper {
                 promotion = new JSONObject(p);
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getABTestForScreen failed", e);
+            Log.e(TAG, "getScreenFixesFor() failed", e);
         } catch (Exception e){
-            Log.e(TAG, " getABTestForScreen falied", e);
+            Log.e(TAG, " getScreenFixesFor() falied", e);
         }
         finally {
             if (cursor != null) {

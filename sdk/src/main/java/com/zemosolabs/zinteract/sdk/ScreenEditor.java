@@ -44,7 +44,9 @@ public class ScreenEditor{
 
     void edit(){
         JSONArray changes = getChangesFor(currentActivity);
-
+        if(changes.length()==0){
+            return;
+        }
         accumulateChanges(changes);
         prepareAndMakeEdits();
         globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -105,11 +107,15 @@ public class ScreenEditor{
         String activityName = activity.getClass().getCanonicalName();
         JSONArray toSendJSONArray = new JSONArray();
         DbHelper dbHelper = DbHelper.getDatabaseHelper(currentActivity.getApplicationContext());
-        JSONObject abTestForScreen = dbHelper.getABTestForScreen(activityName);
+        JSONObject screenFix = dbHelper.getScreenFixesFor(activityName);
+        Log.i("screenFix",screenFix.toString());
+        if(screenFix.length()==0){
+            return new JSONArray();
+        }
         try {
-            toSendJSONArray = abTestForScreen.getJSONObject("template").getJSONArray("changes");
+            toSendJSONArray = screenFix.getJSONObject("fixInfo").getJSONArray("changes");
         } catch (JSONException e) {
-            Log.e("ScreenEditor", e.getMessage());
+            Log.e("ScreenEditor", e.getMessage(),e);
         }
 
         return toSendJSONArray;

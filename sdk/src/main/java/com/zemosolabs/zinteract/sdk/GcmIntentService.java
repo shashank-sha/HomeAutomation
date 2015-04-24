@@ -2,6 +2,7 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +10,13 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.zemosolabs.zinteract.R;
 
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     public static int notificationCount=0;
+    private static final String TAG = "Zint.GcmIntentService";
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -24,7 +25,7 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i("GcmIntentService","Notified of push");
+        Log.i(TAG,"Notified of push");
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
         //Log.i("log info ","GCMINTENT service --> onHandleintent");
@@ -60,25 +61,38 @@ public class GcmIntentService extends IntentService {
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(Bundle bundle) {
+        Log.i(TAG,"sendNotification() called");
+        String launcherClassName = getApplicationContext().getPackageManager()
+                .getLaunchIntentForPackage(getApplicationContext().getPackageName())
+                .getComponent().getClassName();
+        int appIconId = getApplicationInfo().icon;
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
-/*        Intent notificationIntent = new Intent(this,SplashScreen.class);
-        notificationIntent.putExtra("setFragment", "Notification");
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-        */
-        notificationCount++;
-        Integer iconId = getResources().getIdentifier("ic_launcher","drawable","com.zemoso.zinteract.ZinteractSampleApp");
-
-        if(iconId==0){
-            iconId= R.drawable.ic_launcher;
-            Log.i("Icon for notification","Not found in the app Resources");
+        Class<?> launcher = null;
+        try {
+            launcher= Class.forName(launcherClassName);  //bundle.getString("launcherClass")
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG,"Launcher Class Not Found", e);
         }
+        PendingIntent contentIntent=null;
+        if(launcher!=null){
+            Intent notificationIntent = new Intent(this,launcher);
+                notificationIntent.putExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID, bundle.getString("campaignId"));
+
+                contentIntent = PendingIntent.getActivity(this, 0,
+                        notificationIntent, 0);
+        }
+
+        notificationCount++;
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this).setSmallIcon(iconId)
+                new NotificationCompat.Builder(this).setSmallIcon(appIconId)
         .setContentText(bundle.getString("message"));
         mBuilder.setContentTitle(bundle.getString("title"));
+        mBuilder.setAutoCancel(true);
+        if(contentIntent!=null) {
+            mBuilder.setContentIntent(contentIntent);
+            Log.i(TAG,"Pending Intent added to the Notification");
+        }
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }

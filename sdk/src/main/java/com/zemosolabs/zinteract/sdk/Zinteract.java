@@ -37,6 +37,7 @@
         private static String deviceId;
         private static String googleApiProjectNumber;
 
+
         private static final DataStore dataStore = DataStore.getDataStore();
 
 
@@ -163,12 +164,11 @@
                 Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
                 return;
             }
-            if (TextUtils.isEmpty(apiKey) || apiKey == null) {
+            if (apiKey == null||TextUtils.isEmpty(apiKey) ) {
                 Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
                 return;
             }
             if (!isInitialzed) {
-
                 setContext(context.getApplicationContext());
                 setApiKey(apiKey);
                 deviceDetails = new DeviceDetails(context);
@@ -194,7 +194,6 @@
                         }
                     });
                 }
-
                 registerZinteractActivityLifecycleCallbacks();
                 isInitialzed = true;
             }
@@ -525,9 +524,26 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
-                    if(promotion.getString("type").equals("abtest")){
-                        Log.i("ABTEST","GOT ABTEST");
-                        dbHelper.addABTest(promotion.toString(),promotion.getString("campaignId"),promotion.getString("screenId"));
+                    if(promotion.getString("type").equals("screenFix")){
+                        Log.i("screenFix","Got screenFix");
+                        final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
+                        int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
+                        int appVersionFrom,appVersionTo;
+                        if(currentAppVersion!=-1) {
+                            if (promotion.has("appVersionFrom")) {
+                                appVersionFrom = promotion.getInt("appVersionFrom");
+                                if(currentAppVersion<appVersionFrom){
+                                    continue;
+                                }
+                            }
+                            if(promotion.has("appVersionTo")){
+                                appVersionTo = promotion.getInt("appVersionTo");
+                                if(currentAppVersion>appVersionTo){
+                                    continue;
+                                }
+                            }
+                            dbHelper.addABTest(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                        }
                     }else if(promotion.getString("type").equals("promotion")) {
                         Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.

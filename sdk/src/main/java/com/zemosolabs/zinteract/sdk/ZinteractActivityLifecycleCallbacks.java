@@ -4,15 +4,16 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import java.util.ArrayList;
+import android.util.Log;
+
 
 /**
  * Created by praveen on 30/01/15.
  */
 public class ZinteractActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
-    private static ArrayList<Activity> activities = new ArrayList<Activity>();
     static Activity currentActivity;
     private ScreenEditor UIEditor;
+    //private ShakeListener shakeListener;
 
     public ZinteractActivityLifecycleCallbacks() {
 
@@ -29,14 +30,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityPaused(Activity activity) {
-        if(activities.get(0)==activity){
-            activities.remove(activity);
-        }else{
-            activities.remove(0);
-        }
-
         Zinteract._endSession();
         UIEditor.purge();
+        //shakeListener.purge();
     }
 
     @Override
@@ -49,21 +45,34 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityResumed(Activity activity) {
+        if(activity.getClass().getCanonicalName().equals(activity.getPackageManager()
+                .getLaunchIntentForPackage(activity.getPackageName()).getComponent().getClassName())) {
+            if(currentActivity==null||activity!=currentActivity) {
+                String campaignId = activity.getIntent()
+                        .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
+                if (campaignId != null && !campaignId.isEmpty()) {
+                    Zinteract.updatePromotionAsSeen(campaignId);
+                    Log.i("PushNotificationViewed", campaignId);
+                }
+            }
+        }
         PackageManager pm = activity.getPackageManager();
         String name = activity.getComponentName().getClassName();
         String label = null;
         try {
             label = pm.getActivityInfo(activity.getComponentName(),0).loadLabel(pm).toString();
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
         }
         Zinteract.updateActivityDetails(label,name);
 
-        activities.add(0,activity);
         currentActivity = activity;
-
-        TripleTapListener tripleTapListener = new TripleTapListener();
-        activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
+        if(Zinteract.isDebuggingOn()) {
+            //shakeListener = ShakeListener.getInstance();
+            //shakeListener.initialize();
+            TripleTapListener tripleTapListener = new TripleTapListener();
+            activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
+        }
         Zinteract._startSession(activity);
         UIEditor = ScreenEditor.getInstance(activity);
         UIEditor.edit();
@@ -72,9 +81,4 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityStopped(Activity activity) { }
-
-    static ArrayList<Activity> getCurrentActivities(){
-        return activities;
-    }
-
 }

@@ -144,35 +144,6 @@ class ScreenCapture {
         }
         return j;
     }
-    private JSONObject writeToJSONViewPadding(View v, JSONObject j){
-        try{
-            JSONObject padding = new JSONObject();
-            padding.put("left",v.getPaddingLeft());
-            padding.put("top",v.getPaddingTop());
-            padding.put("bottom",v.getPaddingBottom());
-            padding.put("right",v.getPaddingRight());
-            j.put("padding",padding);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return j;
-    }
-
-    private JSONObject writeToJSONViewDimAndLoc(View v,JSONObject j){
-        try {
-        JSONObject dimAndLoc = new JSONObject();
-        dimAndLoc.put("left",v.getLeft());
-        dimAndLoc.put("top",v.getTop());
-        dimAndLoc.put("width",v.getWidth());
-        dimAndLoc.put("height",v.getHeight());
-        dimAndLoc.put("translationX",v.getTranslationX());
-        dimAndLoc.put("translationY",v.getTranslationY());
-        j.put("dim_and_loc",dimAndLoc);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return j;
-    }
 
     private String retrieveSnapshotOfView(View v){
         Bitmap rootViewScreenshot= null;

@@ -52,7 +52,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 1;
+    static final int Z_DB_VERSION = 2;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";
@@ -97,5 +97,5 @@ class Constants {
     static String Z_USER_PROPERTIES_LOG_URL = Z_BASE_URL+"sendUserProperties";
     static long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
-    static final String packageName = "com.zemosolabs.zinteract.sdk";
+    static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";
 }

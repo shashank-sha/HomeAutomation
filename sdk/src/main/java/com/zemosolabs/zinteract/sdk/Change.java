@@ -24,21 +24,24 @@ public class Change {
     private ArrayList<ViewElement> Hierarchy = new ArrayList<ViewElement>();
     private Activity currentActivity;
     boolean valid=false;
+    private int position;
     private String viewName;
     Change(JSONObject change,Activity activity){
         this.change = change;
         this.currentActivity=activity;
     }
     boolean prepare(){
+        position=0;
         valid = true;
         View rootView = currentActivity.getWindow().getDecorView().getRootView();
         updateHierarchy();
         ViewElement rootElement = Hierarchy.remove(0);
+        position++;
         viewName = rootElement.viewClassName;
         if(!(rootView instanceof ViewGroup)){
             valid=false;
         }
-        find(rootElement, (ViewGroup) rootView,rootElement.index);
+        find(rootElement, (ViewGroup) rootView,rootElement.index,position);
         if(viewOfConcern==null){
             valid=false;
         }
@@ -57,13 +60,16 @@ public class Change {
                 return false;
             }else{
                 ViewElement vElement = Hierarchy.remove(0);
+                position++;
                 viewName = vElement.viewClassName;
+                int pos = vElement.position;
                 if(vElement.index>=((ViewGroup)viewOfConcern).getChildCount()){
                     return false;
                 }
                 viewOfConcern = ((ViewGroup)viewOfConcern).getChildAt(vElement.index);
 
-                if(matches(vElement,viewOfConcern,vElement.index)) {
+
+                if(matches(vElement,viewOfConcern,vElement.index,pos)) {
                     pathValid();
                 }else{
                     Log.i("Path Not Valid","Look in Matches");
@@ -131,18 +137,18 @@ public class Change {
         }
     }
 
-    private void find(ViewElement rootElement, ViewGroup currentView,int index){
-        if(matches(rootElement,currentView,index)){
+    private void find(ViewElement rootElement, ViewGroup currentView,int index,int pos){
+        if(matches(rootElement,currentView,index,pos)){
             viewOfConcern = currentView;
         }
         else{
             for(int i=0;i<currentView.getChildCount();i++) {
                 View v =currentView.getChildAt(i);
-                if(matches(rootElement,v,i)){
+                if(matches(rootElement,v,i,pos)){
                     viewOfConcern = v;
                 }else{
                     if (v instanceof ViewGroup) {
-                        find(rootElement,(ViewGroup) v,i);
+                        find(rootElement,(ViewGroup) v,i,pos);
                     }else {
                         viewOfConcern = null;
                     }
@@ -150,7 +156,7 @@ public class Change {
             }
         }
     }
-    private boolean matches(ViewElement element, View view,int index){
+    private boolean matches(ViewElement element, View view,int index,int pos){
         if(!view.getClass().getCanonicalName().equalsIgnoreCase(element.viewClassName)){
             i("matchingNames",element.viewClassName+","+view.getClass().getCanonicalName());
             return false;
@@ -163,6 +169,9 @@ public class Change {
             i("matchingIndex",element.index+","+index);
             return false;
         }
+        if(pos!=position){
+            i("matchingPosition","JSON integrity check failed");
+        }
         return true;
     }
 
@@ -174,7 +183,8 @@ public class Change {
                 String className = jO.getString("viewClassName");
                 int id = jO.getInt("viewId");
                 int ix = jO.getInt("index");
-                ViewElement viewElement = new ViewElement(className,id,ix);
+                int pos = jO.getInt("position");
+                ViewElement viewElement = new ViewElement(className,id,ix,pos);
                 Hierarchy.add(viewElement);
             }
             i("Change", "Hierarchy Updated");
@@ -191,12 +201,13 @@ public class Change {
 
     private class ViewElement {
         String viewClassName;
-        int viewId,index;
+        int viewId,index,position;
 
-        ViewElement(String className, int id, int indX){
+        ViewElement(String className, int id, int indX, int pos){
             viewClassName = className;
             viewId = id;
             index = indX;
+            position = pos;
         }
     }
 }
