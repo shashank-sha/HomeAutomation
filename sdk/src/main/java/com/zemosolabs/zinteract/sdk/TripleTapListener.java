@@ -1,7 +1,6 @@
 package com.zemosolabs.zinteract.sdk;
 
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -37,9 +36,10 @@ public class TripleTapListener implements View.OnTouchListener {
             }
             if (tapCount == 2) {
                 if(Zinteract.isDebuggingOn()) {
+                    ShakeListener.getInstance().purge();
                     ScreenCapture screenCapturer = ScreenCapture.getInstance();
                     screenCapturer.initialize();
-                    screenCapturer.writeViewToFile();
+                    screenCapturer.captureAndSend();
                 }
             }
         }

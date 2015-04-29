@@ -13,7 +13,8 @@ import android.util.Log;
 public class ZinteractActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
     static Activity currentActivity;
     private ScreenEditor UIEditor;
-    //private ShakeListener shakeListener;
+    private ShakeListener shakeListener=null;
+    TripleTapListener tripleTapListener;
 
     public ZinteractActivityLifecycleCallbacks() {
 
@@ -32,7 +33,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
     public void onActivityPaused(Activity activity) {
         Zinteract._endSession();
         UIEditor.purge();
-        //shakeListener.purge();
+        if(shakeListener!=null) {
+            shakeListener.purge();
+        }
     }
 
     @Override
@@ -68,9 +71,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
         currentActivity = activity;
         if(Zinteract.isDebuggingOn()) {
-            //shakeListener = ShakeListener.getInstance();
-            //shakeListener.initialize();
-            TripleTapListener tripleTapListener = new TripleTapListener();
+            shakeListener = ShakeListener.getInstance();
+            shakeListener.initialize();
+            tripleTapListener= new TripleTapListener();
             activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
         }
         Zinteract._startSession(activity);

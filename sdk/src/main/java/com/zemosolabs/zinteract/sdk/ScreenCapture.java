@@ -60,14 +60,14 @@ class ScreenCapture {
             e.printStackTrace();
         }
     }
-    static ScreenCapture  getInstance(){
+    synchronized static ScreenCapture  getInstance(){
         if(instance==null){
            return instance = new ScreenCapture();
         }
         return instance;
     }
 
-    void writeViewToFile(){
+    void captureAndSend(){
         try {
             JSONObject screenDetails = new JSONObject();
             screenDetails.put("hierarchyAndProps",buildHierarchy(rootView,-1));
@@ -78,6 +78,7 @@ class ScreenCapture {
             e.printStackTrace();
         }
         createNewFile();
+        writeToFile(viewsInAPage.toString());
         Zinteract.sendSnapshot(viewsInAPage);
     }
     private JSONObject buildHierarchy(View view,int index){
@@ -180,7 +181,7 @@ class ScreenCapture {
                 e.printStackTrace();
             }
             byte[] bitmapBytes = baos.toByteArray();
-            base64Screenshot = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            base64Screenshot = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
             /*int screenShotDensity = rootViewScreenshot.getDensity();
             Float scale = (float)(Zinteract.deviceDetails.getScreenDensity()/screenShotDensity);*/
         }
