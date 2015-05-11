@@ -2,7 +2,11 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
@@ -78,7 +82,7 @@ class ScreenCapture {
             e.printStackTrace();
         }
         createNewFile();
-        writeToFile(viewsInAPage.toString());
+        //writeToFile(viewsInAPage.toString());
         Zinteract.sendSnapshot(viewsInAPage);
     }
     private JSONObject buildHierarchy(View view,int index){
@@ -126,8 +130,16 @@ class ScreenCapture {
                             JSONObject property = new JSONObject();
                             try {
                                 property.put("name",methodName);
-                                property.put("value",methodUnderInspection.invoke(v));
-                                property.put("type",methodUnderInspection.getReturnType().getCanonicalName());
+                                Object value = methodUnderInspection.invoke(v);
+                                if(value instanceof Drawable){
+                                    String base64BackgroundDrawable = getBase64ImageOfDrawable((Drawable)((Drawable) value).mutate());
+                                    property.put("value",base64BackgroundDrawable);
+                                    property.put("type","Base64Bitmap");
+                                   // property.put("drawableFeatures",writeToJSONDrawableProps((Drawable)value));
+                                }else {
+                                    property.put("value", methodUnderInspection.invoke(v));
+                                    property.put("type", methodUnderInspection.getReturnType().getCanonicalName());
+                                }
                             } catch (InvocationTargetException e) {
                                 property.put("name", methodName);
                                 property.put("value","Exception Thrown");
@@ -146,9 +158,59 @@ class ScreenCapture {
         return j;
     }
 
+    private JSONArray writeToJSONDrawableProps(Drawable value) {
+        JSONArray drawableProps = new JSONArray();
+        try{
+            Method[] methodsOfView = value.getClass().getMethods();
+            for(Method methodUnderInspection:methodsOfView){
+                if(methodUnderInspection.getParameterTypes().length==0){
+                    if(methodUnderInspection.getReturnType()!=Void.TYPE && methodUnderInspection.getReturnType()!=Void.class){
+                        String methodName = methodUnderInspection.getName();
+                        if(isAccessorMethod(methodName)) {
+                            JSONObject property = new JSONObject();
+                            try {
+                                property.put("name",methodName);
+                                property.put("value", methodUnderInspection.invoke(value));
+                                property.put("type", methodUnderInspection.getReturnType().getCanonicalName());
+                            } catch (InvocationTargetException e) {
+                                property.put("name", methodName);
+                                property.put("value","Exception Thrown");
+                            } catch (IllegalAccessException e) {
+                                property.put("name", methodName);
+                                property.put("value","Exception Thrown");
+                            }
+                            drawableProps.put(property);
+                        }
+                    }
+                }
+            }
+        }catch(JSONException e){
+            Log.e("ScreenCapture","Writing Drawable to json",e);
+        }
+        return drawableProps;
+    }
+
+
+    private String getBase64ImageOfDrawable(Drawable value) {
+        if(value instanceof BitmapDrawable){
+            return base64ScreenshotOf(((BitmapDrawable) value).getBitmap());
+        }
+
+        int width = !value.getBounds().isEmpty()? value.copyBounds().width(): value.getIntrinsicWidth();
+        int height = !value.getBounds().isEmpty()? value.copyBounds().height():value.getIntrinsicHeight();
+        width = (width<=0)? 3 : width;
+        height = (height<=0)? 3:height;
+        Log.i("Zinteract","Base64BmpFromDrawable "+width);
+        Log.i("Zinteract","Base64BmpFromDrawable "+height);
+        Bitmap bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        value.setBounds(0,0,canvas.getWidth(),canvas.getHeight());
+        value.draw(canvas);
+        return base64ScreenshotOf(bitmap);
+    }
+
     private String retrieveSnapshotOfView(View v){
         Bitmap rootViewScreenshot= null;
-        String base64Screenshot = "";
         try {
             Method createSnapshot = View.class.getDeclaredMethod("createSnapshot", Bitmap.Config.class, Integer.TYPE, Boolean.TYPE);
             createSnapshot.setAccessible(true);
@@ -169,12 +231,17 @@ class ScreenCapture {
                 v.setDrawingCacheEnabled(false);
             }
         }
-        if(rootViewScreenshot!=null){
 
+        return base64ScreenshotOf(rootViewScreenshot);
+    }
+
+    private String base64ScreenshotOf(Bitmap rootViewScreenshot) {
+        String base64Screenshot = "";
+
+        if(rootViewScreenshot!=null){
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
-            Bitmap bitmap = rootViewScreenshot;
-            bitmap.compress(Bitmap.CompressFormat.PNG,100,b64os);
+            rootViewScreenshot.compress(Bitmap.CompressFormat.PNG,100,b64os);
             try {
                 b64os.flush();
             } catch (IOException e) {
@@ -223,7 +290,7 @@ class ScreenCapture {
 
     void createNewFile(){
         try {
-            file = new File("/sdcard/Zinteract/viewHierarchy.txt");
+            file = new File("/sdcard/Zinteract/viewHierarchy2.txt");
             file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();

@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 
 
 public class Activity4 extends Activity implements View.OnClickListener {
-    private Float grandTotal=0.00f;
+    private Double grandTotal=0.00;
     private DecimalFormat df = new DecimalFormat("#.##");
     SharedPreferences prefs;
 
@@ -36,7 +36,7 @@ public class Activity4 extends Activity implements View.OnClickListener {
         Button removeFromCart = (Button)findViewById(R.id.buttonRemove);
         removeFromCart.setOnClickListener(this);
         prefs = getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE);
-        grandTotal = prefs.getFloat("grandTotal",0.00f);
+        grandTotal = Double.valueOf(prefs.getString("grandTotal","0.00"));
         ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
     }
 
@@ -67,12 +67,13 @@ public class Activity4 extends Activity implements View.OnClickListener {
     public void onResume(){
         super.onResume();
         Zinteract.logEvent("view screen4");
-        getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).getFloat("grandTotal",0.00f);
+        grandTotal = Double.valueOf(getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).getString("grandTotal","0.00"));
+        ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
     }
 
     @Override
     public void onPause(){
-        getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).edit().putFloat("grandTotal",grandTotal).apply();
+        getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).edit().putString("grandTotal",grandTotal.toString()).apply();
         super.onPause();
     }
 
@@ -94,24 +95,17 @@ public class Activity4 extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.buttonBuy:
-                String grandTotalString = (String)((TextView)findViewById(R.id.grandTotalValue)).getText();
-                JSONObject purchaseDetails = new JSONObject();
-                try {
-                    purchaseDetails.put("grand_total",Double.valueOf(grandTotalString));
-                } catch (JSONException e) {
-                    Log.e("Purchase","Activity 4 update of grand total failed",e);
-                }
-                Zinteract.logPurchaseCompletedEvent(purchaseDetails);
-                grandTotal = 0.00f;
+                Zinteract.logPurchaseCompletedEvent(grandTotal);
+                grandTotal = 0.00;
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 break;
             case R.id.buttonAddToCart:
-                grandTotal += (float)(Math.random()*5000);
+                grandTotal += (Math.random()*5000);
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 Zinteract.logPurchaseAttempted();
                 break;
             case R.id.buttonRemove:
-                grandTotal = 0.00f;
+                grandTotal = 0.00;
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 break;
             default:

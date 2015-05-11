@@ -5,6 +5,7 @@
     import android.app.Fragment;
     import android.app.FragmentTransaction;
     import android.content.Context;
+    import android.content.Intent;
     import android.content.SharedPreferences;
     import android.location.Location;
     import android.text.TextUtils;
@@ -193,6 +194,7 @@
                             sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(), Constants.Z_INIT_LOG_URL, true);
                         }
                     });
+                    context.startService(new Intent(context,CampaignHandlingService.class));
                 }
                 registerZinteractActivityLifecycleCallbacks();
                 isInitialzed = true;
@@ -235,7 +237,7 @@
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
                 }
             } catch (IOException ex) {
-                Log.e(TAG,"Exception :"+ex);
+                Log.e(TAG,"Exception in registerInBackground :",ex);
             }
         }
 
@@ -360,14 +362,14 @@
                             try {
                                 newNotification = (ZinteractInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
                             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                                Log.e(TAG,"Exception: "+ e);
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             }
                         }
                         else{
                             try {
                                 newNotification = (ZinteractInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
                             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                                Log.e(TAG,"Exception: "+ e);
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             }
                         }
                         newNotification.customize(context, campaignId, template);
@@ -376,7 +378,7 @@
                 });
             }
             catch (Exception e){
-                Log.e(TAG,"Exception in showProm: "+e);
+                Log.e(TAG,"Exception in showProm: ",e);
             }
 
         }
@@ -474,7 +476,7 @@
             try {
                 promotionEvent.put("campaignId",campaignId);
             } catch (JSONException e) {
-                Log.e(TAG,"Exception: "+e);
+                Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
             }
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }
@@ -510,7 +512,7 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in fetchPromotion:", e);
             }
 
             if (!fetchSuccess) {
@@ -524,33 +526,54 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
-                    if(promotion.getString("type").equals("screenFix")){
-                        Log.i("screenFix","Got screenFix");
-                        final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
-                        int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
-                        int appVersionFrom,appVersionTo;
-                        if(currentAppVersion!=-1) {
-                            if (promotion.has("appVersionFrom")) {
-                                appVersionFrom = promotion.getInt("appVersionFrom");
-                                if(currentAppVersion<appVersionFrom){
-                                    continue;
-                                }
+                    final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
+                    int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
+                    int appVersionFrom,appVersionTo;
+                    if(currentAppVersion!=-1) {
+                        if (promotion.has("appVersionFrom")) {
+                            appVersionFrom = promotion.getInt("appVersionFrom");
+                            if(currentAppVersion<appVersionFrom){
+                                continue;
                             }
-                            if(promotion.has("appVersionTo")){
-                                appVersionTo = promotion.getInt("appVersionTo");
-                                if(currentAppVersion>appVersionTo){
-                                    continue;
-                                }
-                            }
-                            dbHelper.addABTest(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                         }
-                    }else if(promotion.getString("type").equals("promotion")) {
-                        Log.i("PROMOTION","GOT PROMOTION");
+                        if(promotion.has("appVersionTo")){
+                            appVersionTo = promotion.getInt("appVersionTo");
+                            if(currentAppVersion>appVersionTo){
+                                continue;
+                            }
+                        }
+                        long timeStampNow = System.currentTimeMillis();
+                        if(promotion.has("campaignEndTime")){
+                            long campaignEndTime = promotion.getInt("campaignEndTime");
+                            if(campaignEndTime<timeStampNow){
+                                continue;
+                            }
+                        }
+                        if(promotion.getString("type").equals("screenFix")){
+                            Log.i("screenFix","Got screenFix");
+                            dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                        }else if(promotion.getString("type").equals("promotion")) {
+                            Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
-                        if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
-                        } else {
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                            if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
+                                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                            } else {
+                                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                            }
+                        }else if(promotion.getString("type").equals("GEO")){
+                            dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
+                                    promotion.getInt("campaignStartTime"),promotion.getInt("campaignEndTime"),
+                                    promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow"));
+                            context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                    .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
+                        }else if(promotion.getString("type").equals("SIMPLE EVENT")){
+                            dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
+                                    promotion.getInt("campaignStartTime"), promotion.getInt("campaignEndTime"),
+                                    promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow"));
+                            context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                    .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
+                        }else if(promotion.getString("type").equals("IBEACON")){
+
                         }
                     }
                 }
@@ -561,7 +584,7 @@
                 }
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in addPromotion:", e);
             }
         }
 
@@ -749,7 +772,7 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in updateUserProps:", e);
             }
             updatingUserPropsCurrently.set(false);
 
@@ -928,7 +951,7 @@
                 HttpHelper.doPost(url,postParams);
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in sendEvent:", e);
             }
         }
 
@@ -996,7 +1019,7 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in checkAndUpdateDataStore:", e);
             }
 
             if (!syncSuccess) {
@@ -1018,7 +1041,7 @@
                 dataStore.setData(context,values);
                 dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in updateDataStore:", e);
             }
             if(Zinteract.isDebuggingOn()){
                 Log.d(TAG,"DataStore update done, we have latest version now.");
@@ -1075,7 +1098,7 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in makeEventUploadRequest:", e);
             }
 
             if (!uploadSuccess) {
@@ -1296,7 +1319,7 @@
                 HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception:", e);
+                Log.e(TAG, "Exception in setUserOnServer:", e);
             }
         }
 
@@ -1378,5 +1401,64 @@
             editor.putInt(Constants.Z_PREFKEY_APP_VERSION, deviceDetails.getAppVersionCode());
             editor.putLong(Constants.Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME,System.currentTimeMillis());
             editor.commit();
+        }
+
+        public static void logPurchaseCompletedEvent(Double grandTotal) {
+            JSONObject purchaseDetails = new JSONObject();
+            try {
+                purchaseDetails.put("grand_total",grandTotal);
+            } catch (JSONException e) {
+                Log.e(TAG,"purchaseDetails",e);
+            }
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT, purchaseDetails);
+        }
+        public static void logPurchaseCompletedEvent(Double grandTotal,String currency) {
+            JSONObject purchaseDetails = new JSONObject();
+            try {
+                purchaseDetails.put("grand_total",grandTotal);
+                purchaseDetails.put("currency",currency);
+            } catch (JSONException e) {
+                Log.e(TAG,"purchaseDetails",e);
+            }
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+        }
+        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax) {
+            JSONObject purchaseDetails = new JSONObject();
+            try {
+                purchaseDetails.put("grand_total",grandTotal);
+                purchaseDetails.put("total",total);
+                purchaseDetails.put("shipping",shipping);
+                purchaseDetails.put("tax",tax);
+            } catch (JSONException e) {
+                Log.e(TAG,"purchaseDetails",e);
+            }
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+        }
+        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double tax) {
+            JSONObject purchaseDetails = new JSONObject();
+            try {
+                purchaseDetails.put("grand_total",grandTotal);
+                purchaseDetails.put("total",total);
+                purchaseDetails.put("tax",tax);
+            } catch (JSONException e) {
+                Log.e(TAG,"purchaseDetails",e);
+            }
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+        }
+        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax,String currency) {
+            JSONObject purchaseDetails = new JSONObject();
+            try {
+                purchaseDetails.put("grand_total",grandTotal);
+                purchaseDetails.put("total",total);
+                purchaseDetails.put("shipping",shipping);
+                purchaseDetails.put("tax",tax);
+                purchaseDetails.put("currency",currency);
+            } catch (JSONException e) {
+                Log.e(TAG,"purchaseDetails",e);
+            }
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+        }
+        public static void logPurchaseAttempted() {
+            logEvent(Constants.Z_PURCHASE_ATTEMPTED_EVENT);
         }
     }
