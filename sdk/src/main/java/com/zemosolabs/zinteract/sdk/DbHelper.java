@@ -27,7 +27,9 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
-    private static final String A_B_TEST_TABLE_NAME = Constants.Z_DB_A_B_TEST_TABLE_NAME;
+    private static final String GEO_CAMPAIGN_TABLE_NAME = Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME;
+    private static final String SCREEN_FIX_TABLE_NAME = Constants.Z_DB_SCREEN_FIX_TABLE_NAME;
+    private static final String SIMPLE_EVENT_CAMPAIGN_TABLE_NAME = Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME;
 
     private static final String ID_FIELD = Constants.Z_DB_EVENT_ID_FIELD_NAME;
     private static final String EVENT_FIELD = Constants.Z_DB_EVENT_EVENTS_FIELD_NAME;
@@ -46,18 +48,34 @@ class DbHelper extends SQLiteOpenHelper {
             + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME + " ("
             + Constants.Z_DB_USER_PROPERTIES_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, propname TEXT, propvalue TEXT, synched INTEGER DEFAULT 0 );";
 
+    private static final String CREATE_GEOCAMPAIGNS_TABLE = "CREATE TABLE IF NOT EXISTS "
+            +Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME + " ("
+            +Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, notBefore INTEGER DEFAULT 0, notAfter INTEGER DEFAULT 0, numberOfTimesToBeShown INTEGER DEFAULT -1, inService INTEGER DEFAULT 0,"
+            +Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME + " TEXT);";
+
+    private static final String CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE = "CREATE TABLE IF NOT EXISTS "
+            +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME + " ("
+            +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, notBefore INTEGER DEFAULT 0, notAfter INTEGER DEFAULT 0, numberOfTimesToBeShown INTEGER DEFAULT -1, inService INTEGER DEFAULT 0,"
+            +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME + " TEXT);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS = "CREATE UNIQUE INDEX simpleEventcampaign_id_idx" +
+            " on "+ SIMPLE_EVENT_CAMPAIGN_TABLE_NAME+" (campaign_id);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS = "CREATE UNIQUE INDEX geocampaign_id_idx" +
+            " on "+ GEO_CAMPAIGN_TABLE_NAME+" (campaign_id);";
+
     private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID = "CREATE UNIQUE INDEX campaign_id_idx" +
             " on "+ PROMOTION_TABLE_NAME+" (campaign_id);";
 
     private static final String CREATE_UNIQUE_INDEX_ON_PROPNAME = "CREATE UNIQUE INDEX propname_idx" +
             " on "+ Constants.Z_DB_USER_PROPERTIES_TABLE_NAME+" (propname);";
 
-    private static final String CREATE_ABTEST_TABLE = "CREATE TABLE IF NOT EXISTS "
-            +A_B_TEST_TABLE_NAME + "(" + Constants.Z_DB_A_B_TEST_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, screen_id TEXT, "
-            +Constants.Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME + " MEDIUMTEXT);";
+    private static final String CREATE_SCREEN_FIX_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + SCREEN_FIX_TABLE_NAME + "(" + Constants.Z_DB_SCREEN_FIX_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, screen_id TEXT, "
+            +Constants.Z_DB_SCREENFIX_PROMOTION_FIELD_NAME + " MEDIUMTEXT);";
 
     private static final String CREATE_UNIQUE_INDEX_ON_SCREEN_ID = "CREATE UNIQUE INDEX screen_idx" +
-            " on "+ Constants.Z_DB_A_B_TEST_TABLE_NAME+" (screen_id);";
+            " on "+ Constants.Z_DB_SCREEN_FIX_TABLE_NAME +" (screen_id);";
 
     private File file;
 
@@ -81,10 +99,14 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
-        db.execSQL(CREATE_ABTEST_TABLE);
+        db.execSQL(CREATE_SCREEN_FIX_TABLE);
+        db.execSQL(CREATE_GEOCAMPAIGNS_TABLE);
+        db.execSQL(CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
     }
 
     @Override
@@ -92,14 +114,18 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PROMOTION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + A_B_TEST_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + SCREEN_FIX_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
-        db.execSQL(CREATE_ABTEST_TABLE);
+        db.execSQL(CREATE_SCREEN_FIX_TABLE);
+        db.execSQL(CREATE_GEOCAMPAIGNS_TABLE);
+        db.execSQL(CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
     }
 
 
@@ -379,16 +405,16 @@ class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    synchronized long addABTest(String change, String campaign_id, String screen_id) {
+    synchronized long addScreenFix(String change, String campaign_id, String screen_id) {
         long result = -1;
         try {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(Constants.Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME, change);
+            contentValues.put(Constants.Z_DB_SCREENFIX_PROMOTION_FIELD_NAME, change);
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
 
-            result = db.insertWithOnConflict(A_B_TEST_TABLE_NAME, null, contentValues,5);
+            result = db.insertWithOnConflict(SCREEN_FIX_TABLE_NAME, null, contentValues,5);
             if (result == -1) {
                 Log.w(TAG, "Insert failed");
             }
@@ -402,13 +428,14 @@ class DbHelper extends SQLiteOpenHelper {
         }
         return result;
     }
+
     synchronized JSONObject getScreenFixesFor(String screen_id){
         JSONObject promotion = new JSONObject();
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-             cursor = db.query(A_B_TEST_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
-                    null, Constants.Z_DB_A_B_TEST_ID_FIELD_NAME + " DESC", "1");
+             cursor = db.query(SCREEN_FIX_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
+                    null, Constants.Z_DB_SCREEN_FIX_ID_FIELD_NAME + " DESC", "1");
 
             while (cursor.moveToNext()) {
                 String p = cursor.getString(3);
@@ -427,5 +454,115 @@ class DbHelper extends SQLiteOpenHelper {
             close();
         }
         return promotion;
+    }
+
+    synchronized long addGeoCampaign(String promotion, String campaign_id, long notBefore,long notAfter, int numberOfTimes) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
+            contentValues.put("campaign_id", campaign_id);
+            contentValues.put("notBefore", notBefore);
+            contentValues.put("notAfter", notAfter);
+            contentValues.put("numberOfTimesToBeShown",numberOfTimes);
+
+            result = db.insertWithOnConflict(GEO_CAMPAIGN_TABLE_NAME, null, contentValues,5);
+            if (result == -1) {
+                Log.w(TAG, "Insert failed");
+            }
+
+        } catch (SQLiteException e) {
+            Log.e(TAG, "addPromotion failed", e);
+            // Not much we can do, just start fresh
+            delete();
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    synchronized JSONArray getGeoFenceCampaigns(){
+        JSONArray promotion = new JSONArray();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String[] columnArray = new String[]{Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME,Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME};
+            cursor = db.query(GEO_CAMPAIGN_TABLE_NAME,columnArray,null, null, null,
+                    null, Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " DESC");
+
+            while (cursor.moveToNext()) {
+                String rowId = cursor.getString(0);
+                String p = cursor.getString(1);
+
+                promotion.put(new JSONObject(p).put("rowIdInTable",rowId));
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getGeoFenceCampaigns() failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getGeoFenceCampaigns() failed", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return promotion;
+    }
+
+    synchronized JSONArray getSimpleEventCampaigns(){
+        JSONArray promotion = new JSONArray();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String[] columnArray = new String[]{Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME,Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME};
+            cursor = db.query(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME,columnArray,null, null, null,
+                    null, Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " DESC");
+
+            while (cursor.moveToNext()) {
+                String rowId = cursor.getString(0);
+                String p = cursor.getString(1);
+
+
+                promotion.put(new JSONObject(p).put("rowIdInTable",rowId));
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "getSimpleEventCampaigns() failed", e);
+        } catch (Exception e){
+            Log.e(TAG, " getSimpleEventCampaigns() failed", e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return promotion;
+    }
+
+    synchronized long addSimpleEventCampaign(String promotion, String campaign_id, long notBefore,long notAfter, int numberOfTimes) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
+            contentValues.put("campaign_id", campaign_id);
+            contentValues.put("notBefore", notBefore);
+            contentValues.put("notAfter", notAfter);
+            contentValues.put("numberOfTimesToBeShown",numberOfTimes);
+
+            result = db.insertWithOnConflict(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, null, contentValues,5);
+            if (result == -1) {
+                Log.w(TAG, "Insert failed");
+            }
+
+        } catch (SQLiteException e) {
+            Log.e(TAG, "addPromotion failed", e);
+            delete();
+        } finally {
+            close();
+        }
+        return result;
     }
 }

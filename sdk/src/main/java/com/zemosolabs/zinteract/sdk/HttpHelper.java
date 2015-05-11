@@ -42,12 +42,12 @@ public class HttpHelper {
 
         postParams = addRequiredParams(postParams);
 
-        if(Zinteract.isDebuggingOn()){
+        /*if(Zinteract.isDebuggingOn()){
             Log.d(TAG, "Post parameters are: " + postParams.toString());
             if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
                 ScreenCapture.getInstance().writeToFile(postParams.toString());
             }
-        }
+        }*/
 
         HttpResponse response;
         String stringResponse = null;

@@ -87,8 +87,7 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this).setSmallIcon(appIconId)
         .setContentText(bundle.getString("message"));
-        mBuilder.setContentTitle(bundle.getString("title"));
-        mBuilder.setAutoCancel(true);
+        mBuilder.setContentTitle(bundle.getString("title")).setAutoCancel(true);
         if(contentIntent!=null) {
             mBuilder.setContentIntent(contentIntent);
             Log.i(TAG,"Pending Intent added to the Notification");

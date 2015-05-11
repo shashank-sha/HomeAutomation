@@ -27,7 +27,9 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) { }
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        //activity.getIntent()
+    }
 
     @Override
     public void onActivityPaused(Activity activity) {

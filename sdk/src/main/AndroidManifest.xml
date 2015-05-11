@@ -1,16 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zemosolabs.zinteract">
+    package="com.zemosolabs.zinteract" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" /><!--necessary only if if the device is running a version lower than Android 4.0.4 -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- necessary only if if the device is running a version lower than Android 4.0.4 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name" >
+        <service android:name=".sdk.GcmIntentService" />
+        <service
+            android:name=".sdk.GeofenceTransitionsIntentService"
+            android:exported="false" >
+        </service>
 
-    <application android:allowBackup="true" android:label="@string/app_name">
-        <service android:name="com.zemosolabs.zinteract.sdk.GcmIntentService" />
+        <receiver
+            android:name=".sdk.MyGeofenceRelatedReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.location.MODE_CHANGED" />
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".sdk.CampaignHandlingService"
+            android:enabled="true"
+            android:permission=""
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

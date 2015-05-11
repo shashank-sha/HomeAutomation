@@ -52,7 +52,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 2;
+    static final int Z_DB_VERSION = 3;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";
@@ -61,13 +61,23 @@ class Constants {
     static final String Z_DB_PROMOTION_ID_FIELD_NAME = "id";
     static final String Z_DB_PROMOTION_PROMOTION_FIELD_NAME = "promotion";
 
-    static final String Z_DB_A_B_TEST_TABLE_NAME="abtest";
-    static final String Z_DB_A_B_TEST_ID_FIELD_NAME = "id";
-    static final String Z_DB_A_B_TEST_A_B_TESTS_FIELD_NAME = "changes";
+    static final String Z_DB_SCREEN_FIX_TABLE_NAME ="screenFix";
+    static final String Z_DB_SCREEN_FIX_ID_FIELD_NAME = "id";
+    static final String Z_DB_SCREENFIX_PROMOTION_FIELD_NAME = "changes";
+
+    static final String Z_DB_GEO_CAMPAIGNS_TABLE_NAME = "geoCampaigns" ;
+    static final String Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME = "id";
+    static final String Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME = "geoPromotion";
+
+    static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME = "simpleEventCampaigns" ;
+    static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME = "id";
+    static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME = "simpleEventPromotion";
 
     static final String Z_DB_USER_PROPERTIES_TABLE_NAME = "userproperties";
     static final String Z_DB_USER_PROPERTIES_ID_FIELD_NAME = "id";
 
+    static final String Z_PURCHASE_COMPLETED_EVENT = "zmobile.purchase_completed";
+    static final String Z_PURCHASE_ATTEMPTED_EVENT = "zmobile.purchase_attempt_start";
 
     //Events related
     static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
@@ -98,4 +108,16 @@ class Constants {
     static long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
     static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";
+
+    static final String Z_CAMPAIGN_TYPE_GEOCAMPAIGN = "GEO";
+    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE EVENT";
+    static final String Z_CAMPAIGN_TYPE_SCREEN_FIX_CAMPAIGN = "screenFix";
+    static final String Z_CAMPAIGN_TYPE_BEACON_CAMPAIGN = "IBEACON";
+    static final String Z_CAMPAING_TYPE_PROMOTION_CAMPAIGN = "promotion";
+
+    static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS = Z_NAMESPACE+".syncDatabaseToLiveCampaigns";
+    static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS = Z_NAMESPACE+".handleGeofenceTriggers";
+    static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS = Z_NAMESPACE+".handleSimpleEventTriggers";
+
+    static final String Z_INTENT_EXTRA_DETAILS_FOR_LOGGING = Z_NAMESPACE+".extraDetailsForLogging";
 }

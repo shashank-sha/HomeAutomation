@@ -65,6 +65,7 @@
         private static boolean isInitialzed = false;
         private static Worker logWorker = new Worker("logWorker");
         private static Worker httpWorker = new Worker("httpWorker");
+        private static Worker campaignWorker = new Worker("campaignWorker");
 
 
         private static String currentActivityName;
@@ -73,6 +74,7 @@
         static {
             logWorker.start();
             httpWorker.start();
+            campaignWorker.start();
         }
 
         private static ZinteractInAppNotification customDialogFragment = null;
@@ -1220,6 +1222,15 @@
                 @Override
                 public void run() {
                     logEvent(eventType, eventProperties, apiProperties, timestamp, checkSession);
+                }
+            });
+            campaignWorker.post(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intentToStartCampaignHandler = new Intent(context,CampaignHandlingService.class);
+                    intentToStartCampaignHandler.putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS);
+                    intentToStartCampaignHandler.putExtra("eventType",eventType);
+                    context.startService(intentToStartCampaignHandler);
                 }
             });
         }
