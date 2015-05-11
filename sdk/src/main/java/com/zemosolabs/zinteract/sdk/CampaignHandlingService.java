@@ -48,13 +48,14 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        listOfGeofences = new ArrayList<>();
+
         if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)){
             final String type = intent.getStringExtra("type");
             fetcher.post(new Runnable(){
                 @Override
                 public void run() {
                     if(type!=null) {
+                        listOfGeofences = new ArrayList<>();
                         fetchNewCampaigns(type);
                         registerGeofences();
                     }
@@ -147,7 +148,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
             for(int i = 0; i < geofencesData.length(); i++){
                 JSONObject currentGeofenceData = (JSONObject)geofencesData.get(i);
                 Geofence.Builder geofenceBuilder = new Geofence.Builder()
-                        .setRequestId(campaignId + currentGeofenceData.getString("geofenceId"))
+                        .setRequestId(campaignId + "_" + currentGeofenceData.getString("geofenceId"))
                         .setCircularRegion(
                                 currentGeofenceData.getDouble("latitude"),
                                 currentGeofenceData.getDouble("longitude"),
