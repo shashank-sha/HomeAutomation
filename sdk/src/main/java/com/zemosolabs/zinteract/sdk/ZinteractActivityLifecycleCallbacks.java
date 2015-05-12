@@ -2,9 +2,13 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -28,7 +32,34 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        //activity.getIntent()
+        Intent startingIntent = activity.getIntent();
+        if(startingIntent.hasExtra(Constants.Z_EVENT_TYPE)){
+            long timeStampNow = System.currentTimeMillis();
+            if(startingIntent.getStringExtra(Constants.Z_EVENT_TYPE).equals(Constants.Z_CAMPAIGN_VIEWED_EVENT)){
+                String campaignId = startingIntent.getStringExtra("campaignId");
+                if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
+                    String geofenceId = startingIntent.getStringExtra("geofenceId");
+                    DbHelper.getDatabaseHelper(activity).updateGeoCampaign(campaignId,timeStampNow);
+                    JSONObject properties = new JSONObject();
+                    try {
+                        properties.put("campaignId",campaignId);
+                        properties.put("geofenceId",geofenceId);
+                    } catch (JSONException e) {
+                        Log.e("CAMPAIGN VIEWED LOG","GeoNotification failed",e);
+                    }
+                    Zinteract.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT,properties);
+                }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
+                    DbHelper.getDatabaseHelper(activity).updateSimpleEventCampaign(campaignId,timeStampNow);
+                    JSONObject properties = new JSONObject();
+                    try {
+                        properties.put("campaignId",campaignId);
+                    } catch (JSONException e) {
+                        Log.e("CAMPAIGN VIEWED LOG","SimpleEvent Notification failed",e);
+                    }
+                    Zinteract.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT,properties);
+                }
+            }
+        }
     }
 
     @Override

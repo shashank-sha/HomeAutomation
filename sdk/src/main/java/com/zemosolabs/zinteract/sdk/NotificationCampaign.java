@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,8 +22,10 @@ abstract class NotificationCampaign {
     protected NotificationManager notifier;
     protected JSONObject template;
     protected int notificationId;
+    protected int numberOfTimesToShow;
 
-    protected NotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId, String campaignType, JSONObject template, int notificationId){
+    protected NotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
+                                   String campaignType, JSONObject template, int numberOfTimesToShow, int notificationId){
         this.campaignId = campaignId;
         this.campaignType= campaignType;
         this.notAfter = notAfter;
@@ -30,9 +33,14 @@ abstract class NotificationCampaign {
         this.uniqueId = uniqueId;
         this.template = template;
         this.notificationId = notificationId;
+        this.numberOfTimesToShow = numberOfTimesToShow;
     }
 
     void show(Context context,String details){
+        if(System.currentTimeMillis()<notBefore){
+            Log.i("NotificationCampaign", "not yet to be shown");
+            return;
+        }
         notifier = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         int appIconId = context.getApplicationInfo().icon;
         String title=null,message=null;
@@ -44,7 +52,7 @@ abstract class NotificationCampaign {
         }
         if(title!=null&&message!=null) {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context).setSmallIcon(appIconId)
-                    .setContentTitle(title).setContentText(message);
+                    .setContentTitle(title).setContentText(message).setAutoCancel(true);
             Intent launchIntent = context.getApplicationContext().getPackageManager().getLaunchIntentForPackage(context.getPackageName());
             if(launchIntent!=null){
                 launchIntent = addExtrasToIntent(launchIntent,details);
@@ -57,4 +65,13 @@ abstract class NotificationCampaign {
 
     abstract protected Intent addExtrasToIntent(Intent intent, String details);
 
+    public boolean valid(long timeStamp) {
+        if(timeStamp>notAfter) {
+            return false;
+        }
+        if(numberOfTimesToShow==0){
+            return false;
+        }
+        return true;
+    }
 }

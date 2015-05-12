@@ -9,19 +9,16 @@ import org.json.JSONObject;
  */
 public class SimpleEventNotificationCampaign extends NotificationCampaign {
 
-    protected SimpleEventNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId, String campaignType, JSONObject template, int notificationId) {
-        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template, notificationId);
+    protected SimpleEventNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
+                                              String campaignType, JSONObject template, int numberOfTimesToShow, int notificationId) {
+        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template, numberOfTimesToShow,notificationId);
     }
 
     @Override
-    protected Intent addExtrasToIntent(Intent launchIntent, String details) {
-        String campaignId = details;
-        String[] detailsForActivity = new String[4];
-        detailsForActivity[0] = "eventName";
-        detailsForActivity[1] = "Notification Viewed";
-        detailsForActivity[2] = "campaignId";
-        detailsForActivity[3] = campaignId;
-        launchIntent.putExtra(Constants.Z_INTENT_EXTRA_DETAILS_FOR_LOGGING,detailsForActivity);
+    protected Intent addExtrasToIntent(Intent launchIntent,String details) {
+        launchIntent.putExtra("campaignId",campaignId);
+        launchIntent.putExtra(Constants.Z_CAMPAIGN_TYPE,Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN);
+        launchIntent.putExtra(Constants.Z_EVENT_TYPE,Constants.Z_CAMPAIGN_VIEWED_EVENT);
         return launchIntent;
     }
 }

@@ -8,22 +8,19 @@ import org.json.JSONObject;
  */
 class GeoNotificationCampaign extends NotificationCampaign {
 
-    protected GeoNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId, String campaignType, JSONObject template, int notificationId) {
-        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template,notificationId);
+    protected GeoNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
+                                      String campaignType, JSONObject template,int numberOfTimesToShow, int notificationId) {
+        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template, numberOfTimesToShow, notificationId);
     }
 
     protected Intent addExtrasToIntent(Intent launchIntent,String details) {
-        String[] requestId = details.split("_");
+        String[] requestId = details.split("_",2);
         String campaignId = requestId[0];
         String geoFenceId = requestId[1];
-        String[] detailsForActivity = new String[6];
-        detailsForActivity[0] = "eventName";
-        detailsForActivity[1] = "Notification Viewed";
-        detailsForActivity[2] = "campaignId";
-        detailsForActivity[3] = campaignId;
-        detailsForActivity[4] = "geofenceId";
-        detailsForActivity[5] = geoFenceId;
-        launchIntent.putExtra(Constants.Z_INTENT_EXTRA_DETAILS_FOR_LOGGING,detailsForActivity);
+        launchIntent.putExtra("campaignId",campaignId);
+        launchIntent.putExtra("geofenceId",geoFenceId);
+        launchIntent.putExtra(Constants.Z_CAMPAIGN_TYPE,Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN);
+        launchIntent.putExtra(Constants.Z_EVENT_TYPE,Constants.Z_CAMPAIGN_VIEWED_EVENT);
         return launchIntent;
     }
 }

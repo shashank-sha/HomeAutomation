@@ -3,9 +3,11 @@ package com.zemosolabs.zinteract.sdk;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -20,14 +22,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CampaignHandlingService extends Service implements ResultCallback<Status> {
-    private static final String TAG = "Zint.CampaignHandlingService";
+public class CampaignHandlingService extends Service implements ResultCallback<Status>,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
+    private static final String TAG = "Zint.CampaignHandler";
     private static Worker fetcher = new Worker("campaignFetcher");
     private static Worker triggerHandler = new Worker("campaignTriggerHandler");
     private static HashMap<String,NotificationCampaign> liveCampaigns = new HashMap<>();
     private static HashMap<String,String> idsMappedToEventName = new HashMap<>();
     private static int notificationId = 0;
     ArrayList<Geofence> listOfGeofences;
+    GoogleApiClient mGoogleApiClient;
     PendingIntent pendingIntentForGeofence = null;
 
     DbHelper dbHelper;
@@ -48,8 +51,9 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        Log.i(TAG,"CampaignHandler started");
         if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)){
+            Log.i(TAG,"UPDATING LIVE CAMPAIGNS");
             final String type = intent.getStringExtra("type");
             fetcher.post(new Runnable(){
                 @Override
@@ -62,6 +66,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                 }
             });
         }else if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS)){
+            Log.i(TAG,"HANDLING GEO TRIGGERS");
             final String requestId = intent.getStringExtra("reqId");
             triggerHandler.post(new Runnable(){
                 @Override
@@ -72,12 +77,14 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                 }
             });
         }else if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS)){
+            Log.i(TAG,"HANDLING SIMPLE EVENT TRIGGERS");
             final String eventName = intent.getStringExtra("eventType");
             triggerHandler.post(new Runnable(){
                 @Override
                 public void run() {
                     if(eventName!=null){
                         handleSimpleEventTrigger(eventName);
+                        Log.i(TAG,"simple event trigger occured"+ eventName);
                     }
                 }
             });
@@ -85,20 +92,35 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
         return START_STICKY;
     }
 
-    private void handleSimpleEventTrigger(String eventName) {
-        if(idsMappedToEventName.containsKey(eventName)){
-            String campaignId = idsMappedToEventName.get(eventName);
+    private void handleSimpleEventTrigger(String eventType) {
+        if(idsMappedToEventName.containsKey(eventType)){
+            Log.i(TAG,"id Mapping to EventName working fine");
+            String campaignId = idsMappedToEventName.get(eventType);
             if(liveCampaigns.containsKey(campaignId)){
-                liveCampaigns.get(campaignId).show(this,campaignId);
+                Log.i(TAG,"liveCampaign contains the key");
+                long timeStamp = System.currentTimeMillis();
+                if(liveCampaigns.get(campaignId).valid(timeStamp)) {
+                    liveCampaigns.get(campaignId).show(this, campaignId);
+                }else{
+                    liveCampaigns.remove(campaignId);
+                    dbHelper.removeSimpleEventCampaign(campaignId);
+                }
             }
         }
+        Log.i(TAG,"eventType: " +eventType);
     }
 
     private void handleGeofenceTrigger(String requestId) {
         String[] reqId = requestId.split("_");
         String campaignId = reqId[0];
         if(liveCampaigns.containsKey(campaignId)){
-            liveCampaigns.get(campaignId).show(this,requestId);
+            long timeStamp = System.currentTimeMillis();
+            if(liveCampaigns.get(campaignId).valid(timeStamp)) {
+                liveCampaigns.get(campaignId).show(this, requestId);
+            }else{
+                liveCampaigns.remove(campaignId);
+                dbHelper.removeGeoCampaign(campaignId);
+            }
         }
     }
 
@@ -109,6 +131,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
             addNewCampaignsIn(geoCampaigns);
         }else if(type.equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
             JSONArray simpleEventCampaigns = dbHelper.getSimpleEventCampaigns();
+            Log.i(TAG,"fetched Simple event campaigns from database:"+simpleEventCampaigns.toString());
             addNewCampaignsIn(simpleEventCampaigns);
         }
     }
@@ -117,24 +140,29 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
         for(int i=0;i<campaignsInDb.length();i++){
             try {
                 JSONObject currentCampaign = campaignsInDb.getJSONObject(i);
+                Log.i(TAG,currentCampaign.toString());
                 if(currentCampaign.getString("type").equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
+                    Log.i(TAG,"Simple event campaign detected while adding new Campaigns");
                     String campaignId = currentCampaign.getString("campaignId");
                     String eventName = currentCampaign.getJSONObject("simple_event").getString("eventName");
+                    int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
                     idsMappedToEventName.put(eventName,campaignId);
                     SimpleEventNotificationCampaign simpleEventNotificationCampaign = new SimpleEventNotificationCampaign(campaignId,
-                            currentCampaign.getInt("notBefore"),currentCampaign.getInt("notAfter"),currentCampaign.getInt("rowIdInTable"),
-                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),notificationId());
+                            currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
+                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
                     liveCampaigns.put(campaignId,simpleEventNotificationCampaign);
                 }else if(currentCampaign.getString("type").equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
                     String campaignId = currentCampaign.getString("campaignId");
+                    int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
                     GeoNotificationCampaign geoNotificationCampaign = new GeoNotificationCampaign(campaignId,
-                            currentCampaign.getInt("notBefore"),currentCampaign.getInt("notAfter"),currentCampaign.getInt("rowIdInTable"),
-                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),notificationId());
+                            currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
+                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
                     createListOfGeofences(currentCampaign);
                     liveCampaigns.put(campaignId,geoNotificationCampaign);
                 }
+                Log.i(TAG,idsMappedToEventName.keySet().toString());
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(TAG,"jsonException",e);
             }
 
         }
@@ -180,12 +208,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     }
 
     private void registerGeofences() {
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).build();
-        LocationServices.GeofencingApi.addGeofences(
-                mGoogleApiClient,
-                getGeofencingRequest(),
-                getGeofencePendingIntent()
-        ).setResultCallback(this);
+       mGoogleApiClient  = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
     }
 
     private GeofencingRequest getGeofencingRequest() {
@@ -220,5 +243,24 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
         }else{
             Log.e(TAG,"Geofences failed. Check on googleApiClient. Implement callbacks maybe");
         }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        LocationServices.GeofencingApi.addGeofences(
+                mGoogleApiClient,
+                getGeofencingRequest(),
+                getGeofencePendingIntent()
+        ).setResultCallback(this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG,"connection failed on googleApiClient:"+connectionResult.getErrorCode());
     }
 }

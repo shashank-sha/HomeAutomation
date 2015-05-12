@@ -52,7 +52,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 3;
+    static final int Z_DB_VERSION = 4;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";
@@ -110,7 +110,7 @@ class Constants {
     static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";
 
     static final String Z_CAMPAIGN_TYPE_GEOCAMPAIGN = "GEO";
-    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE EVENT";
+    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE_EVENT";
     static final String Z_CAMPAIGN_TYPE_SCREEN_FIX_CAMPAIGN = "screenFix";
     static final String Z_CAMPAIGN_TYPE_BEACON_CAMPAIGN = "IBEACON";
     static final String Z_CAMPAING_TYPE_PROMOTION_CAMPAIGN = "promotion";
@@ -119,5 +119,6 @@ class Constants {
     static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS = Z_NAMESPACE+".handleGeofenceTriggers";
     static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS = Z_NAMESPACE+".handleSimpleEventTriggers";
 
-    static final String Z_INTENT_EXTRA_DETAILS_FOR_LOGGING = Z_NAMESPACE+".extraDetailsForLogging";
+    public static final String Z_EVENT_TYPE = Z_NAMESPACE+".eventType";
+    public static final String Z_CAMPAIGN_TYPE = Z_NAMESPACE+".campaignType" ;
 }

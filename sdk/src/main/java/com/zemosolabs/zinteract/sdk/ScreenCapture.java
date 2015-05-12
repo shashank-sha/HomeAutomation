@@ -290,7 +290,7 @@ class ScreenCapture {
 
     void createNewFile(){
         try {
-            file = new File("/sdcard/Zinteract/viewHierarchy2.txt");
+            file = new File("/sdcard/Zinteract/fetchPromoJSONReceived.txt");
             file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();

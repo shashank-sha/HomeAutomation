@@ -196,7 +196,6 @@
                             sendEventToServer(Constants.Z_INIT_EVENT, System.currentTimeMillis(), Constants.Z_INIT_LOG_URL, true);
                         }
                     });
-                    context.startService(new Intent(context,CampaignHandlingService.class));
                 }
                 registerZinteractActivityLifecycleCallbacks();
                 isInitialzed = true;
@@ -532,22 +531,26 @@
                     int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
                     int appVersionFrom,appVersionTo;
                     if(currentAppVersion!=-1) {
+                        Log.i(TAG,Integer.valueOf(currentAppVersion).toString());
                         if (promotion.has("appVersionFrom")) {
                             appVersionFrom = promotion.getInt("appVersionFrom");
                             if(currentAppVersion<appVersionFrom){
+                                Log.i(TAG,"appVersionFrom problem");
                                 continue;
                             }
                         }
                         if(promotion.has("appVersionTo")){
                             appVersionTo = promotion.getInt("appVersionTo");
                             if(currentAppVersion>appVersionTo){
+                                Log.i(TAG,"appVersionTo problem");
                                 continue;
                             }
                         }
                         long timeStampNow = System.currentTimeMillis();
                         if(promotion.has("campaignEndTime")){
-                            long campaignEndTime = promotion.getInt("campaignEndTime");
+                            long campaignEndTime = promotion.getLong("campaignEndTime");
                             if(campaignEndTime<timeStampNow){
+                                Log.i(TAG,"time limit problem"+" "+Long.valueOf(timeStampNow)+" : "+Long.valueOf(campaignEndTime));
                                 continue;
                             }
                         }
@@ -563,15 +566,19 @@
                                 dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
                             }
                         }else if(promotion.getString("type").equals("GEO")){
+                            JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
+                            Log.i(TAG,"We have a geo event being saved to database");
                             dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
-                                    promotion.getInt("campaignStartTime"),promotion.getInt("campaignEndTime"),
-                                    promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow"));
+                                    promotion.getLong("campaignStartTime"),promotion.getLong("campaignEndTime"),
+                                    suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
                             context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                     .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
-                        }else if(promotion.getString("type").equals("SIMPLE EVENT")){
+                        }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
+                            JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
                             dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
-                                    promotion.getInt("campaignStartTime"), promotion.getInt("campaignEndTime"),
-                                    promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow"));
+                                    promotion.getLong("campaignStartTime"), promotion.getLong("campaignEndTime"),
+                                    suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
+                            Log.i(TAG,"We have a simple event being saved to database");
                             context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                     .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
                         }else if(promotion.getString("type").equals("IBEACON")){
