@@ -577,11 +577,11 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getReadableDatabase();
             String[] selectArgs = {campaignId};
             String[] columnArray = new String[]{Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME, "notBefore", "notAfter", "numberOfTimesToBeShown", "minutesBeforeReshow"};
-            cursor = db.query(GEO_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id", selectArgs, null,
+            cursor = db.query(GEO_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
                     null, Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " DESC");
 
             cursor.moveToNext();
-            Log.i("GEOCAMPAIGN TABLE DB","id: "+Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME);
+            Log.i("GEOCAMPAIGN TABLE DB","id: "+Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME+cursor);
             long notBefore = cursor.getLong(1);
             int numberOfTimesToBeShown = cursor.getInt(3);
             int minutesBeforeReshow = cursor.getInt(4);
@@ -594,7 +594,7 @@ class DbHelper extends SQLiteOpenHelper {
             ContentValues contentValues = new ContentValues();
             contentValues.put("notBefore", notBefore);
             contentValues.put("numberOfTimesToBeShown",numberOfTimesToBeShown);
-            int rows = db.update(GEO_CAMPAIGN_TABLE_NAME,contentValues,"campaign_id",selectArgs);
+            int rows = db.update(GEO_CAMPAIGN_TABLE_NAME,contentValues,"campaign_id = ?",selectArgs);
             Log.i("GEOCAMPAIGN TABLE DB","no.of rows: "+rows);
         } catch (SQLiteException e) {
             Log.e(TAG, "getSimpleEventCampaigns() failed", e);
@@ -615,7 +615,7 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getReadableDatabase();
             String[] selectArgs = {campaignId};
             String[] columnArray = new String[]{Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME, "notBefore", "notAfter", "numberOfTimesToBeShown", "minutesBeforeReshow"};
-            cursor = db.query(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id", selectArgs, null,
+            cursor = db.query(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
                     null, Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " DESC");
 
             cursor.moveToNext();
@@ -631,7 +631,7 @@ class DbHelper extends SQLiteOpenHelper {
             ContentValues contentValues = new ContentValues();
             contentValues.put("notBefore", notBefore);
             contentValues.put("numberOfTimesToBeShown",numberOfTimesToBeShown);
-            db.update(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, contentValues, "campaign_id", selectArgs);
+            db.update(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, contentValues, "campaign_id = ?", selectArgs);
         } catch (SQLiteException e) {
             Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
         } catch (Exception e){
@@ -649,7 +649,7 @@ class DbHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getReadableDatabase();
             String[] whereArgs = {campaignId};
-            db.delete(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME, "campaign_id", whereArgs);
+            db.delete(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
             Log.e(TAG,"failure in removing simple event campaign: "+campaignId,e);
         } catch (Exception e){
@@ -661,7 +661,7 @@ class DbHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getReadableDatabase();
             String[] whereArgs = {campaignId};
-            db.delete(Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME, "campaign_id", whereArgs);
+            db.delete(Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
             Log.e(TAG,"failure in removing geo campaign: "+campaignId,e);
         } catch (Exception e){

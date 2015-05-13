@@ -35,8 +35,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             for(Object geofence: triggeringGeofences){
                 String requestId = ((Geofence)geofence).getRequestId();
                 Intent intentToCampaignHandlingService = new Intent(this,CampaignHandlingService.class);
-                intent.putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS);
-                intent.putExtra("reqId",requestId);
+                intentToCampaignHandlingService.putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS);
+                intentToCampaignHandlingService.putExtra("reqId",requestId);
                 startService(intentToCampaignHandlingService);
             }
         }

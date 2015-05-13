@@ -34,12 +34,10 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         Intent startingIntent = activity.getIntent();
         if(startingIntent.hasExtra(Constants.Z_EVENT_TYPE)){
-            long timeStampNow = System.currentTimeMillis();
             if(startingIntent.getStringExtra(Constants.Z_EVENT_TYPE).equals(Constants.Z_CAMPAIGN_VIEWED_EVENT)){
                 String campaignId = startingIntent.getStringExtra("campaignId");
                 if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
                     String geofenceId = startingIntent.getStringExtra("geofenceId");
-                    DbHelper.getDatabaseHelper(activity).updateGeoCampaign(campaignId,timeStampNow);
                     JSONObject properties = new JSONObject();
                     try {
                         properties.put("campaignId",campaignId);
@@ -49,7 +47,6 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
                     }
                     Zinteract.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT,properties);
                 }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
-                    DbHelper.getDatabaseHelper(activity).updateSimpleEventCampaign(campaignId,timeStampNow);
                     JSONObject properties = new JSONObject();
                     try {
                         properties.put("campaignId",campaignId);

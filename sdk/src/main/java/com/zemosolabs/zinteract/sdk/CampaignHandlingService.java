@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CampaignHandlingService extends Service implements ResultCallback<Status>,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
-    private static final String TAG = "Zint.CampaignHandler";
+    private static final String TAG = "CampaignHandler";
+    private static final String TAGGEO = TAG+"GEO";
+    private static final String TAGSIMPLE = TAG+"SIMPLE";
     private static Worker fetcher = new Worker("campaignFetcher");
     private static Worker triggerHandler = new Worker("campaignTriggerHandler");
     private static HashMap<String,NotificationCampaign> liveCampaigns = new HashMap<>();
@@ -51,43 +53,53 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG,"CampaignHandler started");
-        if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)){
-            Log.i(TAG,"UPDATING LIVE CAMPAIGNS");
-            final String type = intent.getStringExtra("type");
-            fetcher.post(new Runnable(){
-                @Override
-                public void run() {
-                    if(type!=null) {
-                        listOfGeofences = new ArrayList<>();
-                        fetchNewCampaigns(type);
-                        registerGeofences();
+        if(intent!=null) {
+            Log.i(TAG, "CampaignHandler started");
+            if (!intent.hasExtra("action")) {
+                Log.i(TAG, "intent does not have action");
+                return START_STICKY;
+            }
+            if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)) {
+                Log.i(TAG, "UPDATING LIVE CAMPAIGNS");
+                final String type = intent.getStringExtra("type");
+                fetcher.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (type != null) {
+                            fetchNewCampaigns(type);
+                            if (type.equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)) {
+                                Log.i(TAGGEO, "Campaign update type geo");
+                                registerGeofences();
+                            }
+                        }
                     }
-                }
-            });
-        }else if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS)){
-            Log.i(TAG,"HANDLING GEO TRIGGERS");
-            final String requestId = intent.getStringExtra("reqId");
-            triggerHandler.post(new Runnable(){
-                @Override
-                public void run() {
-                    if(requestId!=null){
-                        handleGeofenceTrigger(requestId);
+                });
+            } else if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS)) {
+                Log.i(TAG, "HANDLING GEO TRIGGERS");
+                fetchNewCampaigns(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN);
+                final String requestId = intent.getStringExtra("reqId");
+                triggerHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (requestId != null) {
+                            handleGeofenceTrigger(requestId);
+                        }
                     }
-                }
-            });
-        }else if(intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS)){
-            Log.i(TAG,"HANDLING SIMPLE EVENT TRIGGERS");
-            final String eventName = intent.getStringExtra("eventType");
-            triggerHandler.post(new Runnable(){
-                @Override
-                public void run() {
-                    if(eventName!=null){
-                        handleSimpleEventTrigger(eventName);
-                        Log.i(TAG,"simple event trigger occured"+ eventName);
+                });
+            } else if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS)) {
+                Log.i(TAG, "HANDLING SIMPLE EVENT TRIGGERS");
+                fetchNewCampaigns(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN);
+                final String eventName = intent.getStringExtra("eventType");
+                triggerHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (eventName != null) {
+                            handleSimpleEventTrigger(eventName);
+                            Log.i(TAG, "simple event trigger occured" + eventName);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         return START_STICKY;
     }
@@ -102,6 +114,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                 if(liveCampaigns.get(campaignId).valid(timeStamp)) {
                     liveCampaigns.get(campaignId).show(this, campaignId);
                 }else{
+                    Log.i(TAG,"removing the campaign: "+campaignId);
                     liveCampaigns.remove(campaignId);
                     dbHelper.removeSimpleEventCampaign(campaignId);
                 }
@@ -117,6 +130,11 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
             long timeStamp = System.currentTimeMillis();
             if(liveCampaigns.get(campaignId).valid(timeStamp)) {
                 liveCampaigns.get(campaignId).show(this, requestId);
+                if(liveCampaigns.get(campaignId).campaignType.equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
+                    DbHelper.getDatabaseHelper(getApplicationContext()).updateGeoCampaign(campaignId,timeStamp);
+                }else if(liveCampaigns.get(campaignId).campaignType.equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
+                    DbHelper.getDatabaseHelper(getApplicationContext()).updateSimpleEventCampaign(campaignId,timeStamp);
+                }
             }else{
                 liveCampaigns.remove(campaignId);
                 dbHelper.removeGeoCampaign(campaignId);
@@ -147,6 +165,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     String eventName = currentCampaign.getJSONObject("simple_event").getString("eventName");
                     int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
                     idsMappedToEventName.put(eventName,campaignId);
+                    //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
                     SimpleEventNotificationCampaign simpleEventNotificationCampaign = new SimpleEventNotificationCampaign(campaignId,
                             currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
                             currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
@@ -154,13 +173,14 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                 }else if(currentCampaign.getString("type").equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
                     String campaignId = currentCampaign.getString("campaignId");
                     int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
+                    //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
                     GeoNotificationCampaign geoNotificationCampaign = new GeoNotificationCampaign(campaignId,
                             currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
                             currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
+                    Log.i(TAG+"GEO","GEO Notification Campaign added to the liveCampaigns");
                     createListOfGeofences(currentCampaign);
                     liveCampaigns.put(campaignId,geoNotificationCampaign);
                 }
-                Log.i(TAG,idsMappedToEventName.keySet().toString());
             } catch (JSONException e) {
                 Log.e(TAG,"jsonException",e);
             }
@@ -169,10 +189,15 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     }
 
     private void createListOfGeofences(JSONObject geoNotificationJSONCampaign) {
+        listOfGeofences = new ArrayList<>();
         try {
             String campaignId = geoNotificationJSONCampaign.getString("campaignId");
             JSONObject geo = geoNotificationJSONCampaign.getJSONObject("geo");
             JSONArray geofencesData = geo.getJSONArray("geoFences");
+            int timeDelay = 5000;
+            if(geo.has("timeDelay")){
+                timeDelay = geo.getInt("timeDelay");
+            }
             for(int i = 0; i < geofencesData.length(); i++){
                 JSONObject currentGeofenceData = (JSONObject)geofencesData.get(i);
                 Geofence.Builder geofenceBuilder = new Geofence.Builder()
@@ -191,31 +216,32 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                         case "EXIT":
                             geofenceBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT);
                         case "DWELL":
-                            geofenceBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL);
+                            geofenceBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL).setLoiteringDelay(timeDelay);
                         default:
                             break;
                 }
-
                 listOfGeofences.add(
                         geofenceBuilder
                         .build());
             }
+            Log.i(TAGGEO,"geofences added to the list"+listOfGeofences.size());
         } catch (JSONException e) {
             Log.e(TAG, "geoNotificationCampaign Failure", e);
         }
-
-
     }
 
     private void registerGeofences() {
-       mGoogleApiClient  = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+        Log.i(TAG+"GEO","registering Geofences");
+        mGoogleApiClient  = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+        mGoogleApiClient.connect();
     }
 
     private GeofencingRequest getGeofencingRequest() {
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(listOfGeofences);
-        return builder.build();
+        Log.i(TAGGEO,Integer.valueOf(listOfGeofences.size()).toString());
+         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
+         builder.addGeofences(listOfGeofences);
+         return builder.build();
     }
 
     private PendingIntent getGeofencePendingIntent() {
@@ -239,28 +265,33 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     @Override
     public void onResult(Status status) {
         if(status.isSuccess()){
-            Log.e(TAG,"Added Geofences");
+            Log.i(TAGGEO,"Added Geofences");
         }else{
-            Log.e(TAG,"Geofences failed. Check on googleApiClient. Implement callbacks maybe");
+            Log.e(TAGGEO,"Geofences failed. Status code: "+status.getStatusCode());
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        LocationServices.GeofencingApi.addGeofences(
-                mGoogleApiClient,
-                getGeofencingRequest(),
-                getGeofencePendingIntent()
-        ).setResultCallback(this);
+        Log.i(TAGGEO,"connected to GoogleApiClient");
+        if(listOfGeofences.size()>0) {
+            LocationServices.GeofencingApi.addGeofences(
+                    mGoogleApiClient,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(this);
+        }else{
+            Log.i(TAGGEO,"list size of geofences"+listOfGeofences.size());
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.i(TAGGEO,"connection to GoogleApiClient suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG,"connection failed on googleApiClient:"+connectionResult.getErrorCode());
+        Log.e(TAGGEO,"connection failed on googleApiClient:"+connectionResult.getErrorCode());
     }
 }

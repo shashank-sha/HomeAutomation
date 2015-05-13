@@ -26,6 +26,7 @@ abstract class NotificationCampaign {
 
     protected NotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
                                    String campaignType, JSONObject template, int numberOfTimesToShow, int notificationId){
+        //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
         this.campaignId = campaignId;
         this.campaignType= campaignType;
         this.notAfter = notAfter;

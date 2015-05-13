@@ -12,11 +12,15 @@ import android.widget.Toast;
 public class MyGeofenceRelatedReceiver extends BroadcastReceiver {
     private final static String TAG = "zint.GeofenceReceiver";
     private final static String locationModeOff = "com.zemosolabs.zinteract.locationModeOff";
+    private static Worker delayerForGeofenceReceiver = new Worker("delayerForGeofenceReceiver");
+    static{
+        delayerForGeofenceReceiver.start();
+    }
     public MyGeofenceRelatedReceiver() {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         int locMode=-100;
         if(intent!=null) {
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
@@ -30,10 +34,17 @@ public class MyGeofenceRelatedReceiver extends BroadcastReceiver {
                     Log.i(TAG,Integer.valueOf(locMode).toString());
                     if (locMode == Settings.Secure.LOCATION_MODE_OFF) {
                         CommonUtils.getSharedPreferences(context).edit().putBoolean(locationModeOff, true).apply();
-                    } else if (CommonUtils.getSharedPreferences(context).getBoolean(locationModeOff, true)) {
+                    } else if ((locMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING||locMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY)
+                            &&CommonUtils.getSharedPreferences(context).getBoolean(locationModeOff, true)) {
                        /* Log.i(TAG,"locationModeOn");
                         Toast.makeText(context,"GPS_ON",Toast.LENGTH_LONG).show();*/
-                        addGeoFences(context);
+                        final Context appContext = context;
+                        delayerForGeofenceReceiver.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                addGeoFences(context);
+                            }
+                        },1000);
                         CommonUtils.getSharedPreferences(context).edit().putBoolean(locationModeOff,false).apply();
                     }
                 }
@@ -42,7 +53,7 @@ public class MyGeofenceRelatedReceiver extends BroadcastReceiver {
                     LocationManager locManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
                     if(locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                             ||locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                        addGeoFences(context);
+                        //addGeoFences(context);
                     }
                 }
             }

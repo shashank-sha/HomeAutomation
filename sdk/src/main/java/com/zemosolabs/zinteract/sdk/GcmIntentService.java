@@ -62,9 +62,13 @@ public class GcmIntentService extends IntentService {
     // a GCM message.
     private void sendNotification(Bundle bundle) {
         Log.i(TAG,"sendNotification() called");
-        String launcherClassName = getApplicationContext().getPackageManager()
-                .getLaunchIntentForPackage(getApplicationContext().getPackageName())
-                .getComponent().getClassName();
+        String launcherClassName = null;
+        launcherClassName = bundle.getString("url");
+        if(launcherClassName==null||launcherClassName.isEmpty()) {
+            launcherClassName = getApplicationContext().getPackageManager()
+                    .getLaunchIntentForPackage(getApplicationContext().getPackageName())
+                    .getComponent().getClassName();
+        }
         int appIconId = getApplicationInfo().icon;
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);

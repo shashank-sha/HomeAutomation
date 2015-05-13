@@ -527,6 +527,7 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
+                    Log.i("promotions: ",i+". "+promotion.toString());
                     final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
                     int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
                     int appVersionFrom,appVersionTo;
@@ -1234,10 +1235,12 @@
             campaignWorker.post(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intentToStartCampaignHandler = new Intent(context,CampaignHandlingService.class);
-                    intentToStartCampaignHandler.putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS);
-                    intentToStartCampaignHandler.putExtra("eventType",eventType);
-                    context.startService(intentToStartCampaignHandler);
+                    if(context!=null) {
+                        Intent intentToStartCampaignHandler = new Intent(context, CampaignHandlingService.class);
+                        intentToStartCampaignHandler.putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS);
+                        intentToStartCampaignHandler.putExtra("eventType", eventType);
+                        context.startService(intentToStartCampaignHandler);
+                    }
                 }
             });
         }
