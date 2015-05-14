@@ -14,34 +14,48 @@ import org.json.JSONObject;
  * Created by vedaprakash on 8/5/15.
  */
 abstract class NotificationCampaign {
-    protected long notBefore;
-    protected long notAfter;
+    private static final String TAG = "notificationCampaign";
+    protected long campaignEndTime;
+    protected long campaignStartTime;
     protected long uniqueId;
     protected String campaignId;
     protected String campaignType;
     protected NotificationManager notifier;
     protected JSONObject template;
+    protected boolean checkServerBeforeNotifying;
     protected int notificationId;
-    protected int numberOfTimesToShow;
+    protected int maximumNumberOfTimesToShow;
+    protected int minimumMinutesBeforeReshow;
 
-    protected NotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
-                                   String campaignType, JSONObject template, int numberOfTimesToShow, int notificationId){
+    protected NotificationCampaign(JSONObject currentCampaign, int notificationId){
         //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
-        this.campaignId = campaignId;
-        this.campaignType= campaignType;
-        this.notAfter = notAfter;
-        this.notBefore = notBefore;
-        this.uniqueId = uniqueId;
-        this.template = template;
+        try {
+            campaignId = currentCampaign.getString("campaignId");
+            campaignType = currentCampaign.getString("type");
+            campaignStartTime = currentCampaign.getLong("campaignStartTime");
+            campaignEndTime = currentCampaign.getLong("campaignEndTime");
+            uniqueId = currentCampaign.getInt("rowIdInTable");
+            template = currentCampaign.getJSONObject("template");
+            JSONObject suppressionLogic = currentCampaign.getJSONObject("suppressionLogic");
+            maximumNumberOfTimesToShow = suppressionLogic.getInt("maximumNumberOfTimesToShow");
+            minimumMinutesBeforeReshow = suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow");
+            checkServerBeforeNotifying = currentCampaign.getBoolean("checkServerBeforeNotifying");
+        }catch (JSONException e){
+            Log.e(TAG,"campaign json inflation error", e);
+        }
         this.notificationId = notificationId;
-        this.numberOfTimesToShow = numberOfTimesToShow;
     }
 
-    void show(Context context,String details){
-        if(System.currentTimeMillis()<notBefore){
-            Log.i("NotificationCampaign", "not yet to be shown");
-            return;
+    void show(Context context,String details,long timeStamp){
+        long lastShownTime = DbHelper.getDatabaseHelper(context).getLastShownTime(campaignId);
+        if(lastShownTime>0){
+            Log.i(TAG, timeStamp+" "+(lastShownTime+minimumMinutesBeforeReshow*6000));
+            if(timeStamp<lastShownTime+ minimumMinutesBeforeReshow *60000){
+                Log.i("NotificationCampaign", "not yet to be shown");
+                return;
+            }
         }
+
         notifier = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         int appIconId = context.getApplicationInfo().icon;
         String title=null,message=null;
@@ -61,16 +75,20 @@ abstract class NotificationCampaign {
             PendingIntent pendingIntent = PendingIntent.getActivity(context,0,launchIntent,0);
             notificationBuilder.setContentIntent(pendingIntent);
             notifier.notify(notificationId,notificationBuilder.build());
+            DbHelper.getDatabaseHelper(context).updateCampaign(campaignId,timeStamp);
         }
     }
 
     abstract protected Intent addExtrasToIntent(Intent intent, String details);
 
-    public boolean valid(long timeStamp) {
-        if(timeStamp>notAfter) {
+    public boolean valid(Context context,long timeStamp) {
+        Log.i(TAG," "+campaignId+": "+timeStamp+" "+campaignEndTime);
+        if(timeStamp>campaignEndTime) {
             return false;
         }
-        if(numberOfTimesToShow==0){
+        int numberOfTimesShown = DbHelper.getDatabaseHelper(context).getNumberOfTimesShown(campaignId);
+        Log.i(TAG," "+ campaignId + ": " + numberOfTimesShown + " " + maximumNumberOfTimesToShow);
+        if(numberOfTimesShown>=maximumNumberOfTimesToShow){
             return false;
         }
         return true;

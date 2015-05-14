@@ -30,6 +30,7 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String GEO_CAMPAIGN_TABLE_NAME = Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME;
     private static final String SCREEN_FIX_TABLE_NAME = Constants.Z_DB_SCREEN_FIX_TABLE_NAME;
     private static final String SIMPLE_EVENT_CAMPAIGN_TABLE_NAME = Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME;
+    private static final String SUPPRESSION_LOGIC_TABLE_NAME = Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME;
 
     private static final String ID_FIELD = Constants.Z_DB_EVENT_ID_FIELD_NAME;
     private static final String EVENT_FIELD = Constants.Z_DB_EVENT_EVENTS_FIELD_NAME;
@@ -50,13 +51,17 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_GEOCAMPAIGNS_TABLE = "CREATE TABLE IF NOT EXISTS "
             +Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME + " ("
-            +Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, notBefore INTEGER DEFAULT 0, notAfter INTEGER DEFAULT 0, numberOfTimesToBeShown INTEGER DEFAULT -1, minutesBeforeReshow INTEGER DEFAULT 0, inService INTEGER DEFAULT 0,"
+            +Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, "
             +Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME + " TEXT);";
 
     private static final String CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE = "CREATE TABLE IF NOT EXISTS "
             +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME + " ("
-            +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, notBefore INTEGER DEFAULT 0, notAfter INTEGER DEFAULT 0, numberOfTimesToBeShown INTEGER DEFAULT -1, minutesBeforeReshow INTEGER DEFAULT 0, inService INTEGER DEFAULT 0,"
+            +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT,"
             +Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME + " TEXT);";
+
+    private static final String CREATE_SUPPRESSION_LOGIC_TABLE_FOR_CAMPAIGNS = "CREATE TABLE IF NOT EXISTS "
+            +Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME + " ("
+            +Constants.Z_DB_SUPPRESSION_LOGIC_ID_FIELD_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, campaign_id TEXT, maximumNumberOfTimesToShow INTEGER, minimumDurationBeforeReshowInMin INTEGER, numberOfTimesShown INTEGER DEFAULT 0, lastShownTimeUnixTimeStamp INTEGER DEFAULT 0);";
 
     private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS = "CREATE UNIQUE INDEX simpleEventcampaign_id_idx" +
             " on "+ SIMPLE_EVENT_CAMPAIGN_TABLE_NAME+" (campaign_id);";
@@ -76,6 +81,9 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_UNIQUE_INDEX_ON_SCREEN_ID = "CREATE UNIQUE INDEX screen_idx" +
             " on "+ Constants.Z_DB_SCREEN_FIX_TABLE_NAME +" (screen_id);";
+
+    private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION = "CREATE UNIQUE INDEX suppression_campaign_idx" + " on "
+            + Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME +" (campaign_id);";
 
     private File file;
 
@@ -102,11 +110,13 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_SCREEN_FIX_TABLE);
         db.execSQL(CREATE_GEOCAMPAIGNS_TABLE);
         db.execSQL(CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE);
+        db.execSQL(CREATE_SUPPRESSION_LOGIC_TABLE_FOR_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
     }
 
     @Override
@@ -114,18 +124,23 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PROMOTION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Constants.Z_DB_USER_PROPERTIES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ GEO_CAMPAIGN_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ SIMPLE_EVENT_CAMPAIGN_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SCREEN_FIX_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + SUPPRESSION_LOGIC_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
         db.execSQL(CREATE_SCREEN_FIX_TABLE);
         db.execSQL(CREATE_GEOCAMPAIGNS_TABLE);
         db.execSQL(CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE);
+        db.execSQL(CREATE_SUPPRESSION_LOGIC_TABLE_FOR_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
     }
 
 
@@ -456,31 +471,35 @@ class DbHelper extends SQLiteOpenHelper {
         return promotion;
     }
 
-    synchronized long addGeoCampaign(String promotion, String campaign_id, long notBefore,long notAfter, int numberOfTimes, int minutesBeforeReshow) {
-        long result = -1;
+    synchronized boolean addGeoCampaign(String promotion, String campaign_id, int maximumNumberOfTimesToShow,int minimumDurationBeforeReshowInMin) {
+        boolean success = false;
+        long result1 = -1,result2 = -1;
         try {
             SQLiteDatabase db = getWritableDatabase();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
-            contentValues.put("campaign_id", campaign_id);
-            contentValues.put("notBefore", notBefore);
-            contentValues.put("notAfter", notAfter);
-            contentValues.put("numberOfTimesToBeShown",numberOfTimes);
-            contentValues.put("minutesBeforeReshow",minutesBeforeReshow);
+            ContentValues contentValues1 = new ContentValues();
+            contentValues1.put(Constants.Z_DB_GEO_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
+            contentValues1.put("campaign_id", campaign_id);
+            ContentValues contentValues2 = new ContentValues();
+            contentValues2.put("campaign_id", campaign_id);
+            contentValues2.put("maximumNumberOfTimesToShow", maximumNumberOfTimesToShow);
+            contentValues2.put("minimumDurationBeforeReshowInMin", minimumDurationBeforeReshowInMin);
 
-            result = db.insertWithOnConflict(GEO_CAMPAIGN_TABLE_NAME, null, contentValues,5);
-            if (result == -1) {
+            result1 = db.insertWithOnConflict(GEO_CAMPAIGN_TABLE_NAME, null, contentValues1,5);
+            result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
+            if (result1 == -1||result2 == -1) {
+                success = false;
                 Log.w(TAG, "Insert failed");
+            }else{
+                success =true;
             }
-
         } catch (SQLiteException e) {
-            Log.e(TAG, "addPromotion failed", e);
+            Log.i("DB Geo", result1 + "," + result2);
             // Not much we can do, just start fresh
             delete();
         } finally {
             close();
         }
-        return result;
+        return success;
     }
 
     synchronized JSONArray getGeoFenceCampaigns(){
@@ -543,21 +562,27 @@ class DbHelper extends SQLiteOpenHelper {
         return promotion;
     }
 
-    synchronized long addSimpleEventCampaign(String promotion, String campaign_id, long notBefore,long notAfter, int numberOfTimes, int minutesBeforeReshow) {
-        long result = -1;
+    synchronized boolean addSimpleEventCampaign(String promotion, String campaign_id, int maximumNumberOfTimesToShow,int minimumDurationBeforeReshowInMin) {
+        long result1 = -1,result2 = -1;
+        boolean success = false;
         try {
             SQLiteDatabase db = getWritableDatabase();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
-            contentValues.put("campaign_id", campaign_id);
-            contentValues.put("notBefore", notBefore);
-            contentValues.put("notAfter", notAfter);
-            contentValues.put("numberOfTimesToBeShown",numberOfTimes);
-            contentValues.put("minutesBeforeReshow",minutesBeforeReshow);
+            ContentValues contentValues1 = new ContentValues();
+            contentValues1.put(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME, promotion);
+            contentValues1.put("campaign_id", campaign_id);
 
-            result = db.insertWithOnConflict(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, null, contentValues,5);
-            if (result == -1) {
+            ContentValues contentValues2 = new ContentValues();
+            contentValues2.put("campaign_id", campaign_id);
+            contentValues2.put("minimumDurationBeforeReshowInMin", minimumDurationBeforeReshowInMin);
+            contentValues2.put("maximumNumberOfTimesToShow", maximumNumberOfTimesToShow);
+
+            result1 = db.insertWithOnConflict(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, null, contentValues1,5);
+            result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
+            if (result1 == -1||result2 == -1) {
+                success = false;
                 Log.w(TAG, "Insert failed");
+            }else{
+                success =true;
             }
 
         } catch (SQLiteException e) {
@@ -566,40 +591,33 @@ class DbHelper extends SQLiteOpenHelper {
         } finally {
             close();
         }
-        Log.i("DB SimpleEvent",Long.valueOf(result).toString());
-        return result;
+        Log.i("DB SimpleEvent", result1+","+result2);
+        return success;
 
     }
 
-    synchronized void updateGeoCampaign(String campaignId, long timeStampOfOccurence) {
+    synchronized void updateCampaign(String campaignId, long timeStampOfOccurence) {
+        Log.i(TAG,"updating campaigns for suppressionLogic");
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
             String[] selectArgs = {campaignId};
-            String[] columnArray = new String[]{Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME, "notBefore", "notAfter", "numberOfTimesToBeShown", "minutesBeforeReshow"};
-            cursor = db.query(GEO_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
-                    null, Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME + " DESC");
+            String[] columnArray = new String[]{Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME, "numberOfTimesShown"};
+            cursor = db.query(SUPPRESSION_LOGIC_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
+                    null, Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME + " DESC");
 
             cursor.moveToNext();
-            Log.i("GEOCAMPAIGN TABLE DB","id: "+Constants.Z_DB_GEO_CAMPAIGNS_ID_FIELD_NAME+cursor);
-            long notBefore = cursor.getLong(1);
-            int numberOfTimesToBeShown = cursor.getInt(3);
-            int minutesBeforeReshow = cursor.getInt(4);
-            if(notBefore>timeStampOfOccurence){
-                if(numberOfTimesToBeShown>0){
-                    numberOfTimesToBeShown--;
-                }
-                notBefore = (minutesBeforeReshow*60000)+timeStampOfOccurence;
-            }
+            int numberOfTimesShown = cursor.getInt(1);
+            numberOfTimesShown++;
             ContentValues contentValues = new ContentValues();
-            contentValues.put("notBefore", notBefore);
-            contentValues.put("numberOfTimesToBeShown",numberOfTimesToBeShown);
-            int rows = db.update(GEO_CAMPAIGN_TABLE_NAME,contentValues,"campaign_id = ?",selectArgs);
-            Log.i("GEOCAMPAIGN TABLE DB","no.of rows: "+rows);
+            contentValues.put("numberOfTimesShown", numberOfTimesShown);
+            contentValues.put("lastShownTimeUnixTimeStamp",timeStampOfOccurence);
+            db.update(SUPPRESSION_LOGIC_TABLE_NAME, contentValues, "campaign_id = ?", selectArgs);
+            Log.i(TAG,"updated suppression Logic Table");
         } catch (SQLiteException e) {
-            Log.e(TAG, "getSimpleEventCampaigns() failed", e);
+            Log.e(TAG, "updating suppressionLogic table failed: "+campaignId, e);
         } catch (Exception e){
-            Log.e(TAG, " getSimpleEventCampaigns() failed", e);
+            Log.e(TAG, "updating suppressionLogic table failed not on SQLiteException: "+campaignId, e);
         }
         finally {
             if (cursor != null) {
@@ -609,47 +627,14 @@ class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    synchronized void updateSimpleEventCampaign(String campaignId, long timeStampOfOccurence) {
-        Cursor cursor = null;
-        try {
-            SQLiteDatabase db = getReadableDatabase();
-            String[] selectArgs = {campaignId};
-            String[] columnArray = new String[]{Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME, "notBefore", "notAfter", "numberOfTimesToBeShown", "minutesBeforeReshow"};
-            cursor = db.query(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
-                    null, Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " DESC");
 
-            cursor.moveToNext();
-            long notBefore = cursor.getLong(1);
-            int numberOfTimesToBeShown = cursor.getInt(3);
-            int minutesBeforeReshow = cursor.getInt(4);
-            if(notBefore>timeStampOfOccurence){
-                if(numberOfTimesToBeShown>0){
-                    numberOfTimesToBeShown--;
-                }
-                notBefore = (minutesBeforeReshow*60000)+timeStampOfOccurence;
-            }
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("notBefore", notBefore);
-            contentValues.put("numberOfTimesToBeShown",numberOfTimesToBeShown);
-            db.update(SIMPLE_EVENT_CAMPAIGN_TABLE_NAME, contentValues, "campaign_id = ?", selectArgs);
-        } catch (SQLiteException e) {
-            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
-        } catch (Exception e){
-            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
-        }
-        finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            close();
-        }
-    }
 
-    void removeSimpleEventCampaign(String campaignId) {
+    synchronized void removeSimpleEventCampaign(String campaignId) {
         try {
             SQLiteDatabase db = getReadableDatabase();
             String[] whereArgs = {campaignId};
             db.delete(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
+            db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
             Log.e(TAG,"failure in removing simple event campaign: "+campaignId,e);
         } catch (Exception e){
@@ -657,15 +642,69 @@ class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    void removeGeoCampaign(String campaignId) {
+    synchronized void removeGeoCampaign(String campaignId) {
         try {
             SQLiteDatabase db = getReadableDatabase();
             String[] whereArgs = {campaignId};
             db.delete(Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
+            db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
             Log.e(TAG,"failure in removing geo campaign: "+campaignId,e);
         } catch (Exception e){
             Log.e(TAG, "removing geo campaign failed: "+campaignId, e);
         }
+    }
+
+    synchronized long getLastShownTime(String campaignId) {
+        Cursor cursor = null;
+        long lastShownTime = 0;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String[] selectArgs = {campaignId};
+            String[] columnArray = new String[]{Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME, "lastShownTimeUnixTimeStamp"};
+            cursor = db.query(SUPPRESSION_LOGIC_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
+                    null, Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME + " DESC");
+
+            cursor.moveToNext();
+            lastShownTime = cursor.getLong(1);
+        } catch (SQLiteException e) {
+            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+        } catch (Exception e){
+            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return lastShownTime;
+    }
+
+    synchronized int getNumberOfTimesShown(String campaignId) {
+        Cursor cursor = null;
+        int numberOfTimesShown = -1;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String[] selectArgs = {campaignId};
+            String[] columnArray = new String[]{Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME, "numberOfTimesShown"};
+            cursor = db.query(SUPPRESSION_LOGIC_TABLE_NAME,columnArray,"campaign_id = ?", selectArgs, null,
+                    null, Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME + " DESC");
+
+            cursor.moveToNext();
+            numberOfTimesShown= cursor.getInt(1);
+
+        } catch (SQLiteException e) {
+            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+        } catch (Exception e){
+            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return numberOfTimesShown;
     }
 }

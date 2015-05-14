@@ -8,10 +8,9 @@ import org.json.JSONObject;
  */
 class GeoNotificationCampaign extends NotificationCampaign {
 
-    protected GeoNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
-                                      String campaignType, JSONObject template,int numberOfTimesToShow, int notificationId) {
+    protected GeoNotificationCampaign(JSONObject currentCampaign, int notificationId) {
         //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
-        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template, numberOfTimesToShow, notificationId);
+        super(currentCampaign, notificationId);
     }
 
     protected Intent addExtrasToIntent(Intent launchIntent,String details) {

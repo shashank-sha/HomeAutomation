@@ -570,14 +570,12 @@
                             JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
                             Log.i(TAG,"We have a geo event being saved to database");
                             dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
-                                    promotion.getLong("campaignStartTime"),promotion.getLong("campaignEndTime"),
                                     suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
                             context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                     .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
                         }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
                             JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
                             dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
-                                    promotion.getLong("campaignStartTime"), promotion.getLong("campaignEndTime"),
                                     suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
                             Log.i(TAG,"We have a simple event being saved to database");
                             context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
@@ -1425,55 +1423,56 @@
         }
 
         public static void logPurchaseCompletedEvent(Double grandTotal) {
-            JSONObject purchaseDetails = new JSONObject();
-            try {
-                purchaseDetails.put("grand_total",grandTotal);
-            } catch (JSONException e) {
-                Log.e(TAG,"purchaseDetails",e);
-            }
-            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT, purchaseDetails);
+            logPurchaseCompletedEvent(null,grandTotal,null,null,null,null,null,null,null);
         }
-        public static void logPurchaseCompletedEvent(Double grandTotal,String currency) {
-            JSONObject purchaseDetails = new JSONObject();
-            try {
-                purchaseDetails.put("grand_total",grandTotal);
-                purchaseDetails.put("currency",currency);
-            } catch (JSONException e) {
-                Log.e(TAG,"purchaseDetails",e);
-            }
-            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+
+        public static void logPurchaseCompletedEvent(Double grandTotal,Integer quantity){
+            logPurchaseCompletedEvent(null,grandTotal,null,null,null,quantity,null,null,null);
+        }
+        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Integer quantity){
+            logPurchaseCompletedEvent(currency,grandTotal,null,null,null,quantity,null,null,null);
         }
         public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax) {
-            JSONObject purchaseDetails = new JSONObject();
-            try {
-                purchaseDetails.put("grand_total",grandTotal);
-                purchaseDetails.put("total",total);
-                purchaseDetails.put("shipping",shipping);
-                purchaseDetails.put("tax",tax);
-            } catch (JSONException e) {
-                Log.e(TAG,"purchaseDetails",e);
-            }
-            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+            logPurchaseCompletedEvent(null,grandTotal,total,shipping,tax,null,null,null,null);
         }
-        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double tax) {
-            JSONObject purchaseDetails = new JSONObject();
-            try {
-                purchaseDetails.put("grand_total",grandTotal);
-                purchaseDetails.put("total",total);
-                purchaseDetails.put("tax",tax);
-            } catch (JSONException e) {
-                Log.e(TAG,"purchaseDetails",e);
-            }
-            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax, Integer quantity) {
+            logPurchaseCompletedEvent(null,grandTotal,total,shipping,tax,quantity,null,null,null);
         }
-        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax,String currency) {
+        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total, Double shipping, Double tax, Integer quantity) {
+            logPurchaseCompletedEvent(currency,grandTotal,total,shipping,tax,quantity,null,null,null);
+        }
+        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total,
+                                                     Double shipping, Double tax, Integer quantity,
+                                                     String orderId, String receiptId, String productsku) {
             JSONObject purchaseDetails = new JSONObject();
             try {
-                purchaseDetails.put("grand_total",grandTotal);
-                purchaseDetails.put("total",total);
-                purchaseDetails.put("shipping",shipping);
-                purchaseDetails.put("tax",tax);
-                purchaseDetails.put("currency",currency);
+                if(currency!=null) {
+                    purchaseDetails.put("currency", currency);
+                }
+                if(grandTotal!=null){
+                    purchaseDetails.put("grand_total",grandTotal);
+                }
+                if(total!=null){
+                    purchaseDetails.put("total",total);
+                }
+                if(shipping!=null){
+                    purchaseDetails.put("shipping",shipping);
+                }
+                if(tax!=null){
+                    purchaseDetails.put("tax",tax);
+                }
+                if(quantity!=null) {
+                    purchaseDetails.put("quantity", quantity);
+                }
+                if(orderId!=null){
+                    purchaseDetails.put("orderid",orderId);
+                }
+                if(receiptId!=null){
+                    purchaseDetails.put("receiptid",receiptId);
+                }
+                if(productsku!=null){
+                    purchaseDetails.put("productsku",productsku);
+                }
             } catch (JSONException e) {
                 Log.e(TAG,"purchaseDetails",e);
             }

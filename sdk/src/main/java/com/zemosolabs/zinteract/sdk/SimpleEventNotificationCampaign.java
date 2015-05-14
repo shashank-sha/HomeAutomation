@@ -9,10 +9,9 @@ import org.json.JSONObject;
  */
 public class SimpleEventNotificationCampaign extends NotificationCampaign {
 
-    protected SimpleEventNotificationCampaign(String campaignId, long notBefore, long notAfter, long uniqueId,
-                                              String campaignType, JSONObject template, int numberOfTimesToShow, int notificationId) {
+    protected SimpleEventNotificationCampaign(JSONObject currentCampaign, int notificationId) {
         //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
-        super(campaignId, notBefore, notAfter, uniqueId, campaignType, template, numberOfTimesToShow,notificationId);
+        super(currentCampaign,notificationId);
     }
 
     @Override

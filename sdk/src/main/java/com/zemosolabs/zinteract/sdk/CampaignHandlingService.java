@@ -111,8 +111,8 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
             if(liveCampaigns.containsKey(campaignId)){
                 Log.i(TAG,"liveCampaign contains the key");
                 long timeStamp = System.currentTimeMillis();
-                if(liveCampaigns.get(campaignId).valid(timeStamp)) {
-                    liveCampaigns.get(campaignId).show(this, campaignId);
+                if(liveCampaigns.get(campaignId).valid(getApplicationContext(),timeStamp)) {
+                    liveCampaigns.get(campaignId).show(this, campaignId,timeStamp);
                 }else{
                     Log.i(TAG,"removing the campaign: "+campaignId);
                     liveCampaigns.remove(campaignId);
@@ -128,13 +128,8 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
         String campaignId = reqId[0];
         if(liveCampaigns.containsKey(campaignId)){
             long timeStamp = System.currentTimeMillis();
-            if(liveCampaigns.get(campaignId).valid(timeStamp)) {
-                liveCampaigns.get(campaignId).show(this, requestId);
-                if(liveCampaigns.get(campaignId).campaignType.equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
-                    DbHelper.getDatabaseHelper(getApplicationContext()).updateGeoCampaign(campaignId,timeStamp);
-                }else if(liveCampaigns.get(campaignId).campaignType.equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
-                    DbHelper.getDatabaseHelper(getApplicationContext()).updateSimpleEventCampaign(campaignId,timeStamp);
-                }
+            if(liveCampaigns.get(campaignId).valid(getApplicationContext(),timeStamp)) {
+                liveCampaigns.get(campaignId).show(this, requestId,timeStamp);
             }else{
                 liveCampaigns.remove(campaignId);
                 dbHelper.removeGeoCampaign(campaignId);
@@ -165,18 +160,12 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     String eventName = currentCampaign.getJSONObject("simple_event").getString("eventName");
                     int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
                     idsMappedToEventName.put(eventName,campaignId);
-                    //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
-                    SimpleEventNotificationCampaign simpleEventNotificationCampaign = new SimpleEventNotificationCampaign(campaignId,
-                            currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
-                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
+                    SimpleEventNotificationCampaign simpleEventNotificationCampaign = new SimpleEventNotificationCampaign(currentCampaign, notificationId());
                     liveCampaigns.put(campaignId,simpleEventNotificationCampaign);
                 }else if(currentCampaign.getString("type").equals(Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN)){
                     String campaignId = currentCampaign.getString("campaignId");
                     int numberOfTimesToShow = currentCampaign.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
-                    //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
-                    GeoNotificationCampaign geoNotificationCampaign = new GeoNotificationCampaign(campaignId,
-                            currentCampaign.getLong("campaignStartTime"),currentCampaign.getLong("campaignEndTime"),currentCampaign.getInt("rowIdInTable"),
-                            currentCampaign.getString("type"),currentCampaign.getJSONObject("template"),numberOfTimesToShow, notificationId());
+                    GeoNotificationCampaign geoNotificationCampaign = new GeoNotificationCampaign(currentCampaign, notificationId());
                     Log.i(TAG+"GEO","GEO Notification Campaign added to the liveCampaigns");
                     createListOfGeofences(currentCampaign);
                     liveCampaigns.put(campaignId,geoNotificationCampaign);

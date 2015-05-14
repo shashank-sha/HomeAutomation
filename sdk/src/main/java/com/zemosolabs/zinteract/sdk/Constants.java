@@ -52,7 +52,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 4;
+    static final int Z_DB_VERSION = 8;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";
@@ -72,6 +72,10 @@ class Constants {
     static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME = "simpleEventCampaigns" ;
     static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME = "id";
     static final String Z_DB_SIMPLE_EVENT_CAMPAIGNS_PROMOTION_FIELD_NAME = "simpleEventPromotion";
+
+    static final String Z_DB_SUPPRESSION_LOGIC_TABLE_NAME = "suppressionLogic";
+    static final String Z_DB_SUPPRESSION_LOGIC_ID_FIELD_NAME = "id";
+    static final String Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME="campaign_id";
 
     static final String Z_DB_USER_PROPERTIES_TABLE_NAME = "userproperties";
     static final String Z_DB_USER_PROPERTIES_ID_FIELD_NAME = "id";
