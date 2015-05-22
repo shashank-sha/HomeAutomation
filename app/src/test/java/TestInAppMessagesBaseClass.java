@@ -19,6 +19,7 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemosolabs.zinteract.sdk.Zinteract;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -27,6 +28,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,7 +101,7 @@ abstract public class TestInAppMessagesBaseClass {
 
     @Before
     public void setUp() {
-
+        Zinteract.robolectricTesting = true;
         //Load Campaign String from file
 
         promotionsForScreensJSON = readFile("app/src/test/java/CampaignTestCase.txt");
@@ -170,6 +172,11 @@ abstract public class TestInAppMessagesBaseClass {
 
     @Test
     abstract public void test();
+
+    @After
+    public void closeUP(){
+        Zinteract.robolectricTesting = false;
+    }
 
     //Test methods
     private void printSizesOfArrayLists(){

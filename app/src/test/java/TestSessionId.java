@@ -7,6 +7,7 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpPost;
@@ -18,9 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.tester.org.apache.http.HttpRequestInfo;
 import org.robolectric.util.ActivityController;
+import org.robolectric.util.ServiceController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +72,7 @@ public class TestSessionId extends TestBaseClass{
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("prev", "Activity4");
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity3");
             resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity4");
-            executePendingTasksOnWorkers(millis);
+            executePendingTasksOnZinteractWorkers(millis);
             System.out.println("Waiting for "+millis/1000+" seconds");
             try {
                 Thread.sleep(millis);
@@ -143,7 +146,7 @@ public class TestSessionId extends TestBaseClass{
         int nextButtonId,prevButtonId;
         Class nextActivity,prevActivity;
         ActivityController<Activity> currentActivityController;
-        System.out.println("ResumeActivityDoAction: "+"Creating/Resuming the activity : "+activityName);
+        System.out.println("ResumeActivityDoAction: " + "Creating/Resuming the activity : " + activityName);
         switch(activityName){
             case "MainActivity":
                 if(mainActivityActivityController==null){
@@ -220,8 +223,8 @@ public class TestSessionId extends TestBaseClass{
                 return;
         }
         assertNotNull(currentActivity);
-        instantiateLogAndHttpWorkers();
-        executeImmediateTasksOnLogWorker();
+        executeWorkerTasksForLogEvent();
+
         //validate required action
         switch(action){
             case "next":
@@ -240,7 +243,8 @@ public class TestSessionId extends TestBaseClass{
                 assertTrue(false);
                 return;
         }
-        System.out.println("ResumeActivityDoAction: "+"Pausing the activity : "+activityName);
+        System.out.println("ResumeActivityDoAction: " + "Pausing the activity : " + activityName);
         currentActivityController.pause();
+        executeWorkerTasksForLogEvent();
     }
 }

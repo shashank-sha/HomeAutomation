@@ -1,5 +1,7 @@
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.HandlerThread;
@@ -9,6 +11,8 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity3;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
+import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
+import com.zemosolabs.zinteract.sdk.Zinteract;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -17,14 +21,17 @@ import org.apache.http.message.BasicHttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.tester.org.apache.http.FakeHttpLayer;
 import org.robolectric.util.ActivityController;
+import org.robolectric.util.ServiceController;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -45,10 +52,8 @@ import static org.junit.Assert.assertNotEquals;
 @Config(reportSdk = 18,emulateSdk = 18)
 @RunWith(CustomRobolectricRunner.class)
 public abstract class TestBaseClass {
-    protected DbHelper sqLiteOpenHelper;
-    protected SharedPreferences sharedPreferences;
-    protected HandlerThread logWorker,httpWorker;
-    protected ShadowLooper logWorkingLooper,httpWorkingLooper;
+    protected HandlerThread logWorker,httpWorker,campaignWorker,fetcher,triggerHandler,delayer,delayerForGeofenceReceiver;
+    protected ShadowLooper logWorkingLooper,httpWorkingLooper,campaignWorkLooper,fetchLooper,triggerHandlingLooper,delayingLooper, delayForGeofenceReceiverLooper;
     protected ActivityController<MainActivity> mainActivityActivityController;
     protected ActivityController<Activity2> activity2ActivityController;
     protected ActivityController<Activity3> activity3ActivityController;
@@ -57,21 +62,13 @@ public abstract class TestBaseClass {
 
     @Before
     public void setup(){
+        Zinteract.robolectricTesting = true;
         System.out.println("Checking if the fakeHttpLayer is functioning properly");
         FakeHttpLayer fakeHttpLayer = Robolectric.getFakeHttpLayer();
         assertFalse(fakeHttpLayer.hasPendingResponses());
         assertFalse(fakeHttpLayer.hasRequestInfos());
         assertFalse(fakeHttpLayer.hasResponseRules());
         assertNull(fakeHttpLayer.getDefaultResponse());
-
-        System.out.println("Confirming that the database table for events is empty");
-        sqLiteOpenHelper = DbHelper.getDatabaseHelper(Robolectric.application);
-        assertEquals(0, sqLiteOpenHelper.getEventCount());
-
-        System.out.println("Checking the SharedPreference file for an empty value for session Id");
-        sharedPreferences = Robolectric.application.
-                getSharedPreferences(Constants.Z_SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-        assertEquals(sharedPreferences.getString(Constants.Z_PREFKEY_LAST_END_SESSION_ID, ""), "");
 
         System.out.println("Setting up the HttpResponse for HttpRequest to uploadEvents page");
 
@@ -103,40 +100,127 @@ public abstract class TestBaseClass {
         return null;
     }
 
-    protected void instantiateLogAndHttpWorkers(){
-        if(logWorker==null||httpWorker==null||logWorkingLooper==null||httpWorkingLooper==null) {
+    @After
+    public void closeUP(){
+        Zinteract.robolectricTesting = false;
+    }
+
+    protected void instantiateZinteractWorkers(){
+        if(logWorker==null||httpWorker==null||logWorkingLooper==null||
+                httpWorkingLooper==null||campaignWorker==null||campaignWorkLooper==null) {
             logWorker = (HandlerThread) getThreadByName("logWorker");
             httpWorker = (HandlerThread) getThreadByName("httpWorker");
+            campaignWorker = (HandlerThread) getThreadByName("campaignWorker");
             logWorkingLooper = Robolectric.shadowOf(logWorker.getLooper());
             httpWorkingLooper = Robolectric.shadowOf(httpWorker.getLooper());
+            campaignWorkLooper = Robolectric.shadowOf(campaignWorker.getLooper());
         }
     }
-    protected void executeImmediateTasksOnLogWorker(){
-        executeTasksOnLogWorker();
-        executeTasksOnHttpWorker();
-        executeTasksOnLogWorker();
-        executeTasksOnHttpWorker();
+
+    protected void instantiateCampaignHandlerWorkers(){
+        if(fetcher==null||triggerHandler==null||fetchLooper==null||
+                triggerHandlingLooper==null) {
+            fetcher = (HandlerThread) getThreadByName("campaignFetcher");
+            triggerHandler = (HandlerThread) getThreadByName("campaignTriggerHandler");
+            fetchLooper = Robolectric.shadowOf(fetcher.getLooper());
+            triggerHandlingLooper = Robolectric.shadowOf(triggerHandler.getLooper());
+        }
     }
 
-    protected void executePendingTasksOnWorkers(long millis){
-        logWorkingLooper.idle(millis);
-        httpWorkingLooper.idle(millis);
-        logWorkingLooper.idle(millis);
-        httpWorkingLooper.idle(millis);
+    protected void instantiateDelayWorkerForShakeListener(){
+        if(delayer==null||delayingLooper==null){
+            delayer = (HandlerThread) getThreadByName("delayer");
+            delayingLooper = Robolectric.shadowOf(delayer.getLooper());
+        }
     }
 
-    private void executeTasksOnLogWorker(){
-        logWorkingLooper.idle();
+    protected void instantiateDelayWorkerForGeofenceReceiver(){
+        if(delayerForGeofenceReceiver == null||delayForGeofenceReceiverLooper==null){
+            delayerForGeofenceReceiver = (HandlerThread) getThreadByName("delayForGeofenceReceiver");
+            delayForGeofenceReceiverLooper = Robolectric.shadowOf(delayerForGeofenceReceiver.getLooper());
+        }
     }
 
-    private void executeTasksOnHttpWorker(){
-        httpWorkingLooper.idle();
+
+    protected void executeImmediateTasksOnZinteractWorkers(){
+        executeImmediateTasksOnWorker(logWorkingLooper);
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);
+        executeImmediateTasksOnWorker(logWorkingLooper);
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);
+        /*executeImmediateTasksOnWorker(logWorkingLooper);
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);
+        executeImmediateTasksOnWorker(logWorkingLooper);
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);*/
     }
+
+    protected void executeImmediateTasksOnCampaignHandlerWorkers(){
+        executeImmediateTasksOnWorker(fetchLooper);
+        executeImmediateTasksOnWorker(triggerHandlingLooper);
+    }
+
+    protected void executePendingTasksOnZinteractWorkers(long millis){
+        executePendingTasksOnWorker(logWorkingLooper, millis);
+        executePendingTasksOnWorker(httpWorkingLooper, millis);
+        executePendingTasksOnWorker(campaignWorkLooper, millis);
+        executePendingTasksOnWorker(logWorkingLooper, millis);
+        executePendingTasksOnWorker(httpWorkingLooper, millis);
+        executePendingTasksOnWorker(campaignWorkLooper, millis);
+    }
+
+    protected void executePendingTasksOnCampaignHandlerWorkers(long millis) {
+        executePendingTasksOnWorker(fetchLooper,millis);
+        executePendingTasksOnWorker(triggerHandlingLooper,millis);
+    }
+
+    protected void executeImmediateTasksOnWorker(ShadowLooper looper){
+        looper.idle();
+    }
+    protected void executePendingTasksOnWorker(ShadowLooper looper,long millis){
+        looper.idle(millis);
+    }
+
+    protected void executeWorkerTasksForLogEvent(){
+        instantiateZinteractWorkers();
+        executeImmediateTasksOnZinteractWorkers();
+        ShadowApplication shadowApplication = Robolectric.shadowOf(Robolectric.application);
+        Intent intentForService = shadowApplication.getNextStartedService();
+        if(intentForService==null){
+            return;
+        }
+        ComponentName compName = intentForService.getComponent();
+        System.out.println("TEST: service started- "+compName.getClassName());
+        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
+                ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
+                campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
+                instantiateCampaignHandlerWorkers();
+                executeImmediateTasksOnCampaignHandlerWorkers();
+        }
+        instantiateZinteractWorkers();
+        executeImmediateTasksOnZinteractWorkers();
+        intentForService = shadowApplication.getNextStartedService();
+        if(intentForService==null){
+            return;
+        }
+        compName = intentForService.getComponent();
+        System.out.println("TEST: service started- "+compName.getClassName());
+        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
+            ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
+            campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
+            instantiateCampaignHandlerWorkers();
+            executeImmediateTasksOnCampaignHandlerWorkers();
+        }
+    }
+
+
 
     private String getCurrentDateTime(long timestamp){
         return new SimpleDateFormat(Constants.Z_DATE_TIME_FORMAT).format(new Date(timestamp));
     }
-    private String readFile( String file ){
+    protected String readFile( String file ){
         StringBuilder stringBuilder = null;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));

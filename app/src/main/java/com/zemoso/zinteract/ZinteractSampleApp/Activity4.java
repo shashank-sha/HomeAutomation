@@ -95,11 +95,17 @@ public class Activity4 extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.buttonBuy:
+                /*if(Zinteract.robolectricTesting) {
+                    System.out.println("APP: buy button clicked");
+                }*/
                 Zinteract.logPurchaseCompletedEvent(grandTotal);
                 grandTotal = 0.00;
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 break;
             case R.id.buttonAddToCart:
+                /*if(Zinteract.robolectricTesting) {
+                    System.out.println("APP: add to cart button clicked");
+                }*/
                 grandTotal += (Math.random()*5000);
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 Zinteract.logPurchaseAttempted();

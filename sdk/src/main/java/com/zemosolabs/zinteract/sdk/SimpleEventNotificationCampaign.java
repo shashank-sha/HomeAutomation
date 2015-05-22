@@ -10,7 +10,6 @@ import org.json.JSONObject;
 public class SimpleEventNotificationCampaign extends NotificationCampaign {
 
     protected SimpleEventNotificationCampaign(JSONObject currentCampaign, int notificationId) {
-        //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
         super(currentCampaign,notificationId);
     }
 

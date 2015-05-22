@@ -2,6 +2,7 @@ package com.zemosolabs.zinteract.sdk;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -78,18 +79,24 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityResumed(Activity activity) {
-        if(activity.getClass().getCanonicalName().equals(activity.getPackageManager()
-                .getLaunchIntentForPackage(activity.getPackageName()).getComponent().getClassName())) {
-            if(currentActivity==null||activity!=currentActivity) {
-                String campaignId = activity.getIntent()
-                        .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
-                if (campaignId != null && !campaignId.isEmpty()) {
-                    Zinteract.updatePromotionAsSeen(campaignId);
-                    Log.i("PushNotificationViewed", campaignId);
+        String packageName = activity.getPackageName();
+        PackageManager pm = activity.getPackageManager();
+        if(Zinteract.robolectricTesting==false) {
+            Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
+            ComponentName compName = launchIntent.getComponent();
+            String launchingClassName = compName.getClassName();
+            if (activity.getClass().getCanonicalName().equals(launchingClassName)) {
+                if (currentActivity == null || activity != currentActivity) {
+                    String campaignId = activity.getIntent()
+                            .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
+                    if (campaignId != null && !campaignId.isEmpty()) {
+                        Zinteract.updatePromotionAsSeen(campaignId);
+                        Log.i("PushNotificationViewed", campaignId);
+                    }
                 }
             }
         }
-        PackageManager pm = activity.getPackageManager();
+        /*PackageManager pm = activity.getPackageManager();*/
         String name = activity.getComponentName().getClassName();
         String label = null;
         try {

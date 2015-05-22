@@ -26,10 +26,13 @@ abstract class NotificationCampaign {
     protected int notificationId;
     protected int maximumNumberOfTimesToShow;
     protected int minimumMinutesBeforeReshow;
+    protected String launchClassName = null;
 
     protected NotificationCampaign(JSONObject currentCampaign, int notificationId){
-        //TODO: use the JSONObject to transfer all the data to fields inside the notificationCampaign
         try {
+            /*if(Zinteract.robolectricTesting) {
+                System.out.println("Notification Campaign: Being constructed");
+            }*/
             campaignId = currentCampaign.getString("campaignId");
             campaignType = currentCampaign.getString("type");
             campaignStartTime = currentCampaign.getLong("campaignStartTime");
@@ -40,8 +43,23 @@ abstract class NotificationCampaign {
             maximumNumberOfTimesToShow = suppressionLogic.getInt("maximumNumberOfTimesToShow");
             minimumMinutesBeforeReshow = suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow");
             checkServerBeforeNotifying = currentCampaign.getBoolean("checkServerBeforeNotifying");
+            JSONObject nextScreen,contentClick;
+            String launcherClassName;
+            if(template.has("contentClick") && (contentClick = template.getJSONObject("contentClick"))!=JSONObject.NULL){
+                if(contentClick.has("nextScreen") && (nextScreen = contentClick.getJSONObject("nextScreen"))!=JSONObject.NULL){
+                    if(nextScreen.has("deepLink") && !(launcherClassName = nextScreen.getString("deepLink")).isEmpty()){
+                        launchClassName = launcherClassName;
+                        /*if(Zinteract.robolectricTesting) {
+                            System.out.println("Notification Campaign: " + launcherClassName);
+                        }*/
+                    }
+                }
+            }
         }catch (JSONException e){
             Log.e(TAG,"campaign json inflation error", e);
+            /*if(Zinteract.robolectricTesting) {
+                e.printStackTrace();
+            }*/
         }
         this.notificationId = notificationId;
     }
@@ -63,12 +81,23 @@ abstract class NotificationCampaign {
             title = template.getString("title");
             message = template.getString("message");
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG,"title and message error",e);
         }
         if(title!=null&&message!=null) {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context).setSmallIcon(appIconId)
                     .setContentTitle(title).setContentText(message).setAutoCancel(true);
-            Intent launchIntent = context.getApplicationContext().getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            Class<?> launcherClass = null;
+            try {
+                launcherClass = Class.forName(launchClassName);
+            } catch (ClassNotFoundException e) {
+                Log.e(TAG,"launcher class not found",e);
+            }
+            Intent launchIntent = null;
+            if(launcherClass!=null) {
+                 launchIntent = new Intent(context, launcherClass);
+            }else{
+                launchIntent = context.getApplicationContext().getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            }
             if(launchIntent!=null){
                 launchIntent = addExtrasToIntent(launchIntent,details);
             }

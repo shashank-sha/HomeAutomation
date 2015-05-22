@@ -70,6 +70,7 @@
 
         private static String currentActivityName;
         private static String currentActivityLabel;
+        public static boolean robolectricTesting = false;
 
         static {
             logWorker.start();
@@ -156,7 +157,7 @@
 
         public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber,String classNameOfCustomDialogFrag) {
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"initializeWithContextAndKey() called");
+                Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,googleApiProjectNumber);
             classNameOfCustomDialogFragment = classNameOfCustomDialogFrag;
@@ -322,7 +323,6 @@
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
             //would work.
-
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 return;
@@ -337,7 +337,6 @@
                 if(Zinteract.isDebuggingOn()){
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
-
                 return;
             }
 
@@ -362,14 +361,22 @@
                         else if(classNameOfCustomDialogFragment!=null){
                             try {
                                 newNotification = (ZinteractInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
-                            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                            } catch (InstantiationException e) {
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                            } catch (IllegalAccessException e){
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                            } catch (ClassNotFoundException e){
                                 Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             }
                         }
                         else{
                             try {
                                 newNotification = (ZinteractInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
-                            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                            } catch (InstantiationException e) {
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                            } catch (IllegalAccessException e){
+                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                            } catch (ClassNotFoundException e){
                                 Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             }
                         }
@@ -445,9 +452,9 @@
             });
         }
 
-        public static void checkPromotions(){
+        static void checkPromotions(){
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"checkPromotions() called");
+                Log.d(TAG, "checkPromotions() called");
             }
 
             logWorker.post(new Runnable() {
@@ -522,6 +529,7 @@
         }
 
         private static void addPromotions(JSONObject json){
+
             try {
                 JSONArray promotions = json.getJSONArray("promotions");
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
@@ -532,58 +540,59 @@
                     int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
                     int appVersionFrom,appVersionTo;
                     if(currentAppVersion!=-1) {
-                        Log.i(TAG,Integer.valueOf(currentAppVersion).toString());
+                        Log.i(TAG, Integer.valueOf(currentAppVersion).toString());
                         if (promotion.has("appVersionFrom")) {
                             appVersionFrom = promotion.getInt("appVersionFrom");
-                            if(currentAppVersion<appVersionFrom){
-                                Log.i(TAG,"appVersionFrom problem");
+                            if (currentAppVersion < appVersionFrom) {
+                                Log.i(TAG, "appVersionFrom problem");
                                 continue;
                             }
                         }
-                        if(promotion.has("appVersionTo")){
+                        if (promotion.has("appVersionTo")) {
                             appVersionTo = promotion.getInt("appVersionTo");
-                            if(currentAppVersion>appVersionTo){
-                                Log.i(TAG,"appVersionTo problem");
+                            if (currentAppVersion > appVersionTo) {
+                                Log.i(TAG, "appVersionTo problem");
                                 continue;
                             }
-                        }
-                        long timeStampNow = System.currentTimeMillis();
-                        if(promotion.has("campaignEndTime")){
-                            long campaignEndTime = promotion.getLong("campaignEndTime");
-                            if(campaignEndTime<timeStampNow){
-                                Log.i(TAG,"time limit problem"+" "+Long.valueOf(timeStampNow)+" : "+Long.valueOf(campaignEndTime));
-                                continue;
-                            }
-                        }
-                        if(promotion.getString("type").equals("screenFix")){
-                            Log.i("screenFix","Got screenFix");
-                            dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
-                        }else if(promotion.getString("type").equals("promotion")) {
-                            Log.i("PROMOTION","GOT PROMOTION");
-//Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
-                            if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
-                                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
-                            } else {
-                                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
-                            }
-                        }else if(promotion.getString("type").equals("GEO")){
-                            JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
-                            Log.i(TAG,"We have a geo event being saved to database");
-                            dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
-                                    suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
-                            context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
-                                    .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
-                        }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
-                            JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
-                            dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
-                                    suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
-                            Log.i(TAG,"We have a simple event being saved to database");
-                            context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
-                                    .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
-                        }else if(promotion.getString("type").equals("IBEACON")){
-
                         }
                     }
+                    long timeStampNow = System.currentTimeMillis();
+                    if(promotion.has("campaignEndTime")){
+                        long campaignEndTime = promotion.getLong("campaignEndTime");
+                        if(campaignEndTime<timeStampNow){
+                            Log.i(TAG,"time limit problem"+" "+Long.valueOf(timeStampNow)+" : "+Long.valueOf(campaignEndTime));
+                            continue;
+                        }
+                    }
+                    if(promotion.getString("type").equals("screenFix")){
+                        Log.i("screenFix","Got screenFix");
+                        dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                    }else if(promotion.getString("type").equals("promotion")) {
+                        Log.i("PROMOTION","GOT PROMOTION");
+//Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
+                        if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                        } else {
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                        }
+                    }else if(promotion.getString("type").equals("GEO")){
+                        JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
+                        Log.i(TAG,"We have a geo event being saved to database");
+                        dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
+                                suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
+                        context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
+                    }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
+                        JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
+                        dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
+                                suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
+                        Log.i(TAG,"We have a simple event being saved to database");
+                        context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
+                    }else if(promotion.getString("type").equals("IBEACON")){
+
+                    }
+
                 }
 
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
@@ -709,7 +718,7 @@
          */
 
         public static String getUserProperty(String key, String defaultValue){
-            return dataStore.getUserProperty(context,key,defaultValue);
+            return dataStore.getUserProperty(context, key, defaultValue);
         }
 
         /**
@@ -894,7 +903,7 @@
             logWorker.post(new Runnable() {
                 @Override
                 public void run() {
-                    sendEventToServer(START_SESSION_EVENT, timestamp,Constants.Z_START_SESSION_EVENT_LOG_URL,true);
+                    sendEventToServer(START_SESSION_EVENT, timestamp, Constants.Z_START_SESSION_EVENT_LOG_URL, true);
                 }
             });
 
@@ -964,7 +973,7 @@
         }
 
 
-        public static void uploadEvents() {
+        static void uploadEvents() {
             if (!isContextAndApiKeySet("uploadEvents()")) {
                 return;
             }
@@ -977,7 +986,7 @@
             });
         }
 
-        public static void syncDataStore(){
+        static void syncDataStore(){
             if(Zinteract.isDebuggingOn()){
                 Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
             }
@@ -1001,7 +1010,7 @@
             boolean syncSuccess = false;
             try {
                 JSONObject postParams = new JSONObject();
-                postParams.put("lastDataStoreSynchedTime",CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
+                postParams.put("lastDataStoreSynchedTime", CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
                 String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
@@ -1212,6 +1221,9 @@
          * @param eventProperties additional parameters. e.g for purchase event additional parameters might be- amount,quantity etc
          */
         public static void logEvent(String eventType, JSONObject eventProperties) {
+            /*if(Zinteract.robolectricTesting) {
+                System.out.println("ZINTERACT: logEvent - " + eventType);
+            }*/
             checkedLogEvent(eventType, eventProperties, null, System.currentTimeMillis(), true);
         }
 
@@ -1329,7 +1341,7 @@
 
         private static void setUserOnServer(){
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"Sending new user id to the server.");
+                Log.d(TAG, "Sending new user id to the server.");
             }
 
             try {
@@ -1439,7 +1451,7 @@
             logPurchaseCompletedEvent(null,grandTotal,total,shipping,tax,quantity,null,null,null);
         }
         public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total, Double shipping, Double tax, Integer quantity) {
-            logPurchaseCompletedEvent(currency,grandTotal,total,shipping,tax,quantity,null,null,null);
+            logPurchaseCompletedEvent(currency, grandTotal, total, shipping, tax, quantity, null, null, null);
         }
         public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total,
                                                      Double shipping, Double tax, Integer quantity,
@@ -1476,9 +1488,15 @@
             } catch (JSONException e) {
                 Log.e(TAG,"purchaseDetails",e);
             }
+            /*if(Zinteract.robolectricTesting) {
+                System.out.println("ZINTERACT: logging purchase completed event");
+            }*/
             logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
         }
         public static void logPurchaseAttempted() {
+            /*if(Zinteract.robolectricTesting) {
+                System.out.println("ZINTERACT: logging purchase attempted event");
+            }*/
             logEvent(Constants.Z_PURCHASE_ATTEMPTED_EVENT);
         }
     }
