@@ -38,11 +38,17 @@
             "latitude": 17.422175,
             "longitude": 78.38155,
             "radius": 100,
-            "geofenceId": "Office"
+            "geofenceId": "Mall1"
+          },
+          {
+            "latitude": 83.2345,
+            "longitude": 34.2345,
+            "radius": 300,
+            "geofenceId": "Mall2"
           }
         ],
         "expirationTime": 1500000000000,
-        "timeDelay": 10000,
+        "timeDelay": 1000,
         "transitionType": "DWELL",
         "initialTrigger": "DWELL"
       },
@@ -50,8 +56,8 @@
       "campaignEndTime": 1500000000000,
       "checkServerBeforeNotifying": false,
       "suppressionLogic": {
-        "maximumNumberOfTimesToShow": 3,
-        "minimumDurationInMinutesBeforeReshow": 2
+        "maximumNumberOfTimesToShow": 2,
+        "minimumDurationInMinutesBeforeReshow": 1
       },
       "template": {
         "title": "WELCOME TO THE OFFICE",

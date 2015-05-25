@@ -186,6 +186,25 @@ public abstract class TestBaseClass {
     protected void executeWorkerTasksForLogEvent(){
         instantiateZinteractWorkers();
         executeImmediateTasksOnZinteractWorkers();
+        executeWorkerTasksOnCampaignHandler();
+        instantiateZinteractWorkers();
+        executeImmediateTasksOnZinteractWorkers();
+        executeWorkerTasksOnCampaignHandler();
+        /*intentForService = shadowApplication.getNextStartedService();
+        if(intentForService==null){
+            return;
+        }
+        compName = intentForService.getComponent();
+        System.out.println("TEST: service started- " + compName.getClassName());
+        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
+            ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
+            campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
+            instantiateCampaignHandlerWorkers();
+            executeImmediateTasksOnCampaignHandlerWorkers();
+        }*/
+    }
+
+    protected void executeWorkerTasksOnCampaignHandler() {
         ShadowApplication shadowApplication = Robolectric.shadowOf(Robolectric.application);
         Intent intentForService = shadowApplication.getNextStartedService();
         if(intentForService==null){
@@ -194,27 +213,12 @@ public abstract class TestBaseClass {
         ComponentName compName = intentForService.getComponent();
         System.out.println("TEST: service started- "+compName.getClassName());
         if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
-                ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
-                campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
-                instantiateCampaignHandlerWorkers();
-                executeImmediateTasksOnCampaignHandlerWorkers();
-        }
-        instantiateZinteractWorkers();
-        executeImmediateTasksOnZinteractWorkers();
-        intentForService = shadowApplication.getNextStartedService();
-        if(intentForService==null){
-            return;
-        }
-        compName = intentForService.getComponent();
-        System.out.println("TEST: service started- "+compName.getClassName());
-        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
             ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
             campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
             instantiateCampaignHandlerWorkers();
             executeImmediateTasksOnCampaignHandlerWorkers();
         }
     }
-
 
 
     private String getCurrentDateTime(long timestamp){
