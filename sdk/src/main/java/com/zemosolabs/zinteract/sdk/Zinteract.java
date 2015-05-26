@@ -70,7 +70,7 @@
 
         private static String currentActivityName;
         private static String currentActivityLabel;
-        public static boolean robolectricTesting = false;
+       // public static boolean robolectricTesting = false;
 
         static {
             logWorker.start();

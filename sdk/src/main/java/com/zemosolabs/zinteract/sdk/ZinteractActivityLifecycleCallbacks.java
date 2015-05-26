@@ -81,7 +81,7 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
     public void onActivityResumed(Activity activity) {
         String packageName = activity.getPackageName();
         PackageManager pm = activity.getPackageManager();
-        if(Zinteract.robolectricTesting==false) {
+       // if(Zinteract.robolectricTesting==false) {
             Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
             ComponentName compName = launchIntent.getComponent();
             String launchingClassName = compName.getClassName();
@@ -95,7 +95,7 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
                     }
                 }
             }
-        }
+       // }
         /*PackageManager pm = activity.getPackageManager();*/
         String name = activity.getComponentName().getClassName();
         String label = null;
