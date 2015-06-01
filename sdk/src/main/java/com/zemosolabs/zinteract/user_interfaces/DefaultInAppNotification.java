@@ -71,7 +71,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
     private String actionButtonText;
     private String remindButtonText;
     private String shareText;
-    private Bitmap bitmap;
+    private Bitmap bitmap,resultBitmap;
     private boolean DEBUGGING_MODE = false;
 
     private static final String TAG = "InAppNotification";
@@ -80,7 +80,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         this.campaignId = campaignId;
         this.context = context;
         if (DEBUGGING_MODE) {
-            templateType = "REGULAR";
+            /*templateType = "REGULAR";
             title = "Test Title";
             message = "<h2>Try me!</h2><p><b>Hello</b></p><p>textAngular is a super cool WYSIWYG Text Editor directive for AngularJS</p><p><b>Features:</b></p><ol><li>Automatic Seamless Two-Way-Binding</li><li> <font color=\"#0000EE\">Super Easy <b>Theming</b> Options</font></li><li>Simple Editor Instance Creation</li><li>Safely Parses Html for Custom Toolbar Icons</li><li>Doesn't Use an iFrame</li><li>Works with Firefox, Chrome, and IE8+</li></ol><p><b>Code at GitHub:</b> <a href=\"https://github.com/fraywing/textAngular\">Here</a> </p>";
             imageUrl = "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg";
@@ -94,21 +94,21 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             byte[] decodedString = Base64.decode(getImage(), Base64.DEFAULT);
             //Bitmap bitmap = BitmapFactory.decodeStream(input);
             bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Rect rect = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
             Rect bottomRect = new Rect(0,bitmap.getHeight()/2,bitmap.getWidth(),bitmap.getHeight());
             RectF rectF = new RectF(rect);
             Paint paint = new Paint();
             paint.setAntiAlias(true);
             Canvas canvas = new Canvas(resultBitmap);
-            float cornerRadius = 10.0f;
+            float cornerRadius = 30.0f;
             canvas.drawARGB(0,0,0,0);
             canvas.drawRoundRect(rectF,cornerRadius,cornerRadius,paint);
             canvas.drawRect(bottomRect,paint);
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             canvas.drawBitmap(bitmap,rect,rect,paint);
 //            imageBase64 = context.getString(R.string.base64ImageStringTest);
-            return;
+            return;*/
         }
         try {
 
@@ -182,14 +182,14 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
         //Bitmap bitmap = BitmapFactory.decodeStream(input);
         bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Rect rect = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
         Rect bottomRect = new Rect(0,bitmap.getHeight()/2,bitmap.getWidth(),bitmap.getHeight());
         RectF rectF = new RectF(rect);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         Canvas canvas = new Canvas(resultBitmap);
-        float cornerRadius = 10.0f;
+        float cornerRadius = 30.0f;
         canvas.drawARGB(0,0,0,0);
         canvas.drawRoundRect(rectF,cornerRadius,cornerRadius,paint);
         canvas.drawRect(bottomRect,paint);
@@ -249,7 +249,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             if(imageUrl!=null){
                 Log.i("Image","ImgView updating");
                // new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
-                imgView.setImageBitmap(bitmap);
+                imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
                     imgView.setOnClickListener(imageClickHandler);
                 }
@@ -288,7 +288,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             if (imageUrl != null) {
                 Log.i("Image", "ImgView updating");
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
-                imgView.setImageBitmap(bitmap);
+                imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
                     imgView.setOnClickListener(imageClickHandler);
                 }
@@ -322,7 +322,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_action);
             if (imageUrl != null) {
                 Log.i("Image", "ImgView updating");
-                imgView.setImageBitmap(bitmap);
+                imgView.setImageBitmap(resultBitmap);
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 if(onClickUrl!=null){
                     imgView.setOnClickListener(imageClickHandler);
@@ -437,51 +437,5 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         }
     };
 
-    /*private class UpdateImageViewAsyncTask extends AsyncTask<Void,Void,Bitmap> {
-
-        private String url;
-
-        UpdateImageViewAsyncTask(String url){
-            this.url = url;
-        }
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-            try {
-                URL urlConnection = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlConnection
-                        .openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                //byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeStream(input);
-                //Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                Bitmap resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                Rect rect = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
-                Rect bottomRect = new Rect(0,bitmap.getHeight()/2,bitmap.getWidth(),bitmap.getHeight());
-                RectF rectF = new RectF(rect);
-                Paint paint = new Paint();
-                paint.setAntiAlias(true);
-                Canvas canvas = new Canvas(resultBitmap);
-                float cornerRadius = getResources().getDimension(R.dimen.bitmap_corner_radius);
-                canvas.drawARGB(0,0,0,0);
-                canvas.drawRoundRect(rectF,cornerRadius,cornerRadius,paint);
-                canvas.drawRect(bottomRect,paint);
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-                canvas.drawBitmap(bitmap,rect,rect,paint);
-                Log.i("Bitmap","Bitmap Loaded");
-                return resultBitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            DefaultInAppNotification.this.bitmap = bitmap;
-        }
-    }*/
 }
 

@@ -255,8 +255,8 @@ class DbHelper extends SQLiteOpenHelper {
     }
 
     //Promotions related
-    synchronized long addPromotion(String promotion, String campaign_id, String screen_id) {
-        long result = -1;
+    synchronized long addPromotion(String promotion, String campaign_id, String screen_id,int maximumNumberOfTimesToShow,int minimumDurationBeforeReshowInMin) {
+        long result = -1,result2=-1;
         try {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
@@ -264,8 +264,14 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
 
+            ContentValues contentValues2 = new ContentValues();
+            contentValues2.put("campaign_id", campaign_id);
+            contentValues2.put("maximumNumberOfTimesToShow", maximumNumberOfTimesToShow);
+            contentValues2.put("minimumDurationBeforeReshowInMin", minimumDurationBeforeReshowInMin);
+
             result = db.insertWithOnConflict(PROMOTION_TABLE_NAME, null, contentValues,5);
-            if (result == -1) {
+            result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
+            if (result == -1 || result2== -1) {
                 Log.w(TAG, "Insert failed");
             }
 

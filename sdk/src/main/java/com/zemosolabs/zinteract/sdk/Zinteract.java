@@ -344,6 +344,26 @@
 
                 final String campaignId = promotion.getString("campaignId");
                 final JSONObject template = promotion.getJSONObject("template");
+                int maximumNumberOfTimesToShow = promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
+                int minimumDurationInMinutesBeforeReshow = promotion.getJSONObject("suppressionLogic").getInt("minimumDurationInMinutesBeforeReshow");
+                long currentTime = System.currentTimeMillis();
+                if(minimumDurationInMinutesBeforeReshow!=-1) {
+                    if (currentTime < dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
+                        if (Zinteract.isDebuggingOn()) {
+                            Log.d(TAG, "Not so soon " + campaignId);
+                        }
+                        dbHelper.markPromotionAsSeen(campaignId);
+                        return;
+                    }
+                }
+                if(maximumNumberOfTimesToShow!=-1) {
+                    if (maximumNumberOfTimesToShow >= dbHelper.getNumberOfTimesShown(campaignId)) {
+                        if (Zinteract.isDebuggingOn()) {
+                            Log.d(TAG, "Already shown too many times " + campaignId);
+                        }
+                        return;
+                    }
+                }
 
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
@@ -535,6 +555,18 @@
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
+                    JSONObject suppressionLogic = new JSONObject();
+                    if(promotion.has("suppressionLogic")) {
+                        suppressionLogic = promotion.getJSONObject("suppressionLogic");
+                    }
+                    int maximumNumberOfTimesToShow = -1;
+                    int minimumDurationInMinutesBeforeReshow = -1;
+                    if(suppressionLogic.has("maximumNumberOfTimesToShow")) {
+                        maximumNumberOfTimesToShow = suppressionLogic.getInt("maximumNumberOfTimesToShow");
+                    }
+                    if(suppressionLogic.has("minimumDurationInMinutesBeforeReshow")){
+                        minimumDurationInMinutesBeforeReshow = suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow");
+                    }
                     Log.i("promotions: ",i+". "+promotion.toString());
                     final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
                     int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
@@ -565,27 +597,27 @@
                         }
                     }
                     if(promotion.getString("type").equals("screenFix")){
-                        Log.i("screenFix","Got screenFix");
+                        Log.i("screenFix", "Got screenFix");
                         dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                     }else if(promotion.getString("type").equals("promotion")) {
                         Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
+                                    maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                         } else {
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp"); //promotion.getString("screenId"));
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp",
+                                    maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
                     }else if(promotion.getString("type").equals("GEO")){
-                        JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
                         Log.i(TAG,"We have a geo event being saved to database");
                         dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
-                                suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
+                                                        maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                         context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
                     }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
-                        JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
                         dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
-                                suppressionLogic.getInt("maximumNumberOfTimesToShow"),suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow"));
+                                                            maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                         Log.i(TAG,"We have a simple event being saved to database");
                         context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
