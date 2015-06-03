@@ -239,7 +239,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             View tv = v.findViewById(R.id.title_regular);
             if(title!=null){
                 Log.i("Title","Updating");
-                ((TextView)tv).setText(title);
+                ((TextView)tv).setText(Html.fromHtml(title),TextView.BufferType.SPANNABLE);
             }
             else{
                 Log.i("Title","Being Removed");
@@ -279,7 +279,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             View tv = v.findViewById(R.id.title_rate_me);
             if (title != null) {
                 Log.i("Title", "Updating");
-                ((TextView) tv).setText(title);
+                ((TextView) tv).setText(Html.fromHtml(title),TextView.BufferType.SPANNABLE);
             } else {
                 Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
@@ -314,7 +314,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             View tv = v.findViewById(R.id.title_action);
             if (title != null) {
                 Log.i("Title", "Updating");
-                ((TextView) tv).setText(title);
+                ((TextView) tv).setText(Html.fromHtml(title),TextView.BufferType.SPANNABLE);
             } else {
                 Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
@@ -376,7 +376,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 JSONObject k = new JSONObject();
                 k.put("campaignId", campaignId);
                 //Zinteract.logEvent("DoNotAskMeAgain", k);
-                Zinteract.updatePromotionAsSeen(campaignId);
+                Zinteract.removePromotion(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -393,7 +393,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             try{
                 Log.i("RATEME:","CLICKED");
                 startActivity(rateMyApp);
-                Zinteract.updatePromotionAsSeen(campaignId);
+                Zinteract.removePromotion(campaignId);
             }catch (ActivityNotFoundException e){
                 Log.i("Exception: ",e.toString());
             }

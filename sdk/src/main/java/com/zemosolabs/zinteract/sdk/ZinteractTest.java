@@ -87,7 +87,11 @@ public class ZinteractTest extends ApplicationTestCase<Application> {
             JSONArray promotions = new JSONArray(promotionsForScreensJSON);
             for(int i =0; i < promotions.length(); i++){
                 JSONObject promotion = promotions.getJSONObject(i);
-                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
+
+                dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
+                        suppressionLogic.getInt("maximumNumberOfTimesToShow"),
+                        suppressionLogic.getInt("minimumDurationBeforeReshowInMin"));
             }
             Thread.sleep(5000);
 

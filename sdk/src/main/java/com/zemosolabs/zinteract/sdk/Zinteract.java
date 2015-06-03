@@ -150,7 +150,7 @@
          */
         public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber) {
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"initializeWithContextAndKey() called");
+                Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,googleApiProjectNumber);
         }
@@ -226,7 +226,7 @@
 
         private static void registerInBackground(){
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"registerInBackground() called");
+                Log.d(TAG, "registerInBackground() called");
             }
             try {
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
@@ -333,7 +333,7 @@
             dbHelper.removeSeenPromotions();
             final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
 
-            if(promotion.length() == 0 || promotion == null){
+            if(promotion == null || promotion.length() == 0  ){
                 if(Zinteract.isDebuggingOn()){
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
@@ -344,14 +344,28 @@
 
                 final String campaignId = promotion.getString("campaignId");
                 final JSONObject template = promotion.getJSONObject("template");
-                int maximumNumberOfTimesToShow = promotion.getJSONObject("suppressionLogic").getInt("maximumNumberOfTimesToShow");
-                int minimumDurationInMinutesBeforeReshow = promotion.getJSONObject("suppressionLogic").getInt("minimumDurationInMinutesBeforeReshow");
+                int maximumNumberOfTimesToShow = -1, minimumDurationInMinutesBeforeReshow = -1;
+                if(promotion.has("suppressionLogic")) {
+                    JSONObject suppressionLogic = promotion.getJSONObject("suppressionLogic");
+                    if(suppressionLogic.has("maximumNumberOfTimesToShow")) {
+                        maximumNumberOfTimesToShow = suppressionLogic.getInt("maximumNumberOfTimesToShow");
+                    }
+                    if(suppressionLogic.has("minimumDurationInMinutesBeforeReshow")) {
+                        minimumDurationInMinutesBeforeReshow = suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow");
+                    }
+                }
                 long currentTime = System.currentTimeMillis();
                 if(minimumDurationInMinutesBeforeReshow!=-1) {
-                    if (currentTime < dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
+                    if (currentTime > dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
                         if (Zinteract.isDebuggingOn()) {
                             Log.d(TAG, "Not so soon " + campaignId);
                         }
+                        dbHelper.markPromotionAsSeen(campaignId);
+                        return;
+                    }
+                }// In case the minimumDurationInMinutes value is not found, then the campaign will be shown only once.
+                else{
+                    if(dbHelper.getNumberOfTimesShown(campaignId)>=1) {
                         dbHelper.markPromotionAsSeen(campaignId);
                         return;
                     }
@@ -361,6 +375,13 @@
                         if (Zinteract.isDebuggingOn()) {
                             Log.d(TAG, "Already shown too many times " + campaignId);
                         }
+                        dbHelper.markPromotionAsSeen(campaignId);
+                        return;
+                    }
+                }// In case the minimumDurationInMinutes value is not found, then the campaign will be shown only once.
+                else{
+                    if(dbHelper.getNumberOfTimesShown(campaignId)>=1) {
+                        dbHelper.markPromotionAsSeen(campaignId);
                         return;
                     }
                 }
@@ -499,7 +520,9 @@
             }
         }
         public static void updatePromotionAsSeen(String campaignId){
-            markPromotionAsSeen(campaignId);
+            //markPromotionAsSeen(campaignId);
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            dbHelper.updateCampaign(campaignId,System.currentTimeMillis());
             JSONObject promotionEvent = new JSONObject();
             try {
                 promotionEvent.put("campaignId",campaignId);
@@ -509,7 +532,7 @@
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }
 
-        static void markPromotionAsSeen(String campaignId){
+        public static void removePromotion(String campaignId) {
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.markPromotionAsSeen(campaignId);
         }

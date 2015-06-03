@@ -51,11 +51,20 @@ public class Activity2 extends Activity {
     public void onResume(){
 
         TextView tV = (TextView)findViewById(R.id.userSpecificText);
+
+        // Example usage of the user properties.
+        // Once the userproperty key and value are defined with Zinteract.setUserProperty as in the MainActivity,
+        // They String 'value' can be extracted by using the 'key'. The 'value' for the 'key' can be changed any time from your
+        // Zinteract account online.
+
         String userFName = Zinteract.getUserProperty("fname","Friend");
         String userLName = Zinteract.getUserProperty("lname","");
         String message = "Hello " + userFName + " " + userLName+"!!!"+" How are you doing?";
         tV.setText(message);
-        Zinteract.logEvent("view screen2");
+
+        // Example logging event with name 'viewed screen2'
+        Zinteract.logEvent("viewed screen2");
+
         super.onResume();
     }
 
@@ -64,15 +73,17 @@ public class Activity2 extends Activity {
         super.onPause();
     }
 
-    public void sendToActivity3(View view)
-    {
+    public void sendToActivity3(View view) {
+        // Example logging event with name 'clicked to view screen3'
         Zinteract.logEvent("clicked to view screen3");
+
         Intent intent = new Intent(Activity2.this, Activity3.class);
         startActivity(intent);
     }
 
     public void sendToActivity1(View view)
     {
+        //Example logging Event with name 'clicked to view screen1'
         Zinteract.logEvent("clicked to view screen1");
         Intent intent = new Intent(Activity2.this, MainActivity.class);
         startActivity(intent);

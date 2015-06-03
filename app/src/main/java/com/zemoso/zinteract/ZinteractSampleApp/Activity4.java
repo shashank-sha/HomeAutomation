@@ -66,7 +66,9 @@ public class Activity4 extends Activity implements View.OnClickListener {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.logEvent("view screen4");
+
+        // Example logging Event with name 'viewed screen4'
+        Zinteract.logEvent("viewed screen4");
         grandTotal = Double.valueOf(getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).getString("grandTotal","0.00"));
         ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
     }
@@ -79,6 +81,7 @@ public class Activity4 extends Activity implements View.OnClickListener {
 
     public void sendToActivity5(View view)
     {
+        // Example logging Event 'clicked to view screen5'
         Zinteract.logEvent("clicked to view screen5");
         Intent intent = new Intent(Activity4.this, Activity5.class);
         startActivity(intent);
@@ -86,6 +89,7 @@ public class Activity4 extends Activity implements View.OnClickListener {
 
     public void sendToActivity3(View view)
     {
+        // Example logging Event 'clicked to view screen3'
         Zinteract.logEvent("clicked to view screen3");
         Intent intent = new Intent(Activity4.this, Activity3.class);
         startActivity(intent);
@@ -95,17 +99,21 @@ public class Activity4 extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.buttonBuy:
-                /*if(Zinteract.robolectricTesting) {
-                    System.out.println("APP: buy button clicked");
-                }*/
+
+                //Example of logging purchase Completed event
+                //Purchase completed event with only the grandTotal is shown here.
+                // Other details such as currency, quantity,tax, shipping, orderId, receiptId, productSku
+                // etc can be logged in the same event using the corresponding methods provided in the sdk
+                // for logging purchase completed events.
+
                 Zinteract.logPurchaseCompletedEvent(grandTotal);
                 grandTotal = 0.00;
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 break;
             case R.id.buttonAddToCart:
-                /*if(Zinteract.robolectricTesting) {
-                    System.out.println("APP: add to cart button clicked");
-                }*/
+
+                //Example of logging purchase Attempted event
+
                 grandTotal += (Math.random()*5000);
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 Zinteract.logPurchaseAttempted();

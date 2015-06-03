@@ -45,7 +45,9 @@ public class Activity5 extends Activity {
     @Override
     public void onResume(){
         super.onResume();
-        Zinteract.logEvent("view screen5");
+
+        //Example of logging event with name 'viewed screen5'
+        Zinteract.logEvent("viewed screen5");
     }
 
     @Override
@@ -55,6 +57,7 @@ public class Activity5 extends Activity {
 
     public void sendToActivity4(View view)
     {
+        //Example of logging event with name 'clicked to view screen4'
         Zinteract.logEvent("clicked to view screen4");
         Intent intent = new Intent(Activity5.this, Activity4.class);
         startActivity(intent);
@@ -62,6 +65,7 @@ public class Activity5 extends Activity {
 
     public void sendToActivity1(View view)
     {
+        //Example of logging event with name 'clicked to view screen1'
         Zinteract.logEvent("clicked to view screen1");
         Intent intent = new Intent(Activity5.this, MainActivity.class);
         startActivity(intent);

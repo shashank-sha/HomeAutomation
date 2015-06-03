@@ -637,7 +637,7 @@ class DbHelper extends SQLiteOpenHelper {
 
     synchronized void removeSimpleEventCampaign(String campaignId) {
         try {
-            SQLiteDatabase db = getReadableDatabase();
+            SQLiteDatabase db = getWritableDatabase();
             String[] whereArgs = {campaignId};
             db.delete(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
             db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);
@@ -650,7 +650,7 @@ class DbHelper extends SQLiteOpenHelper {
 
     synchronized void removeGeoCampaign(String campaignId) {
         try {
-            SQLiteDatabase db = getReadableDatabase();
+            SQLiteDatabase db = getWritableDatabase();
             String[] whereArgs = {campaignId};
             db.delete(Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
             db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);

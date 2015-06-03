@@ -17,11 +17,23 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         //Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+
+        // Initialize Zinteract with Context and key provided upon registration on Zinteract website.
+        // Optionally the Google Api Project key and custom class for IN APP PROMOTION can be passed in as arguments.
+
         Zinteract.initializeWithContextAndKey(getApplicationContext(),"43eb-a23d-0106af662c83","914500168484");
         //Zinteract.initializeWithContextAndKey(getApplicationContext(),"ios67","914500168484");
+
+        //Setting the user properties.
+        //Once the user properties are set through these methods, they can be accessed through you Zinteract account
+        //And the values can be dynamically changed from the website using your Zinteract account.
+
         Zinteract.setUserProperty("fname","John");
         Zinteract.setUserProperty("lname","Doe");
         Zinteract.setUserProperty("age","39");
+
+        //enableDebugging method should only be used for uploading screens for to the Zinteract website for dynamic editing.
+
         Zinteract.enableDebugging();
     }
 
@@ -50,9 +62,9 @@ public class MainActivity extends Activity {
 
     @Override
     public void onResume(){
-        Zinteract.logEvent("view screen1");
+        // An example of logging event with name 'viewed screen1'
+        Zinteract.logEvent("viewed screen1");
         super.onResume();
-
     }
 
     @Override
@@ -60,12 +72,17 @@ public class MainActivity extends Activity {
         super.onPause();
     }
 
-    public void sendToActivity2(View view)
-    {
+    public void sendToActivity2(View view){
+
+        // An example of logging event.
+        // Any specific event that occurs in the app can be recorded by using the method Zinteract.logEvent().
+        // A string parameter can be passed to the method naming the event.
+
         Zinteract.logEvent("clicked to view screen2");
         Intent intent = new Intent(MainActivity.this, Activity2.class);
         startActivity(intent);
     }
+
     public void show(View view){
         findViewById(R.id.visibleText).setVisibility(View.VISIBLE);
         findViewById(R.id.hiddenText).setVisibility(View.VISIBLE);
