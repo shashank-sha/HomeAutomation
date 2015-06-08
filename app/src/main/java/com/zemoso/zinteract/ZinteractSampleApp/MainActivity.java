@@ -27,9 +27,8 @@ public class MainActivity extends Activity {
                                                 "43eb-a23d-0106af662c83","914500168484");
 
         /*Setting the user properties.
-        Once the user properties are set through these methods, they can be accessed through you
-        Zinteract account and the values can be dynamically changed from the website using your
-        Zinteract account.*/
+        Once the user properties are set through these methods, they can be accessed from other
+        activities using Zinteract.getUserProperty() method.*/
 
         Zinteract.setUserProperty("fname","John");
         Zinteract.setUserProperty("lname","Doe");

@@ -50,8 +50,7 @@ public class Activity2 extends Activity {
 
         /*Example usage of the user properties.
         Once the userproperty key and value are defined with Zinteract.setUserProperty as in the MainActivity,
-        They String 'value' can be extracted by using the 'key'. The 'value' for the 'key' can be changed any time from your
-        Zinteract account online.*/
+        They String 'value' can be extracted by using the 'key'.*/
 
         String userFName = Zinteract.getUserProperty("fname","Friend");
         String userLName = Zinteract.getUserProperty("lname","");
