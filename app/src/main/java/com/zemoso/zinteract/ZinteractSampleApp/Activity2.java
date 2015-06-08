@@ -1,13 +1,9 @@
 package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,16 +23,16 @@ public class Activity2 extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        /*Inflate the menu; this adds items to the action bar if it is present.*/
         getMenuInflater().inflate(R.menu.menu_activity2, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        /*Handle action bar item clicks here. The action bar will
+        automatically handle clicks on the Home/Up button, so long
+        as you specify a parent activity in AndroidManifest.xml.*/
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -52,17 +48,17 @@ public class Activity2 extends Activity {
 
         TextView tV = (TextView)findViewById(R.id.userSpecificText);
 
-        // Example usage of the user properties.
-        // Once the userproperty key and value are defined with Zinteract.setUserProperty as in the MainActivity,
-        // They String 'value' can be extracted by using the 'key'. The 'value' for the 'key' can be changed any time from your
-        // Zinteract account online.
+        /*Example usage of the user properties.
+        Once the userproperty key and value are defined with Zinteract.setUserProperty as in the MainActivity,
+        They String 'value' can be extracted by using the 'key'. The 'value' for the 'key' can be changed any time from your
+        Zinteract account online.*/
 
         String userFName = Zinteract.getUserProperty("fname","Friend");
         String userLName = Zinteract.getUserProperty("lname","");
         String message = "Hello " + userFName + " " + userLName+"!!!"+" How are you doing?";
         tV.setText(message);
 
-        // Example logging event with name 'viewed screen2'
+        /*Example logging event with name 'viewed screen2'*/
         Zinteract.logEvent("viewed screen2");
 
         super.onResume();
@@ -74,7 +70,7 @@ public class Activity2 extends Activity {
     }
 
     public void sendToActivity3(View view) {
-        // Example logging event with name 'clicked to view screen3'
+        /*Example logging event with name 'clicked to view screen3'*/
         Zinteract.logEvent("clicked to view screen3");
 
         Intent intent = new Intent(Activity2.this, Activity3.class);
@@ -83,7 +79,7 @@ public class Activity2 extends Activity {
 
     public void sendToActivity1(View view)
     {
-        //Example logging Event with name 'clicked to view screen1'
+        /*Example logging Event with name 'clicked to view screen1'*/
         Zinteract.logEvent("clicked to view screen1");
         Intent intent = new Intent(Activity2.this, MainActivity.class);
         startActivity(intent);

@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
 
@@ -15,24 +16,27 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Crashlytics.start(this);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
-        // Initialize Zinteract with Context and key provided upon registration on Zinteract website.
-        // Optionally the Google Api Project key and custom class for IN APP PROMOTION can be passed in as arguments.
+        /*Initialize Zinteract with Context and key provided upon registration on Zinteract website.
+        Optionally the Google Api Project key and custom class for IN APP PROMOTION can be passed
+        in as arguments.*/
 
-        Zinteract.initializeWithContextAndKey(getApplicationContext(),"43eb-a23d-0106af662c83","914500168484");
-        //Zinteract.initializeWithContextAndKey(getApplicationContext(),"ios67","914500168484");
+        Zinteract.initializeWithContextAndKey(getApplicationContext(),
+                                                "43eb-a23d-0106af662c83","914500168484");
 
-        //Setting the user properties.
-        //Once the user properties are set through these methods, they can be accessed through you Zinteract account
-        //And the values can be dynamically changed from the website using your Zinteract account.
+        /*Setting the user properties.
+        Once the user properties are set through these methods, they can be accessed through you
+        Zinteract account and the values can be dynamically changed from the website using your
+        Zinteract account.*/
 
         Zinteract.setUserProperty("fname","John");
         Zinteract.setUserProperty("lname","Doe");
         Zinteract.setUserProperty("age","39");
 
-        //enableDebugging method should only be used for uploading screens for to the Zinteract website for dynamic editing.
+        /*enableDebugging method should only be used for uploading screens for to the Zinteract
+         website for dynamic editing or to read the logs for troubleshooting */
 
         Zinteract.enableDebugging();
     }

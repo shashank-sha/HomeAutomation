@@ -2,8 +2,8 @@ package com.zemoso.zinteract.ZinteractSampleApp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,8 +11,14 @@ import android.widget.TextView;
 
 import com.zemosolabs.zinteract.sdk.Zinteract;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class Activity3 extends Activity {
+    private static final String TAG = "SampleApp.Activity3" ;
+    long inTime;
+    long outTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +55,7 @@ public class Activity3 extends Activity {
     @Override
     public void onResume(){
         super.onResume();
-
+        inTime = System.currentTimeMillis();
         // Example logging Event with name 'viewed screen3'
         Zinteract.logEvent("viewed screen3");
     }
@@ -59,18 +65,38 @@ public class Activity3 extends Activity {
         super.onPause();
     }
 
+    /* This method is called when the button with text 'Screen 4' is clicked*/
     public void sendToActivity4(View view)
     {
         // Example logging Event with name 'clicked to view screen4'
-        Zinteract.logEvent("clicked to view screen4");
+        outTime=System.currentTimeMillis();
+        JSONObject timeSpent = new JSONObject();
+        try {
+            timeSpent.put("inTime",inTime);
+            timeSpent.put("outTime",outTime);
+        } catch (JSONException e) {
+            Log.e(TAG, "log details exception", e);
+        }
+
+        Zinteract.logEvent("clicked to view screen4",timeSpent);
         Intent intent = new Intent(Activity3.this, Activity4.class);
         startActivity(intent);
     }
 
+    /* This method is called when the button with text 'Screen 2' is clicked*/
     public void sendToActivity2(View view)
     {
+        outTime=System.currentTimeMillis();
+        JSONObject timeSpent = new JSONObject();
+        try {
+            timeSpent.put("inTime",inTime);
+            timeSpent.put("outTime",outTime);
+        } catch (JSONException e) {
+            Log.e(TAG, "log details exception", e);
+        }
+
         // Example logging Event with name 'clicked to view screen2'
-        Zinteract.logEvent("clicked to view screen2");
+        Zinteract.logEvent("clicked to view screen2",timeSpent);
         Intent intent = new Intent(Activity3.this, Activity2.class);
         startActivity(intent);
     }

@@ -92,8 +92,6 @@
                 if (context.getApplicationContext() instanceof Application) {
                     final Application app = (Application) context.getApplicationContext();
                     app.registerActivityLifecycleCallbacks((new ZinteractActivityLifecycleCallbacks()));
-                } else {
-                    Log.i(TAG, "Context is not an Application.");
                 }
             }
         }
@@ -134,7 +132,7 @@
          */
         public static void initializeWithContextAndKey(Context context, String apiKey) {
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"initializeWithContextAndKey() called");
+                Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,null);
         }
@@ -155,6 +153,20 @@
             initialize(context, apiKey,googleApiProjectNumber);
         }
 
+        /**
+         * Method to initialize Zinteract SDK
+         *
+         * @param context the application context
+         * @param apiKey the api key found at zinteract account
+         * @param googleApiProjectNumber the Google API Project Number for Push Notifications
+         * @param classNameOfCustomDialogFrag The class name of the the custom DialogFragment which subclasses
+         *                                    ZinteractInAppNotification to handle the displaying of In App
+         *                                    Promotions.
+         *
+         *    This initialize method should only be used if the user wants to handle the display of In App Promotions
+         *    through the custom subclass of ZinteractInAppNotification.class
+         */
+
         public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber,String classNameOfCustomDialogFrag) {
             if(Zinteract.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
@@ -165,11 +177,15 @@
 
         private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
             if (context == null) {
-                Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
+                if(Zinteract.isDebuggingOn()) {
+                    Log.e("Initialize error", "Application context cannot be null in initializeWithContextAndKey()");
+                }
                 return;
             }
             if (apiKey == null||TextUtils.isEmpty(apiKey) ) {
-                Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
+                if(Zinteract.isDebuggingOn()) {
+                    Log.e("Initialize error", "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
+                }
                 return;
             }
             if (!isInitialzed) {
@@ -218,9 +234,9 @@
                     });
 
                 }
-                Log.i("gcmClientId",getRegistrationId());
+               // Log.i("gcmClientId",getRegistrationId());
             } else {
-                Log.i(TAG, "No valid Google Play Services APK found.");
+               // Log.i(TAG, "No valid Google Play Services APK found.");
             }
         }
 
@@ -232,20 +248,20 @@
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 
                 String regid = gcm.register(googleApiProjectNumber);
-                Log.i("gcmClientId",regid);
+                //Log.i("gcmClientId",regid);
                 setUserProperty("deviceToken",regid);
                 saveRegistrationId(regid);
                 if(Zinteract.isDebuggingOn()){
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
                 }
             } catch (IOException ex) {
-                Log.e(TAG,"Exception in registerInBackground :",ex);
+                Log.e("GCM reg error","Exception in registerInBackground :",ex);
             }
         }
 
         private static boolean checkPlayServices() {
             int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-            Log.i("resultCode",Integer.valueOf(resultCode).toString()+";" +Integer.valueOf(ConnectionResult.SUCCESS).toString());
+            Log.i("resultCode", Integer.valueOf(resultCode).toString() + ";" + Integer.valueOf(ConnectionResult.SUCCESS).toString());
             if (resultCode != ConnectionResult.SUCCESS) {
                 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                     Log.e(TAG,"Google Play services is not installed");
@@ -297,6 +313,10 @@
             DEBUG = true;
         }
 
+        /**
+         * Method to disable Zinteract SDK logging.
+         */
+
         public static void disableDebugging(){
             DEBUG = false;
         }
@@ -304,6 +324,7 @@
         static boolean isDebuggingOn(){
             return DEBUG;
         }
+
 
         private static boolean isFirstTimeUse(){
             return CommonUtils.getSharedPreferences(context).getBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
@@ -314,6 +335,15 @@
             CommonUtils.getSharedPreferences(context).edit().putBoolean(Constants.Z_PREFKEY_FIRSTTIME_FLAG,
                     false).apply();
         }
+
+        /**
+         * Method to provide the instance of a custom dialog Fragment
+         * @param customDialogFrag is the instance of a subclass of ZinteractInAppNotification class provided
+         *                         by the user of the sdk.
+         *
+         *   This initialize method should only be used if the user wants to handle the display of In App Promotions
+         *   through the custom subclass of ZinteractInAppNotification.class
+         */
 
         public static void setCustomDialogFragment(ZinteractInAppNotification customDialogFrag){
             customDialogFragment = customDialogFrag;
@@ -519,10 +549,22 @@
                 });
             }
         }
+
+        /**
+         * Method to update the viewing of In App Promotion
+         * @param campaignId campaignId passed to your custom subclass of ZinteractInAppNotification used to
+         *                   handle display of In App Promotions
+         *
+         * Zinteract SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
+         * was shown. Based on the logic user sets through the Zinteract account, the Promotions are suppressed when not necessary.
+         *
+         * When the user takes the responsibility of handling the display of the In App Promotions, he/she should also take the
+         * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
+         */
         public static void updatePromotionAsSeen(String campaignId){
-            //markPromotionAsSeen(campaignId);
+
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-            dbHelper.updateCampaign(campaignId,System.currentTimeMillis());
+            dbHelper.updateCampaign(campaignId, System.currentTimeMillis());
             JSONObject promotionEvent = new JSONObject();
             try {
                 promotionEvent.put("campaignId",campaignId);
@@ -531,6 +573,18 @@
             }
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
         }
+
+        /**
+         * Method to remove Campaigns from database.
+         * @param campaignId campaignId passed to your custom subclass of ZinteractInAppNotification used to
+         *                   handle display of In App Promotions
+         *
+         * Zinteract SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
+         * was shown. Based on the logic user sets through the Zinteract account, the Promotions are suppressed when not necessary.
+         *
+         * When the user takes the responsibility of handling the display of the In App Promotions, he/she should also take the
+         * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
+         */
 
         public static void removePromotion(String campaignId) {
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
@@ -615,7 +669,7 @@
                     if(promotion.has("campaignEndTime")){
                         long campaignEndTime = promotion.getLong("campaignEndTime");
                         if(campaignEndTime<timeStampNow){
-                            Log.i(TAG,"time limit problem"+" "+Long.valueOf(timeStampNow)+" : "+Long.valueOf(campaignEndTime));
+                            Log.i(TAG,"time limit problem"+" "+timeStampNow+" : "+campaignEndTime);
                             continue;
                         }
                     }
@@ -760,7 +814,7 @@
          */
         public static void setUserProperties(JSONObject userproperties){
 
-            dataStore.setUserProperties(context, userproperties);
+            DataStore.setUserProperties(context, userproperties);
             sendUserProperties(Constants.Z_USER_PROPS_UPLOAD_PERIOD_MILLIS);
         }
 
@@ -773,7 +827,7 @@
          */
 
         public static String getUserProperty(String key, String defaultValue){
-            return dataStore.getUserProperty(context, key, defaultValue);
+            return DataStore.getUserProperty(context, key, defaultValue);
         }
 
         /**
@@ -784,7 +838,7 @@
          * @return the value for the key
          */
         public static String getData(String key, String defaultValue){
-            return dataStore.getData(context, key, defaultValue);
+            return DataStore.getData(context, key, defaultValue);
         }
 
         private static void closeSession() {
@@ -859,8 +913,8 @@
                 public void run() {
 
                     deviceDetails.getadditionalDetails();
-                    if(Zinteract.isDebuggingOn()){
-                        Log.d(TAG,"Device details initialization finished");
+                    if (Zinteract.isDebuggingOn()) {
+                        Log.d(TAG, "Device details initialization finished");
                     }
                 }
             });
@@ -968,7 +1022,7 @@
             httpWorker.post(new Runnable() {
                 @Override
                 public void run() {
-                    sendEvent(eventType, timestamp,url,header);
+                    sendEvent(eventType, timestamp, url, header);
                 }
             });
         }
@@ -982,7 +1036,7 @@
             try {
                 JSONObject postParams = new JSONObject();
 
-                postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getApplicationName()));
+                postParams.put("appName",CommonUtils.replaceWithJSONNull(DeviceDetails.getApplicationName()));
                 postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
                 postParams.put("OSName",CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
                 postParams.put("OSFamily",CommonUtils.replaceWithJSONNull(deviceDetails.getOsFamily()));
@@ -999,7 +1053,7 @@
 
                 postParams.put("eventParams", CommonUtils.replaceWithJSONNull(eventParams));
                 //postParams.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime()));
-                postParams.put("ostz", CommonUtils.replaceWithJSONNull(deviceDetails.getOstz()));
+                postParams.put("ostz", CommonUtils.replaceWithJSONNull(DeviceDetails.getOstz()));
 
 
                 //postParams.add(new BasicNameValuePair("deviceResoultion", Constants.Z_VERSION));//TODO
@@ -1110,20 +1164,20 @@
                 for(int i = 0; i<variables.names().length(); i++){
                     values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                 }
-                dataStore.setData(context,values);
+                dataStore.setData(context, values);
                 dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
                 Log.e(TAG, "Exception in updateDataStore:", e);
             }
             if(Zinteract.isDebuggingOn()){
-                Log.d(TAG,"DataStore update done, we have latest version now.");
+                Log.d(TAG, "DataStore update done, we have latest version now.");
             }
 
             synchingDataStoreCurrently.set(false);
         }
 
         private static void setData(String key, String value){
-            dataStore.setData(context, key, value);
+            DataStore.setData(context, key, value);
         }
 
         private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
@@ -1300,7 +1354,7 @@
             campaignWorker.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(context!=null) {
+                    if (context != null) {
                         Intent intentToStartCampaignHandler = new Intent(context, CampaignHandlingService.class);
                         intentToStartCampaignHandler.putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS);
                         intentToStartCampaignHandler.putExtra("eventType", eventType);
@@ -1470,7 +1524,7 @@
         }
 
         private static String getLastCampaignSyncTime(){
-            return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME,"");
+            return CommonUtils.getSharedPreferences(context).getString(Constants.Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME, "");
         }
 
         private static String getOldUserId(){
@@ -1489,28 +1543,89 @@
             editor.commit();
         }
 
-        public static void logPurchaseCompletedEvent(Double grandTotal) {
-            logPurchaseCompletedEvent(null,grandTotal,null,null,null,null,null,null,null);
+        /**
+         * Method to log a purchase completed event
+         * @param grandTotal The double value of Grand total of the purchase made
+         */
+
+        public static void logPurchaseCompleted(Double grandTotal) {
+            logPurchaseCompleted(null, grandTotal, null, null, null, null, null, null, null);
         }
 
-        public static void logPurchaseCompletedEvent(Double grandTotal,Integer quantity){
-            logPurchaseCompletedEvent(null,grandTotal,null,null,null,quantity,null,null,null);
+        /**
+         * Method to log a purchase completed event
+         * @param grandTotal The double value of Grand total of the purchase made
+         * @param quantity The integer value of the number of items purchased.
+         */
+
+        public static void logPurchaseCompleted(Double grandTotal, Integer quantity){
+            logPurchaseCompleted(null, grandTotal, null, null, null, quantity, null, null, null);
         }
-        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Integer quantity){
-            logPurchaseCompletedEvent(currency,grandTotal,null,null,null,quantity,null,null,null);
+
+        /**
+         *  Method to log a purchase completed event
+         * @param currency The String representation of the currency of transaction.
+         * @param grandTotal The double value of Grand total of the purchase made.
+         * @param quantity The integer value of the number of items purchased.
+         *
+         */
+        public static void logPurchaseCompleted(String currency, Double grandTotal, Integer quantity){
+            logPurchaseCompleted(currency, grandTotal, null, null, null, quantity, null, null, null);
         }
-        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax) {
-            logPurchaseCompletedEvent(null,grandTotal,total,shipping,tax,null,null,null,null);
+
+        /**
+         *  Method to log a purchase completed event
+         * @param grandTotal The double value of Grand total of the purchase made.
+         * @param total The double value of the Total value of purchase excluding shipping and tax.
+         * @param shipping The shipping costs for the purchased items.
+         * @param tax The tax levied on the purchased goods.
+         */
+        public static void logPurchaseCompleted(Double grandTotal, Double total, Double shipping, Double tax) {
+            logPurchaseCompleted(null, grandTotal, total, shipping, tax, null, null, null, null);
         }
-        public static void logPurchaseCompletedEvent(Double grandTotal,Double total, Double shipping, Double tax, Integer quantity) {
-            logPurchaseCompletedEvent(null,grandTotal,total,shipping,tax,quantity,null,null,null);
+
+        /**
+         * Method to log a purchase completed event
+         * @param grandTotal The double value of Grand total of the purchase made.
+         * @param total The double value of the Total value of purchase excluding shipping and tax.
+         * @param shipping The shipping costs for the purchased items.
+         * @param tax The tax levied on the purchased goods.
+         * @param quantity The integer value of the number of Items purchased.
+         */
+        public static void logPurchaseCompleted(Double grandTotal, Double total, Double shipping, Double tax, Integer quantity) {
+            logPurchaseCompleted(null, grandTotal, total, shipping, tax, quantity, null, null, null);
         }
-        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total, Double shipping, Double tax, Integer quantity) {
-            logPurchaseCompletedEvent(currency, grandTotal, total, shipping, tax, quantity, null, null, null);
+
+        /**
+         *  Method to log a purchase completed event
+         * @param currency The String representation of the currency of transaction.
+         * @param grandTotal The double value of Grand total of the purchase made.
+         * @param total The double value of the Total value of purchase excluding shipping and tax.
+         * @param shipping The shipping costs for the purchased items.
+         * @param tax The tax levied on the purchased goods.
+         * @param quantity The integer value of the number of Items purchased.
+         */
+        public static void logPurchaseCompleted(String currency, Double grandTotal, Double total, Double shipping, Double tax, Integer quantity) {
+            logPurchaseCompleted(currency, grandTotal, total, shipping, tax, quantity, null, null, null);
         }
-        public static void logPurchaseCompletedEvent(String currency, Double grandTotal,Double total,
-                                                     Double shipping, Double tax, Integer quantity,
-                                                     String orderId, String receiptId, String productsku) {
+
+        /**
+         * Method to log a purchase completed event
+         * @param currency The String representation of the currency of transaction.
+         * @param grandTotal The double value of Grand total of the purchase made.
+         * @param total The double value of the Total value of purchase excluding shipping and tax.
+         * @param shipping The shipping costs for the purchased items.
+         * @param tax The tax levied on the purchased goods.
+         * @param quantity The integer value of the number of Items purchased.
+         * @param orderId The String representation of the order id if any
+         * @param receiptId The String representation of the receipt id if any
+         * @param productsku The String representation of the product sku if any
+         *
+         * All values except @param grandTotal are optional for now.
+         */
+        public static void logPurchaseCompleted(String currency, Double grandTotal, Double total,
+                                                Double shipping, Double tax, Integer quantity,
+                                                String orderId, String receiptId, String productsku) {
             JSONObject purchaseDetails = new JSONObject();
             try {
                 if(currency!=null) {
@@ -1518,6 +1633,11 @@
                 }
                 if(grandTotal!=null){
                     purchaseDetails.put("grand_total",grandTotal);
+                }else{
+                    if(Zinteract.isDebuggingOn()){
+                        Log.i("PurchaseCompletedEvent:", "grandTotal param missing in the method call");
+                    }
+                    return;
                 }
                 if(total!=null){
                     purchaseDetails.put("total",total);
@@ -1548,6 +1668,10 @@
             }*/
             logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
         }
+
+        /**
+         * Method to log Purchase Attempted event
+         */
         public static void logPurchaseAttempted() {
             /*if(Zinteract.robolectricTesting) {
                 System.out.println("ZINTERACT: logging purchase attempted event");
