@@ -26,9 +26,9 @@ public class MainActivity extends Activity {
         Zinteract.initializeWithContextAndKey(getApplicationContext(),
                                                 "43eb-a23d-0106af662c83","914500168484");
 
-        /*Setting the user properties.
-        Once the user properties are set through these methods, they can be accessed from other
-        activities using Zinteract.getUserProperty() method.*/
+        /* Setting the user properties(optional).
+         Provide the user properties which can be useful to segment users. Once the user properties
+         are set through these methods, they can used to filter users through you Zinteract account */
 
         Zinteract.setUserProperty("fname","John");
         Zinteract.setUserProperty("lname","Doe");
@@ -65,7 +65,9 @@ public class MainActivity extends Activity {
 
     @Override
     public void onResume(){
-        // An example of logging event with name 'viewed screen1'
+        /*An example of logging event with name 'viewed screen1'
+        Any specific event that occurs in the app can be recorded by using the method Zinteract.logEvent().
+        A string parameter can be passed to the method naming the event.*/
         Zinteract.logEvent("viewed screen1");
         super.onResume();
     }
@@ -76,12 +78,6 @@ public class MainActivity extends Activity {
     }
 
     public void sendToActivity2(View view){
-
-        // An example of logging event.
-        // Any specific event that occurs in the app can be recorded by using the method Zinteract.logEvent().
-        // A string parameter can be passed to the method naming the event.
-
-        Zinteract.logEvent("clicked to view screen2");
         Intent intent = new Intent(MainActivity.this, Activity2.class);
         startActivity(intent);
     }

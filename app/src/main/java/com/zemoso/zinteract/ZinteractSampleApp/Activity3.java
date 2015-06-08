@@ -68,7 +68,7 @@ public class Activity3 extends Activity {
     /* This method is called when the button with text 'Screen 4' is clicked*/
     public void sendToActivity4(View view)
     {
-        // Example logging Event with name 'clicked to view screen4'
+        /*Example logging Event with name 'clicked to view screen4' and extra details*/
         outTime=System.currentTimeMillis();
         JSONObject timeSpent = new JSONObject();
         try {
@@ -94,9 +94,6 @@ public class Activity3 extends Activity {
         } catch (JSONException e) {
             Log.e(TAG, "log details exception", e);
         }
-
-        // Example logging Event with name 'clicked to view screen2'
-        Zinteract.logEvent("clicked to view screen2",timeSpent);
         Intent intent = new Intent(Activity3.this, Activity2.class);
         startActivity(intent);
     }

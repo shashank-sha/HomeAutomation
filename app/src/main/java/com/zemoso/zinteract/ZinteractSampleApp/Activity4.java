@@ -58,9 +58,6 @@ public class Activity4 extends Activity implements View.OnClickListener {
     @Override
     public void onResume(){
         super.onResume();
-
-        /*Example logging Event with name 'viewed screen4'*/
-        Zinteract.logEvent("viewed screen4");
         grandTotal = Double.valueOf(getSharedPreferences("PurchasePrefs",Activity.MODE_PRIVATE).getString("grandTotal","0.00"));
         ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
     }
@@ -73,16 +70,12 @@ public class Activity4 extends Activity implements View.OnClickListener {
 
     public void sendToActivity5(View view)
     {
-        /*Example logging Event 'clicked to view screen5'*/
-        Zinteract.logEvent("clicked to view screen5");
         Intent intent = new Intent(Activity4.this, Activity5.class);
         startActivity(intent);
     }
 
     public void sendToActivity3(View view)
     {
-        /*Example logging Event 'clicked to view screen3'*/
-        Zinteract.logEvent("clicked to view screen3");
         Intent intent = new Intent(Activity4.this, Activity3.class);
         startActivity(intent);
     }

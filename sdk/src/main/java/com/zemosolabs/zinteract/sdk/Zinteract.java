@@ -400,7 +400,7 @@
                     }
                 }
                 if(maximumNumberOfTimesToShow!=-1) {
-                    if (maximumNumberOfTimesToShow >= dbHelper.getNumberOfTimesShown(campaignId)) {
+                    if (dbHelper.getNumberOfTimesShown(campaignId) >= maximumNumberOfTimesToShow) {
                         if (Zinteract.isDebuggingOn()) {
                             Log.d(TAG, "Already shown too many times " + campaignId);
                         }

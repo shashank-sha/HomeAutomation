@@ -69,17 +69,12 @@ public class Activity2 extends Activity {
     }
 
     public void sendToActivity3(View view) {
-        /*Example logging event with name 'clicked to view screen3'*/
-        Zinteract.logEvent("clicked to view screen3");
-
         Intent intent = new Intent(Activity2.this, Activity3.class);
         startActivity(intent);
     }
 
     public void sendToActivity1(View view)
     {
-        /*Example logging Event with name 'clicked to view screen1'*/
-        Zinteract.logEvent("clicked to view screen1");
         Intent intent = new Intent(Activity2.this, MainActivity.class);
         startActivity(intent);
     }
