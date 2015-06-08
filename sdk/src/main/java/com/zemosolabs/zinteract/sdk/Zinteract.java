@@ -386,11 +386,10 @@
                 }
                 long currentTime = System.currentTimeMillis();
                 if(minimumDurationInMinutesBeforeReshow!=-1) {
-                    if (currentTime > dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
+                    if (currentTime < dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
                         if (Zinteract.isDebuggingOn()) {
                             Log.d(TAG, "Not so soon " + campaignId);
                         }
-                        dbHelper.markPromotionAsSeen(campaignId);
                         return;
                     }
                 }// In case the minimumDurationInMinutes value is not found, then the campaign will be shown only once.
