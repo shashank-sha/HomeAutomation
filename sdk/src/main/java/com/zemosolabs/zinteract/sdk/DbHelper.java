@@ -171,7 +171,7 @@ class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-            cursor = db.query(EVENT_TABLE_NAME, new String[] { ID_FIELD, EVENT_FIELD },
+            cursor = db.query(EVENT_TABLE_NAME, new String[]{ID_FIELD, EVENT_FIELD},
                     lessThanId >= 0 ? ID_FIELD + " < " + lessThanId : null, null, null,
                     null, ID_FIELD + " ASC", limit >= 0 ? "" + limit : null);
 
@@ -263,7 +263,7 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put(Constants.Z_DB_PROMOTION_PROMOTION_FIELD_NAME, promotion);
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
-
+            Log.i(TAG,"Promotion for screenId: "+screen_id+" added");
             ContentValues contentValues2 = new ContentValues();
             contentValues2.put("campaign_id", campaign_id);
             contentValues2.put("maximumNumberOfTimesToShow", maximumNumberOfTimesToShow);
@@ -288,7 +288,8 @@ class DbHelper extends SQLiteOpenHelper {
     synchronized void removeSeenPromotions() {
         try {
             SQLiteDatabase db = getWritableDatabase();
-            db.delete(PROMOTION_TABLE_NAME, "status = 1", null);
+            int count = db.delete(PROMOTION_TABLE_NAME, "status = 1", null);
+            Log.i(TAG,"Removing Promotions: "+count);
 
         } catch (SQLiteException e) {
             Log.e(TAG, "removePromotion failed", e);
@@ -302,7 +303,8 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put("status", 1);
-            db.update(PROMOTION_TABLE_NAME,contentValues,"campaign_id = ?",new String[]{campaign_id});
+            int count = db.update(PROMOTION_TABLE_NAME, contentValues, "campaign_id = ?", new String[]{campaign_id});
+            Log.i(TAG,"Updating Promotions: "+count+" "+campaign_id);
         } catch (SQLiteException e) {
             Log.e(TAG, "markPromotionAsSeen failed", e);
         } finally {
@@ -315,13 +317,19 @@ class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-            cursor = db.query(PROMOTION_TABLE_NAME, null,"screen_id = ? AND status = ?", new String[]{screen_id,"0"}, null,
-                    null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", "1");
-
+            cursor = db.query(PROMOTION_TABLE_NAME, null, "screen_id = ? AND status = ?", new String[]{screen_id, "0"}, null,
+                    null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", null);
+            Log.i(TAG,"Promotion count: "+cursor.getCount());
             while (cursor.moveToNext()) {
-                String p = cursor.getString(4);
-
-                promotion = new JSONObject(p);
+                String campaignId = cursor.getString(1);
+                if(checkCampaignValidity(campaignId,System.currentTimeMillis())){
+                    String p = cursor.getString(4);
+                    Log.i(TAG,"Length of Promotion fetched is"+promotion.length());
+                    promotion = new JSONObject(p);
+                    break;
+                }else{
+                    Log.i(TAG,"Promotion Campaign InValid for now "+campaignId);
+                }
             }
         } catch (SQLiteException e) {
             Log.e(TAG, "getPromotionforScreen failed", e);
@@ -455,8 +463,8 @@ class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
-             cursor = db.query(SCREEN_FIX_TABLE_NAME, null,"screen_id = ?", new String[]{screen_id}, null,
-                    null, Constants.Z_DB_SCREEN_FIX_ID_FIELD_NAME + " DESC", "1");
+             cursor = db.query(SCREEN_FIX_TABLE_NAME, null, "screen_id = ?", new String[]{screen_id}, null,
+                     null, Constants.Z_DB_SCREEN_FIX_ID_FIELD_NAME + " DESC", "1");
 
             while (cursor.moveToNext()) {
                 String p = cursor.getString(3);
@@ -491,7 +499,7 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues2.put("minimumDurationBeforeReshowInMin", minimumDurationBeforeReshowInMin);
 
             result1 = db.insertWithOnConflict(GEO_CAMPAIGN_TABLE_NAME, null, contentValues1,5);
-            result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
+            result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME, null, contentValues2, 5);
             if (result1 == -1||result2 == -1) {
                 success = false;
                 Log.w(TAG, "Insert failed");
@@ -600,6 +608,39 @@ class DbHelper extends SQLiteOpenHelper {
         Log.i("DB SimpleEvent", result1+","+result2);
         return success;
 
+    }
+
+    synchronized boolean checkCampaignValidity(String campaignId, long timeStampOfOccurence){
+        Cursor cursor = null;
+        boolean valid = false;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            String[] selectArgs = {campaignId};
+            //String[] columnArray = new String[]{Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME, "lastShownTimeUnixTimeStamp"};
+            cursor = db.query(SUPPRESSION_LOGIC_TABLE_NAME,null,"campaign_id = ?", selectArgs, null,
+                    null, Constants.Z_DB_SUPPRESSION_LOGIC_CAMPAIGN_ID_FIELD_NAME + " DESC");
+
+            cursor.moveToNext();
+            long lastShownTime = cursor.getLong(5);
+            long minimumDurationBeforeReshow = cursor.getLong(3);
+            int numberOfTimesShown = cursor.getInt(4);
+            int maxNumberOfTimesToShow = cursor.getInt(2);
+            if(timeStampOfOccurence>=lastShownTime+minimumDurationBeforeReshow*60*1000 &&
+                    maxNumberOfTimesToShow>numberOfTimesShown){
+                valid = true;
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+        } catch (Exception e){
+            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            close();
+        }
+        return valid;
     }
 
     synchronized void updateCampaign(String campaignId, long timeStampOfOccurence) {

@@ -27,7 +27,8 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
 
     @Override
     public void onActivityStarted(final Activity activity) {
-
+        currentActivity = activity;
+        Zinteract.currentActivity = activity;
     }
 
 
@@ -58,6 +59,7 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
                 }
             }
         }
+        Zinteract._startSession(activity);
     }
 
     @Override
@@ -106,14 +108,14 @@ public class ZinteractActivityLifecycleCallbacks implements Application.Activity
         }
         Zinteract.updateActivityDetails(label,name);
 
-        currentActivity = activity;
+
         if(Zinteract.isDebuggingOn()) {
             shakeListener = ShakeListener.getInstance();
             shakeListener.initialize();
             tripleTapListener= new TripleTapListener();
             activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
         }
-        Zinteract._startSession(activity);
+
         UIEditor = ScreenEditor.getInstance(activity);
         UIEditor.edit();
 

@@ -52,7 +52,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 8;
+    static final int Z_DB_VERSION = 9;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";

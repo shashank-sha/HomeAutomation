@@ -70,7 +70,8 @@
 
         private static String currentActivityName;
         private static String currentActivityLabel;
-       // public static boolean robolectricTesting = false;
+        static Activity currentActivity;
+        // public static boolean robolectricTesting = false;
 
         static {
             logWorker.start();
@@ -355,6 +356,7 @@
             //would work.
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
+                Log.i(TAG,"currentActivityLabel is null");
                 return;
             }
             Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
@@ -407,7 +409,7 @@
                         dbHelper.markPromotionAsSeen(campaignId);
                         return;
                     }
-                }// In case the minimumDurationInMinutes value is not found, then the campaign will be shown only once.
+                }// In case the maximumNumberOfTimesToShow value is not found, then the campaign will be shown only once.
                 else{
                     if(dbHelper.getNumberOfTimesShown(campaignId)>=1) {
                         dbHelper.markPromotionAsSeen(campaignId);
@@ -451,7 +453,12 @@
                             }
                         }
                         newNotification.customize(context, campaignId, template);
-                        newNotification.show(ft, "dialog");
+                        if(Zinteract.currentActivity==currentActivity) {
+                            Log.i(TAG,"same Activity before In App Promotion launched");
+                            newNotification.show(ft, "dialog");
+                        }else{
+                            Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
+                        }
                     }
                 });
             }
@@ -625,10 +632,11 @@
         }
 
         private static void addPromotions(JSONObject json){
-
+            int addCount;
             try {
                 JSONArray promotions = json.getJSONArray("promotions");
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                addCount = 0;
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
                     JSONObject suppressionLogic = new JSONObject();
@@ -700,12 +708,12 @@
                     }else if(promotion.getString("type").equals("IBEACON")){
 
                     }
-
+                    addCount++;
                 }
 
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
                 if(Zinteract.isDebuggingOn()){
-                    Log.d(TAG,"Added "+promotions.length()+" promotions in db");
+                    Log.d(TAG,"Added "+addCount+" promotions in db");
                 }
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload

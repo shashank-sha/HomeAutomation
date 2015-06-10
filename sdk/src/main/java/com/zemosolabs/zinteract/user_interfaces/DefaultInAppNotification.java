@@ -119,11 +119,13 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             if(template.has("message") && template.get("message")!=JSONObject.NULL) {
                 message = template.getString("message");
             }else message ="dMESSAGE";
-            if (template.has("imageUrl") && template.get("imageUrl") != JSONObject.NULL) {
-                imageUrl = template.getString("imageUrl");
+            if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL) {
+                imageBase64 = template.getString("imageBase64");
+            } else{
+                imageBase64 = null;
+                Log.i(TAG,"imageBase64 is null");
+            }
 
-                //new UpdateImageViewAsyncTask(imageUrl).execute();
-            } else imageUrl = null;
             if (template.has("onClickUrl") && template.get("onClickUrl") != JSONObject.NULL) {
                 onClickUrl = template.getString("onClickUrl");
             } else onClickUrl = null;
@@ -178,26 +180,27 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         } catch (JSONException e) {
             Log.i("Exception: ", e.toString());
         }
-        imageBase64 = getImage();
-        byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
-        //Bitmap bitmap = BitmapFactory.decodeStream(input);
-        bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        resultBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Rect rect = new Rect(0,0,bitmap.getWidth(),bitmap.getHeight());
-        Rect bottomRect = new Rect(0,bitmap.getHeight()/2,bitmap.getWidth(),bitmap.getHeight());
-        RectF rectF = new RectF(rect);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        Canvas canvas = new Canvas(resultBitmap);
-        float cornerRadius = 30.0f;
-        canvas.drawARGB(0,0,0,0);
-        canvas.drawRoundRect(rectF,cornerRadius,cornerRadius,paint);
-        canvas.drawRect(bottomRect,paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap,rect,rect,paint);
+        if(imageBase64!=null) {
+            byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
+            //Bitmap bitmap = BitmapFactory.decodeStream(input);
+            bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            resultBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            Rect bottomRect = new Rect(0, bitmap.getHeight() / 2, bitmap.getWidth(), bitmap.getHeight());
+            RectF rectF = new RectF(rect);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            Canvas canvas = new Canvas(resultBitmap);
+            float cornerRadius = 30.0f;
+            canvas.drawARGB(0, 0, 0, 0);
+            canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
+            canvas.drawRect(bottomRect, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(bitmap, rect, rect, paint);
+        }
     }
 
-    private String getImage() {
+   /* private String getImage() {
         String string="";
         try{
             InputStream is = context.getResources().openRawResource(R.raw.base64image);
@@ -211,7 +214,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
         }
         Log.i(TAG, "base64 string is: " + string.subSequence(0, 50));
         return string;
-    }
+    }*/
 
 
     @Override
@@ -246,7 +249,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_regular);
-            if(imageUrl!=null){
+            if(imageBase64!=null){
                 Log.i("Image","ImgView updating");
                // new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
@@ -269,7 +272,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             Button askLaterButton = (Button) v.findViewById(R.id.neutral_button_rate_me);
             askLaterButton.setOnClickListener(askMeLater);
             Button dontAskButton = (Button) v.findViewById(R.id.dismiss_button_rate_me);
-            dontAskButton.setOnClickListener(closeHandler);
+            dontAskButton.setOnClickListener(dontAskMeAgain);
             Button rateItButton = (Button) v.findViewById(R.id.action_button_rate_me);
             rateItButton.setOnClickListener(rateMeEventHandler);
             Log.i("RateMeButton", "Updating");
@@ -285,7 +288,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_rate_me);
-            if (imageUrl != null) {
+            if (imageBase64 != null) {
                 Log.i("Image", "ImgView updating");
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
@@ -320,7 +323,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_action);
-            if (imageUrl != null) {
+            if (imageBase64 != null) {
                 Log.i("Image", "ImgView updating");
                 imgView.setImageBitmap(resultBitmap);
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
@@ -360,7 +363,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             try {
                 JSONObject j = new JSONObject();
                 j.put("campaignId", campaignId);
-                //Zinteract.logEvent("ViewEventLater", j);
+                Zinteract.updatePromotionAsSeen(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -372,15 +375,14 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
 
     View.OnClickListener dontAskMeAgain = new View.OnClickListener() {
         public void onClick(View v) {
-            try {
+           /* try {
                 JSONObject k = new JSONObject();
                 k.put("campaignId", campaignId);
-                //Zinteract.logEvent("DoNotAskMeAgain", k);
-                Zinteract.removePromotion(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
-            }
+            }*/
+            Zinteract.removePromotion(campaignId);
             dismiss();
         }
     };

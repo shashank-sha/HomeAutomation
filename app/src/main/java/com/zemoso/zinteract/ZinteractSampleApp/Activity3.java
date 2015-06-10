@@ -86,14 +86,6 @@ public class Activity3 extends Activity {
     /* This method is called when the button with text 'Screen 2' is clicked*/
     public void sendToActivity2(View view)
     {
-        outTime=System.currentTimeMillis();
-        JSONObject timeSpent = new JSONObject();
-        try {
-            timeSpent.put("inTime",inTime);
-            timeSpent.put("outTime",outTime);
-        } catch (JSONException e) {
-            Log.e(TAG, "log details exception", e);
-        }
         Intent intent = new Intent(Activity3.this, Activity2.class);
         startActivity(intent);
     }
