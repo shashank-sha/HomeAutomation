@@ -293,7 +293,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     @Override
     public void onConnected(Bundle bundle) {
         Log.i(TAGGEO,"connected to GoogleApiClient");
-        if(listOfGeofences.size()>0) {
+        if(listOfGeofences!=null && listOfGeofences.size()>0) {
             LocationServices.GeofencingApi.addGeofences(
                     mGoogleApiClient,
                     getGeofencingRequest(),
