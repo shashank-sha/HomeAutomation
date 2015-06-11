@@ -299,8 +299,6 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     getGeofencingRequest(),
                     getGeofencePendingIntent()
             ).setResultCallback(this);
-        }else{
-            Log.i(TAGGEO,"list size of geofences"+listOfGeofences.size());
         }
     }
 

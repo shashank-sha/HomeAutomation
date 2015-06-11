@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.zemosolabs.zinteract.sdk.Zinteract;
+import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends Activity {
@@ -16,7 +17,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         /*Initialize Zinteract with Context and key provided upon registration on Zinteract website.
