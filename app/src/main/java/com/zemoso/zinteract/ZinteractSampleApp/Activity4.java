@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.zemosolabs.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.ZTarget;
 
 import java.text.DecimalFormat;
 
@@ -91,7 +91,7 @@ public class Activity4 extends Activity implements View.OnClickListener {
                 etc can be logged in the same event using the corresponding methods provided in the sdk
                 for logging purchase completed events.*/
 
-                Zinteract.logPurchaseCompleted(grandTotal);
+                ZTarget.logPurchaseCompleted(grandTotal);
                 grandTotal = 0.00;
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
                 break;
@@ -101,7 +101,7 @@ public class Activity4 extends Activity implements View.OnClickListener {
 
                 grandTotal += (Math.random()*5000);
                 ((TextView)findViewById(R.id.grandTotalValue)).setText(df.format(grandTotal));
-                Zinteract.logPurchaseAttempted();
+                ZTarget.logPurchaseAttempted();
                 break;
             case R.id.buttonRemove:
                 grandTotal = 0.00;

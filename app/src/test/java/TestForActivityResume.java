@@ -1,14 +1,11 @@
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Pair;
 
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemosolabs.zinteract.sdk.Zinteract;
-import com.zemosolabs.zinteract.sdk.util.SystemUiHider;
+import com.zemosolabs.zinteract.sdk.ZTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -192,7 +189,7 @@ public class TestForActivityResume {
         int count = numberOfEventsInDb();
 
         do{
-            Zinteract.logEvent("Event No."+Integer.valueOf(count));
+            ZTarget.logEvent("Event No." + Integer.valueOf(count));
             count++;
             System.out.println("count="+count);
             executeEventsOnLogAndHttpWorkers();

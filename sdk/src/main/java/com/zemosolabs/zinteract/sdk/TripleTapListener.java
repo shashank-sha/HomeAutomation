@@ -35,7 +35,7 @@ public class TripleTapListener implements View.OnTouchListener {
                     tapCount = 0;
             }
             if (tapCount == 2) {
-                if(Zinteract.isDebuggingOn()) {
+                if(ZTarget.isDebuggingOn()) {
                     ShakeListener.getInstance().purge();
                     ScreenCapture screenCapturer = ScreenCapture.getInstance();
                     screenCapturer.initialize();

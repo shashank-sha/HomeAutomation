@@ -1,9 +1,5 @@
-import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.HandlerThread;
 
 import com.zemoso.zinteract.ZinteractSampleApp.Activity2;
@@ -12,13 +8,12 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
-import com.zemosolabs.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.ZTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -62,7 +57,7 @@ public abstract class TestBaseClass {
 
     @Before
     public void setup(){
-        Zinteract.robolectricTesting = true;
+        ZTarget.robolectricTesting = true;
         System.out.println("Checking if the fakeHttpLayer is functioning properly");
         FakeHttpLayer fakeHttpLayer = Robolectric.getFakeHttpLayer();
         assertFalse(fakeHttpLayer.hasPendingResponses());
@@ -102,7 +97,7 @@ public abstract class TestBaseClass {
 
     @After
     public void closeUP(){
-        Zinteract.robolectricTesting = false;
+        ZTarget.robolectricTesting = false;
     }
 
     protected void instantiateZinteractWorkers(){

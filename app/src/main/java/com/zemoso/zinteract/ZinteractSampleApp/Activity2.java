@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zemosolabs.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.ZTarget;
 
 
 public class Activity2 extends Activity {
@@ -49,16 +49,16 @@ public class Activity2 extends Activity {
         TextView tV = (TextView)findViewById(R.id.userSpecificText);
 
         /*Example usage of the user properties.
-        Once the userproperty key and value are defined with Zinteract.setUserProperty as in the MainActivity,
+        Once the userproperty key and value are defined with ZTarget.setUserProperty as in the MainActivity,
         They String 'value' can be extracted by using the 'key'.*/
 
-        String userFName = Zinteract.getUserProperty("fname","Friend");
-        String userLName = Zinteract.getUserProperty("lname","");
+        String userFName = ZTarget.getUserProperty("fname", "Friend");
+        String userLName = ZTarget.getUserProperty("lname", "");
         String message = "Hello " + userFName + " " + userLName+"!!!"+" How are you doing?";
         tV.setText(message);
 
         /*Example logging event with name 'viewed screen2'*/
-        Zinteract.logEvent("viewed screen2");
+        ZTarget.logEvent("viewed screen2");
 
         super.onResume();
     }

@@ -29,7 +29,7 @@
     /**
      * Created by praveen on 19/01/15.
      */
-    public class Zinteract {
+    public class ZTarget {
 
         private static final String TAG = "com.zemos.zint.sdk.zint";
         private static Context context;
@@ -79,12 +79,12 @@
             campaignWorker.start();
         }
 
-        private static ZinteractInAppNotification customDialogFragment = null;
+        private static ZTargetInAppNotification customDialogFragment = null;
         private static String classNameOfCustomDialogFragment = null;
         private static String classNameOfDefaultDialogFragment = "com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification";
 
 
-        private Zinteract(){
+        private ZTarget(){
 
         }
 
@@ -92,7 +92,7 @@
             if(android.os.Build.VERSION.SDK_INT >= 16) { //Only available for API >=16
                 if (context.getApplicationContext() instanceof Application) {
                     final Application app = (Application) context.getApplicationContext();
-                    app.registerActivityLifecycleCallbacks((new ZinteractActivityLifecycleCallbacks()));
+                    app.registerActivityLifecycleCallbacks((new ZTargetActivityLifecycleCallbacks()));
                 }
             }
         }
@@ -125,14 +125,14 @@
 
         /**
          *
-         * Method to initialize Zinteract SDK
+         * Method to initialize ZTarget SDK
          *
          * @param context the application context
          * @param apiKey the api key found at zinteract account
          *
          */
         public static void initializeWithContextAndKey(Context context, String apiKey) {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,null);
@@ -140,7 +140,7 @@
 
         /**
          *
-         * Method to initialize Zinteract SDK
+         * Method to initialize ZTarget SDK
          *
          * @param context the application context
          * @param apiKey the api key found at zinteract account
@@ -148,28 +148,28 @@
          *
          */
         public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber) {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,googleApiProjectNumber);
         }
 
         /**
-         * Method to initialize Zinteract SDK
+         * Method to initialize ZTarget SDK
          *
          * @param context the application context
          * @param apiKey the api key found at zinteract account
          * @param googleApiProjectNumber the Google API Project Number for Push Notifications
          * @param classNameOfCustomDialogFrag The class name of the the custom DialogFragment which subclasses
-         *                                    ZinteractInAppNotification to handle the displaying of In App
+         *                                    ZTargetInAppNotification to handle the displaying of In App
          *                                    Promotions.
          *
          *    This initialize method should only be used if the user wants to handle the display of In App Promotions
-         *    through the custom subclass of ZinteractInAppNotification.class
+         *    through the custom subclass of ZTargetInAppNotification.class
          */
 
         public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber,String classNameOfCustomDialogFrag) {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
             }
             initialize(context, apiKey,googleApiProjectNumber);
@@ -178,13 +178,13 @@
 
         private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
             if (context == null) {
-                if(Zinteract.isDebuggingOn()) {
+                if(ZTarget.isDebuggingOn()) {
                     Log.e("Initialize error", "Application context cannot be null in initializeWithContextAndKey()");
                 }
                 return;
             }
             if (apiKey == null||TextUtils.isEmpty(apiKey) ) {
-                if(Zinteract.isDebuggingOn()) {
+                if(ZTarget.isDebuggingOn()) {
                     Log.e("Initialize error", "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
                 }
                 return;
@@ -202,7 +202,7 @@
                 }
 
                 if(googleApiProjectNumber != null){
-                    Zinteract.googleApiProjectNumber = googleApiProjectNumber;
+                    ZTarget.googleApiProjectNumber = googleApiProjectNumber;
                 }
 
                 //Send init event if installed for the first time.
@@ -242,7 +242,7 @@
         }
 
         private static void registerInBackground(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "registerInBackground() called");
             }
             try {
@@ -252,7 +252,7 @@
                 //Log.i("gcmClientId",regid);
                 setUserProperty("deviceToken",regid);
                 saveRegistrationId(regid);
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
                 }
             } catch (IOException ex) {
@@ -308,14 +308,14 @@
 
 
         /**
-         * Method to enable Zinteract SDK logging, useful for debugging
+         * Method to enable ZTarget SDK logging, useful for debugging
          */
         public static void enableDebugging(){
             DEBUG = true;
         }
 
         /**
-         * Method to disable Zinteract SDK logging.
+         * Method to disable ZTarget SDK logging.
          */
 
         public static void disableDebugging(){
@@ -339,14 +339,14 @@
 
         /**
          * Method to provide the instance of a custom dialog Fragment
-         * @param customDialogFrag is the instance of a subclass of ZinteractInAppNotification class provided
+         * @param customDialogFrag is the instance of a subclass of ZTargetInAppNotification class provided
          *                         by the user of the sdk.
          *
          *   This initialize method should only be used if the user wants to handle the display of In App Promotions
-         *   through the custom subclass of ZinteractInAppNotification.class
+         *   through the custom subclass of ZTargetInAppNotification.class
          */
 
-        public static void setCustomDialogFragment(ZinteractInAppNotification customDialogFrag){
+        public static void setCustomDialogFragment(ZTargetInAppNotification customDialogFrag){
             customDialogFragment = customDialogFrag;
         }
 
@@ -366,7 +366,7 @@
             final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
 
             if(promotion == null || promotion.length() == 0  ){
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
                 return;
@@ -389,7 +389,7 @@
                 long currentTime = System.currentTimeMillis();
                 if(minimumDurationInMinutesBeforeReshow!=-1) {
                     if (currentTime < dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
-                        if (Zinteract.isDebuggingOn()) {
+                        if (ZTarget.isDebuggingOn()) {
                             Log.d(TAG, "Not so soon " + campaignId);
                         }
                         return;
@@ -403,7 +403,7 @@
                 }
                 if(maximumNumberOfTimesToShow!=-1) {
                     if (dbHelper.getNumberOfTimesShown(campaignId) >= maximumNumberOfTimesToShow) {
-                        if (Zinteract.isDebuggingOn()) {
+                        if (ZTarget.isDebuggingOn()) {
                             Log.d(TAG, "Already shown too many times " + campaignId);
                         }
                         dbHelper.markPromotionAsSeen(campaignId);
@@ -426,13 +426,13 @@
                             ft.remove(prev);
                         }
                         ft.addToBackStack(null);
-                        ZinteractInAppNotification newNotification = null;
+                        ZTargetInAppNotification newNotification = null;
                         if(customDialogFragment!=null){
                             newNotification = customDialogFragment;
                         }
                         else if(classNameOfCustomDialogFragment!=null){
                             try {
-                                newNotification = (ZinteractInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
+                                newNotification = (ZTargetInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
                             } catch (InstantiationException e) {
                                 Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             } catch (IllegalAccessException e){
@@ -443,7 +443,7 @@
                         }
                         else{
                             try {
-                                newNotification = (ZinteractInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
+                                newNotification = (ZTargetInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
                             } catch (InstantiationException e) {
                                 Log.e(TAG,"Exception in creating Custom Notification: ", e);
                             } catch (IllegalAccessException e){
@@ -453,7 +453,7 @@
                             }
                         }
                         newNotification.customize(context, campaignId, template);
-                        if(Zinteract.currentActivity==currentActivity) {
+                        if(ZTarget.currentActivity==currentActivity) {
                             Log.i(TAG,"same Activity before In App Promotion launched");
                             newNotification.show(ft, "dialog");
                         }else{
@@ -493,7 +493,7 @@
          */
 
         static void startSession() {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"startSession() called");
             }
             if (!isContextAndApiKeySet("startSession()")) {
@@ -530,7 +530,7 @@
         }
 
         static void checkPromotions(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "checkPromotions() called");
             }
 
@@ -544,7 +544,7 @@
 
         private static void getPromotions(){
             if(!fetchingPromotionsCurrently.getAndSet(true)) {
-                if (Zinteract.isDebuggingOn()) {
+                if (ZTarget.isDebuggingOn()) {
                     Log.d(TAG, "logWorker is now asking httpWorker to fetch Promotions");
                 }
                 httpWorker.post(new Runnable() {
@@ -558,11 +558,11 @@
 
         /**
          * Method to update the viewing of In App Promotion
-         * @param campaignId campaignId passed to your custom subclass of ZinteractInAppNotification used to
+         * @param campaignId campaignId passed to your custom subclass of ZTargetInAppNotification used to
          *                   handle display of In App Promotions
          *
-         * Zinteract SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
-         * was shown. Based on the logic user sets through the Zinteract account, the Promotions are suppressed when not necessary.
+         * ZTarget SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
+         * was shown. Based on the logic user sets through the ZTarget account, the Promotions are suppressed when not necessary.
          *
          * When the user takes the responsibility of handling the display of the In App Promotions, he/she should also take the
          * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
@@ -582,11 +582,11 @@
 
         /**
          * Method to remove Campaigns from database.
-         * @param campaignId campaignId passed to your custom subclass of ZinteractInAppNotification used to
+         * @param campaignId campaignId passed to your custom subclass of ZTargetInAppNotification used to
          *                   handle display of In App Promotions
          *
-         * Zinteract SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
-         * was shown. Based on the logic user sets through the Zinteract account, the Promotions are suppressed when not necessary.
+         * ZTarget SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
+         * was shown. Based on the logic user sets through the ZTarget account, the Promotions are suppressed when not necessary.
          *
          * When the user takes the responsibility of handling the display of the In App Promotions, he/she should also take the
          * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
@@ -598,7 +598,7 @@
         }
 
         private static void fetchPromotions(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
             }
             boolean fetchSuccess = false;
@@ -712,7 +712,7 @@
                 }
 
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"Added "+addCount+" promotions in db");
                 }
             } catch (Exception e) {
@@ -763,7 +763,7 @@
          * This method ends a usage session
          */
         static void endSession() {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"endSession() called");
             }
             if (!isContextAndApiKeySet("endSession()")) {
@@ -801,7 +801,7 @@
         }
 
         /**
-         * This method is to specify user properties, which can be accessed at Zinteract cloud
+         * This method is to specify user properties, which can be accessed at ZTarget cloud
          * and hence can be used to target campaigns based on user properties
          *
          * @param key the key paramether for which the value has to be saved, e.g firstname, lastname etc
@@ -814,7 +814,7 @@
         }
 
         /**
-         * This method is to specify user properties, which can be accessed at Zinteract cloud
+         * This method is to specify user properties, which can be accessed at ZTarget cloud
          * and hence can be used to target campaigns based on user properties
          *
          * @param userproperties JSON containing multiple user properties
@@ -826,7 +826,7 @@
         }
 
         /**
-         * This method is to get user properties set from the SDK or from the Zinteract cloud
+         * This method is to get user properties set from the SDK or from the ZTarget cloud
          *
          * @param key the key for which value needs to be accessed
          * @param defaultValue the default value in case the user property for the key has not been set yet
@@ -838,7 +838,7 @@
         }
 
         /**
-         * This method is to get data store values set from Zinteract cloud
+         * This method is to get data store values set from ZTarget cloud
          *
          * @param key the key for which value needs to be accessed
          * @param defaultValue the default value in case the user property for the key has not been set yet
@@ -888,7 +888,7 @@
         }
 
         private static void updateUserProperties(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"httpWorker is uploading user properties now");
             }
 
@@ -920,7 +920,7 @@
                 public void run() {
 
                     deviceDetails.getadditionalDetails();
-                    if (Zinteract.isDebuggingOn()) {
+                    if (ZTarget.isDebuggingOn()) {
                         Log.d(TAG, "Device details initialization finished");
                     }
                 }
@@ -943,7 +943,7 @@
                 return deviceId;
             }
 
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"DeviceId has to be created");
             }
 
@@ -976,7 +976,7 @@
                         Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                         sessionId = previousSessionId;
                         Log.i("sessionId","updated at startNewSessionIfNeeded");
-                        if(Zinteract.isDebuggingOn()){
+                        if(ZTarget.isDebuggingOn()){
                             Log.d(TAG,"starting new session is not required as very close previous session already exists");
                         }
                     }
@@ -984,7 +984,7 @@
                     // Sessions not close enough, create new sessionId
                     sync();
                     startNewSession(timestamp);
-                    if(Zinteract.isDebuggingOn()){
+                    if(ZTarget.isDebuggingOn()){
                         Log.d(TAG,"starting new session as previous session was not close enough");
                     }
                 }
@@ -993,12 +993,12 @@
                 if (timestamp - lastEventTime > sessionTimeoutMillis || sessionId == -1) {
                     sync();
                     startNewSession(timestamp);
-                    if(Zinteract.isDebuggingOn()){
+                    if(ZTarget.isDebuggingOn()){
                         Log.d(TAG,"starting new session as session timed out");
                     }
                 }
                 else {
-                    if(Zinteract.isDebuggingOn()){
+                    if(ZTarget.isDebuggingOn()){
                         Log.d(TAG,"Already previous session is open so not starting another session");
                     }
                 }
@@ -1035,7 +1035,7 @@
         }
 
         private static void sendEvent(String eventType, long timestamp, String url,boolean header){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"Sending "+eventType+" separately");
 
             }
@@ -1103,7 +1103,7 @@
         }
 
         static void syncDataStore(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"syncDataStore() called, asking logWorker to sync");
             }
             if (!isContextAndApiKeySet("syncDataStore()")) {
@@ -1119,7 +1119,7 @@
         }
 
         private static void checkAndUpdateDataStore(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"httpWorker is now making server request to update DataStore");
             }
 
@@ -1131,7 +1131,7 @@
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
                     if ("OUT_OF_SYNCH".equals(jsonResponse.getString("status"))) {
-                        if(Zinteract.isDebuggingOn()){
+                        if(ZTarget.isDebuggingOn()){
                             Log.d(TAG,"DataStore is out of sync, asking logWorker to update local data store");
                         }
                         syncSuccess = true;
@@ -1144,7 +1144,7 @@
                         });
                     }
                     else {
-                        if(Zinteract.isDebuggingOn()){
+                        if(ZTarget.isDebuggingOn()){
                             Log.d(TAG,"DataStore already latest version, not updating local DataStore");
                         }
                     }
@@ -1162,7 +1162,7 @@
         }
 
         private static void updateDataStore(JSONObject newDataStore){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"logWorker id updating local data store with the fetched data store");
             }
             try {
@@ -1176,7 +1176,7 @@
             } catch (Exception e){
                 Log.e(TAG, "Exception in updateDataStore:", e);
             }
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "DataStore update done, we have latest version now.");
             }
 
@@ -1188,7 +1188,7 @@
         }
 
         private static void makeEventUploadPostRequest(String url, String events, final long maxId) {
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG,"httpWorker is uploading events now - "+events);
             }
 
@@ -1207,14 +1207,14 @@
                         logWorker.post(new Runnable() {
                             @Override
                             public void run() {
-                                if(Zinteract.isDebuggingOn()){
+                                if(ZTarget.isDebuggingOn()){
                                     Log.d(TAG,"Events upload successful, trying to delete uploaded events");
                                 }
                                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                                 dbHelper.removeEvents(maxId);
                                 uploadingCurrently.set(false);
                                 if (dbHelper.getEventCount() > Constants.Z_EVENT_UPLOAD_THRESHOLD) {
-                                    if(Zinteract.isDebuggingOn()){
+                                    if(ZTarget.isDebuggingOn()){
                                         Log.d(TAG,"Still lot of events exist i.e greater than Z_EVENT_UPLOAD_THRESHOLD, asking logWorker to upload again");
                                     }
                                     logWorker.post(new Runnable() {
@@ -1250,7 +1250,7 @@
                     final long maxId = pair.first;
                     final JSONArray events = pair.second;
                     if(events.length() == 0){
-                        if(Zinteract.isDebuggingOn()){
+                        if(ZTarget.isDebuggingOn()){
                             Log.d(TAG,"httpWorker tried uploading events but found zero event, hence not making server request");
                         }
                         uploadingCurrently.set(false);
@@ -1259,7 +1259,7 @@
                     httpWorker.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(Zinteract.isDebuggingOn()){
+                            if(ZTarget.isDebuggingOn()){
                                 Log.d(TAG,"Asking httpWorker to upload "+events.length()+" events");
                             }
                             makeEventUploadPostRequest(Constants.Z_EVENT_LOG_URL, events.toString(),
@@ -1272,7 +1272,7 @@
                 }
             }
             else {
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"Already uploading events to the server hence not uploading now");
                 }
             }
@@ -1280,7 +1280,7 @@
 
         private static void _syncDataStore() {
             if (!synchingDataStoreCurrently.getAndSet(true)) {
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"Asking httpWorker to sync datastore");
                 }
                 httpWorker.post(new Runnable() {
@@ -1291,7 +1291,7 @@
                 });
             }
             else {
-                if(Zinteract.isDebuggingOn()){
+                if(ZTarget.isDebuggingOn()){
                     Log.d(TAG,"sync datastore is already going on, so not syncing now");
                 }
             }
@@ -1337,7 +1337,7 @@
          * @param eventProperties additional parameters. e.g for purchase event additional parameters might be- amount,quantity etc
          */
         public static void logEvent(String eventType, JSONObject eventProperties) {
-            /*if(Zinteract.robolectricTesting) {
+            /*if(ZTarget.robolectricTesting) {
                 System.out.println("ZINTERACT: logEvent - " + eventType);
             }*/
             checkedLogEvent(eventType, eventProperties, null, System.currentTimeMillis(), true);
@@ -1437,7 +1437,7 @@
         public synchronized static void setUserId(String userId){
             CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_OLD_USER_ID, getUserId()).commit();
             CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
-            Zinteract.userId = userId;
+            ZTarget.userId = userId;
             logWorker.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1456,7 +1456,7 @@
         }
 
         private static void setUserOnServer(){
-            if(Zinteract.isDebuggingOn()){
+            if(ZTarget.isDebuggingOn()){
                 Log.d(TAG, "Sending new user id to the server.");
             }
 
@@ -1490,11 +1490,11 @@
         }
 
         private static void setContext(Context context){
-            Zinteract.context = context;
+            ZTarget.context = context;
         }
 
         private static void setApiKey(String apiKey){
-            Zinteract.apiKey = apiKey;
+            ZTarget.apiKey = apiKey;
         }
 
         private static long getLastEventTime() {
@@ -1641,7 +1641,7 @@
                 if(grandTotal!=null){
                     purchaseDetails.put("grand_total",grandTotal);
                 }else{
-                    if(Zinteract.isDebuggingOn()){
+                    if(ZTarget.isDebuggingOn()){
                         Log.i("PurchaseCompletedEvent:", "grandTotal param missing in the method call");
                     }
                     return;
@@ -1670,7 +1670,7 @@
             } catch (JSONException e) {
                 Log.e(TAG,"purchaseDetails",e);
             }
-            /*if(Zinteract.robolectricTesting) {
+            /*if(ZTarget.robolectricTesting) {
                 System.out.println("ZINTERACT: logging purchase completed event");
             }*/
             logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
@@ -1680,7 +1680,7 @@
          * Method to log Purchase Attempted event
          */
         public static void logPurchaseAttempted() {
-            /*if(Zinteract.robolectricTesting) {
+            /*if(ZTarget.robolectricTesting) {
                 System.out.println("ZINTERACT: logging purchase attempted event");
             }*/
             logEvent(Constants.Z_PURCHASE_ATTEMPTED_EVENT);

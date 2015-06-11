@@ -30,7 +30,7 @@ abstract class NotificationCampaign {
 
     protected NotificationCampaign(JSONObject currentCampaign, int notificationId){
         try {
-            /*if(Zinteract.robolectricTesting) {
+            /*if(ZTarget.robolectricTesting) {
                 System.out.println("Notification Campaign: Being constructed");
             }*/
             campaignId = currentCampaign.getString("campaignId");
@@ -49,7 +49,7 @@ abstract class NotificationCampaign {
                 if(contentClick.has("nextScreen") && (nextScreen = contentClick.getJSONObject("nextScreen"))!=JSONObject.NULL){
                     if(nextScreen.has("deepLink") && !(launcherClassName = nextScreen.getString("deepLink")).isEmpty()){
                         launchClassName = launcherClassName;
-                        /*if(Zinteract.robolectricTesting) {
+                        /*if(ZTarget.robolectricTesting) {
                             System.out.println("Notification Campaign: " + launcherClassName);
                         }*/
                     }
@@ -57,7 +57,7 @@ abstract class NotificationCampaign {
             }
         }catch (JSONException e){
             Log.e(TAG,"campaign json inflation error", e);
-            /*if(Zinteract.robolectricTesting) {
+            /*if(ZTarget.robolectricTesting) {
                 e.printStackTrace();
             }*/
         }

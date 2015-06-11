@@ -41,9 +41,9 @@ public class ShakeListener implements SensorEventListener {
 
     static ShakeListener getInstance(){
         if(instance==null){
-            instance = new ShakeListener(ZinteractActivityLifecycleCallbacks.currentActivity);
+            instance = new ShakeListener(ZTargetActivityLifecycleCallbacks.currentActivity);
         }else{
-            instance.currentActivity=ZinteractActivityLifecycleCallbacks.currentActivity;
+            instance.currentActivity= ZTargetActivityLifecycleCallbacks.currentActivity;
         }
         return instance;
     }
@@ -204,7 +204,7 @@ public class ShakeListener implements SensorEventListener {
     private void doActionWhenZfound() {
 
         Log.i(TAG, "Z motion found");
-        if(Zinteract.isDebuggingOn()) {
+        if(ZTarget.isDebuggingOn()) {
             ScreenCapture screenCapturer = ScreenCapture.getInstance();
             screenCapturer.initialize();
             screenCapturer.captureAndSend();

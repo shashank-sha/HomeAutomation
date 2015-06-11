@@ -25,13 +25,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zemosolabs.zinteract.R;
-import com.zemosolabs.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.ZTarget;
+import com.zemosolabs.zinteract.sdk.ZTargetInAppNotification;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 
 /**
@@ -55,7 +54,7 @@ import java.util.Locale;
  * <p>    } </p>
  * <p>   } </p>
  */
-public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.ZinteractInAppNotification {
+public class DefaultInAppNotification extends ZTargetInAppNotification {
 
     private Context context;
     private String campaignId;
@@ -363,7 +362,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             try {
                 JSONObject j = new JSONObject();
                 j.put("campaignId", campaignId);
-                Zinteract.updatePromotionAsSeen(campaignId);
+                ZTarget.updatePromotionAsSeen(campaignId);
             }
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
@@ -382,7 +381,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             catch (Exception e){
                 Log.e(TAG, "Exception: " + e);
             }*/
-            Zinteract.removePromotion(campaignId);
+            ZTarget.removePromotion(campaignId);
             dismiss();
         }
     };
@@ -395,7 +394,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
             try{
                 Log.i("RATEME:","CLICKED");
                 startActivity(rateMyApp);
-                Zinteract.removePromotion(campaignId);
+                ZTarget.removePromotion(campaignId);
             }catch (ActivityNotFoundException e){
                 Log.i("Exception: ",e.toString());
             }
@@ -410,7 +409,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 try{
                     Log.i("ACTIONEVENT:","CLICKED");
                     startActivity(openLinkInBrowser);
-                    Zinteract.updatePromotionAsSeen(campaignId);
+                    ZTarget.updatePromotionAsSeen(campaignId);
                 }catch (ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }
@@ -422,7 +421,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
                 try{
                     Log.i("SHAREEVENT:","CLICKED");
                     startActivity(share);
-                    Zinteract.updatePromotionAsSeen(campaignId);
+                    ZTarget.updatePromotionAsSeen(campaignId);
                 }catch(ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }
@@ -434,7 +433,7 @@ public class DefaultInAppNotification extends com.zemosolabs.zinteract.sdk.Zinte
 
     View.OnClickListener closeHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            Zinteract.updatePromotionAsSeen(campaignId);
+            ZTarget.updatePromotionAsSeen(campaignId);
             dismiss();
         }
     };

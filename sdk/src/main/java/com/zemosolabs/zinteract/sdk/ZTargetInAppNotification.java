@@ -6,18 +6,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 
-import com.zemosolabs.zinteract.sdk.Zinteract;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Created by vedaprakash on 3/3/15.
  */
-public abstract class ZinteractInAppNotification extends DialogFragment {
+public abstract class ZTargetInAppNotification extends DialogFragment {
 
 
      /**

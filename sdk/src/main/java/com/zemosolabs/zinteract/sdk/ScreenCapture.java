@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Base64OutputStream;
@@ -17,16 +16,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by vedaprakash on 30/3/15.
@@ -43,22 +38,22 @@ class ScreenCapture {
 
     }
     void initialize(){
-        currentActivity = ZinteractActivityLifecycleCallbacks.currentActivity;
+        currentActivity = ZTargetActivityLifecycleCallbacks.currentActivity;
         rootView = currentActivity.getWindow().getDecorView().getRootView();
         String packageName = currentActivity.getPackageName();
         viewsInAPage = new JSONObject();
         try {
-            viewsInAPage.put("osName",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOSName()));
-            viewsInAPage.put("osFamily",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOsFamily()));
-            viewsInAPage.put("osVersion",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getOSVersion()));
-            viewsInAPage.put("brand",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getBrand()));
-            viewsInAPage.put("manufacturer",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getManufacturer()));
-            viewsInAPage.put("deviceModel",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getModel()));
-            viewsInAPage.put("deviceResolution",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getScreenResolution()));
-            viewsInAPage.put("language",CommonUtils.replaceWithJSONNull(Zinteract.deviceDetails.getLanguage()));
+            viewsInAPage.put("osName",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getOSName()));
+            viewsInAPage.put("osFamily",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getOsFamily()));
+            viewsInAPage.put("osVersion",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getOSVersion()));
+            viewsInAPage.put("brand",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getBrand()));
+            viewsInAPage.put("manufacturer",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getManufacturer()));
+            viewsInAPage.put("deviceModel",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getModel()));
+            viewsInAPage.put("deviceResolution",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getScreenResolution()));
+            viewsInAPage.put("language",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getLanguage()));
             viewsInAPage.put("editingSessionId",CommonUtils.replaceWithJSONNull(editSessionId));
             viewsInAPage.put("appName",CommonUtils.replaceWithJSONNull(packageName));
-            viewsInAPage.put("screenName",CommonUtils.replaceWithJSONNull(ZinteractActivityLifecycleCallbacks.currentActivity.getClass().getCanonicalName()));
+            viewsInAPage.put("screenName",CommonUtils.replaceWithJSONNull(ZTargetActivityLifecycleCallbacks.currentActivity.getClass().getCanonicalName()));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -83,7 +78,7 @@ class ScreenCapture {
         }
         createNewFile();
         //writeToFile(viewsInAPage.toString());
-        Zinteract.sendSnapshot(viewsInAPage);
+        ZTarget.sendSnapshot(viewsInAPage);
     }
     private JSONObject buildHierarchy(View view,int index){
         JSONObject viewHierarchy = new JSONObject();
@@ -200,8 +195,8 @@ class ScreenCapture {
         int height = !value.getBounds().isEmpty()? value.copyBounds().height():value.getIntrinsicHeight();
         width = (width<=0)? 3 : width;
         height = (height<=0)? 3:height;
-        Log.i("Zinteract","Base64BmpFromDrawable "+width);
-        Log.i("Zinteract","Base64BmpFromDrawable "+height);
+        Log.i("ZTarget","Base64BmpFromDrawable "+width);
+        Log.i("ZTarget","Base64BmpFromDrawable "+height);
         Bitmap bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         value.setBounds(0,0,canvas.getWidth(),canvas.getHeight());
@@ -250,7 +245,7 @@ class ScreenCapture {
             byte[] bitmapBytes = baos.toByteArray();
             base64Screenshot = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
             /*int screenShotDensity = rootViewScreenshot.getDensity();
-            Float scale = (float)(Zinteract.deviceDetails.getScreenDensity()/screenShotDensity);*/
+            Float scale = (float)(ZTarget.deviceDetails.getScreenDensity()/screenShotDensity);*/
         }
         return base64Screenshot;
     }
@@ -290,7 +285,7 @@ class ScreenCapture {
 
     void createNewFile(){
         try {
-            file = new File("/sdcard/Zinteract/fetchPromoJSONReceived.txt");
+            file = new File("/sdcard/ZTarget/fetchPromoJSONReceived.txt");
             file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();

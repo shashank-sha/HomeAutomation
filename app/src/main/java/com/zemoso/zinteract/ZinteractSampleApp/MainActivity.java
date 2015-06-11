@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
-import com.zemosolabs.zinteract.sdk.Zinteract;
+import com.zemosolabs.zinteract.sdk.ZTarget;
 import io.fabric.sdk.android.Fabric;
 
 
@@ -20,25 +20,25 @@ public class MainActivity extends Activity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
-        /*Initialize Zinteract with Context and key provided upon registration on Zinteract website.
+        /*Initialize ZTarget with Context and key provided upon registration on ZTarget website.
         Optionally the Google Api Project key and custom class for IN APP PROMOTION can be passed
         in as arguments.*/
 
-        Zinteract.initializeWithContextAndKey(getApplicationContext(),
-                                                "43eb-a23d-0106af662c83","914500168484");
+        ZTarget.initializeWithContextAndKey(getApplicationContext(),
+                "43eb-a23d-0106af662c83", "914500168484");
 
         /* Setting the user properties(optional).
          Provide the user properties which can be useful to segment users. Once the user properties
-         are set through these methods, they can used to filter users through you Zinteract account */
+         are set through these methods, they can used to filter users through you ZTarget account */
 
-        Zinteract.setUserProperty("fname","John");
-        Zinteract.setUserProperty("lname","Doe");
-        Zinteract.setUserProperty("age","39");
+        ZTarget.setUserProperty("fname", "John");
+        ZTarget.setUserProperty("lname", "Doe");
+        ZTarget.setUserProperty("age", "39");
 
-        /*enableDebugging method should only be used for uploading screens for to the Zinteract
+        /*enableDebugging method should only be used for uploading screens for to the ZTarget
          website for dynamic editing or to read the logs for troubleshooting */
 
-        Zinteract.enableDebugging();
+        ZTarget.enableDebugging();
     }
 
 
@@ -67,9 +67,9 @@ public class MainActivity extends Activity {
     @Override
     public void onResume(){
         /*An example of logging event with name 'viewed screen1'
-        Any specific event that occurs in the app can be recorded by using the method Zinteract.logEvent().
+        Any specific event that occurs in the app can be recorded by using the method ZTarget.logEvent().
         A string parameter can be passed to the method naming the event.*/
-        Zinteract.logEvent("viewed screen1");
+        ZTarget.logEvent("viewed screen1");
         super.onResume();
     }
 
