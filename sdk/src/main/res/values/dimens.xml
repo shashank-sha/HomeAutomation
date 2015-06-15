@@ -2,4 +2,5 @@
 <resources>
     <dimen name="border_radius_inAppMessage">10dp</dimen>
     <dimen name="bitmap_corner_radius">10dp</dimen>
+    <dimen name="in_app_promo_width">300dp</dimen>
 </resources>
