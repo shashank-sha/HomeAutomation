@@ -8,7 +8,7 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
-import com.zemosolabs.zinteract.sdk.ZTarget;
+import com.zemosolabs.zinteract.sdk.ZeTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -57,7 +57,7 @@ public abstract class TestBaseClass {
 
     @Before
     public void setup(){
-        ZTarget.robolectricTesting = true;
+        ZeTarget.robolectricTesting = true;
         System.out.println("Checking if the fakeHttpLayer is functioning properly");
         FakeHttpLayer fakeHttpLayer = Robolectric.getFakeHttpLayer();
         assertFalse(fakeHttpLayer.hasPendingResponses());
@@ -97,7 +97,7 @@ public abstract class TestBaseClass {
 
     @After
     public void closeUP(){
-        ZTarget.robolectricTesting = false;
+        ZeTarget.robolectricTesting = false;
     }
 
     protected void instantiateZinteractWorkers(){

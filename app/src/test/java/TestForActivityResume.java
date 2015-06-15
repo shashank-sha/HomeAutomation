@@ -5,7 +5,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemosolabs.zinteract.sdk.ZTarget;
+import com.zemosolabs.zinteract.sdk.ZeTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -189,7 +189,7 @@ public class TestForActivityResume {
         int count = numberOfEventsInDb();
 
         do{
-            ZTarget.logEvent("Event No." + Integer.valueOf(count));
+            ZeTarget.logEvent("Event No." + Integer.valueOf(count));
             count++;
             System.out.println("count="+count);
             executeEventsOnLogAndHttpWorkers();

@@ -36,13 +36,13 @@ public class HttpHelper {
 
     static String doPost(String url, JSONObject postParams){
 
-        if(ZTarget.isDebuggingOn()){
+        if(ZeTarget.isDebuggingOn()){
             Log.d(TAG,"doPost() called");
         }
 
         postParams = addRequiredParams(postParams);
 
-        /*if(ZTarget.isDebuggingOn()){
+        /*if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Post parameters are: " + postParams.toString());
             if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
                 ScreenCapture.getInstance().writeToFile(postParams.toString());
@@ -60,7 +60,7 @@ public class HttpHelper {
             postRequest.setEntity(new StringEntity(jsonString));
             response = client.execute(postRequest);
             stringResponse = EntityUtils.toString(response.getEntity());
-            if(ZTarget.isDebuggingOn()){
+            if(ZeTarget.isDebuggingOn()){
                 if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
                     Log.i("HttpResponse",stringResponse);
                 }
@@ -86,7 +86,7 @@ public class HttpHelper {
                 client.getConnectionManager().shutdown();
             }
         }
-        if(ZTarget.isDebuggingOn()){
+        if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Post Response is: " + stringResponse);
         }
         return stringResponse;
@@ -94,12 +94,12 @@ public class HttpHelper {
 
     private static JSONObject addRequiredParams(JSONObject postParams){
         try {
-            postParams.put("apiKey",CommonUtils.replaceWithJSONNull(ZTarget.getApiKey()));
-            postParams.put("userId",CommonUtils.replaceWithJSONNull(ZTarget.getUserId()));
+            postParams.put("apiKey",CommonUtils.replaceWithJSONNull(ZeTarget.getApiKey()));
+            postParams.put("userId",CommonUtils.replaceWithJSONNull(ZeTarget.getUserId()));
 
-            postParams.put("deviceId", CommonUtils.replaceWithJSONNull(ZTarget.getDeviceId()));
+            postParams.put("deviceId", CommonUtils.replaceWithJSONNull(ZeTarget.getDeviceId()));
             postParams.put("sdkId", CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
-            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(ZTarget.deviceDetails.getVersionName()));
+            postParams.put("appVersion",CommonUtils.replaceWithJSONNull(ZeTarget.deviceDetails.getVersionName()));
             return postParams;
         }
         catch (Exception e){

@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zemosolabs.zinteract.sdk.ZTarget;
+import com.zemosolabs.zinteract.sdk.ZeTarget;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +26,7 @@ public class Activity3 extends Activity {
         setContentView(R.layout.activity_activity3);
 
         TextView messageView = (TextView) findViewById(R.id.activity3_heading);
-        messageView.setText(ZTarget.getData("text", "Hello"));
+        messageView.setText(ZeTarget.getData("text", "Hello"));
     }
 
 
@@ -57,7 +57,7 @@ public class Activity3 extends Activity {
         super.onResume();
         inTime = System.currentTimeMillis();
         // Example logging Event with name 'viewed screen3'
-        ZTarget.logEvent("viewed screen3");
+        ZeTarget.logEvent("viewed screen3");
     }
 
     @Override
@@ -78,7 +78,7 @@ public class Activity3 extends Activity {
             Log.e(TAG, "log details exception", e);
         }
 
-        ZTarget.logEvent("clicked to view screen4", timeSpent);
+        ZeTarget.logEvent("clicked to view screen4", timeSpent);
         Intent intent = new Intent(Activity3.this, Activity4.class);
         startActivity(intent);
     }

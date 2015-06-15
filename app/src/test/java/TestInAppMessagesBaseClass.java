@@ -19,7 +19,7 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemoso.zinteract.ZinteractSampleApp.R;
-import com.zemosolabs.zinteract.sdk.ZTarget;
+import com.zemosolabs.zinteract.sdk.ZeTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -101,7 +101,7 @@ abstract public class TestInAppMessagesBaseClass {
 
     @Before
     public void setUp() {
-        ZTarget.robolectricTesting = true;
+        ZeTarget.robolectricTesting = true;
         //Load Campaign String from file
 
         promotionsForScreensJSON = readFile("app/src/test/java/CampaignTestCase.txt");
@@ -175,7 +175,7 @@ abstract public class TestInAppMessagesBaseClass {
 
     @After
     public void closeUP(){
-        ZTarget.robolectricTesting = false;
+        ZeTarget.robolectricTesting = false;
     }
 
     //Test methods

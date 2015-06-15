@@ -13,7 +13,7 @@ import org.json.JSONObject;
 /**
  * Created by vedaprakash on 3/3/15.
  */
-public abstract class ZTargetInAppNotification extends DialogFragment {
+public abstract class ZeTargetInAppNotification extends DialogFragment {
 
 
      /**

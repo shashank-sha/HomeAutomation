@@ -55,18 +55,18 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent!=null) {
             Log.i(TAG, "CampaignHandler started");
-            /*if(ZTarget.robolectricTesting) {
+            /*if(ZeTarget.robolectricTesting) {
                 System.out.println("Campaign Handler: started");
             }*/
             if (!intent.hasExtra("action")) {
-                /*if(ZTarget.robolectricTesting) {
+                /*if(ZeTarget.robolectricTesting) {
                     System.out.println("Campaign Handler: Doesn't have extra action");
                 }*/
                 Log.i(TAG, "intent does not have action");
                 return START_STICKY;
             }
             if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)) {
-                /*if(ZTarget.robolectricTesting) {
+                /*if(ZeTarget.robolectricTesting) {
                     System.out.println("Campaign Handler: campaign updation received");
                 }*/
                 Log.i(TAG, "UPDATING LIVE CAMPAIGNS");
@@ -84,7 +84,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     }
                 });
             } else if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS)) {
-                /*if(ZTarget.robolectricTesting) {
+                /*if(ZeTarget.robolectricTesting) {
                     System.out.println("Campaign Handler: geo trigger received");
                 }*/
                 Log.i(TAG, "HANDLING GEO TRIGGERS");
@@ -99,20 +99,20 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     }
                 });
             } else if (intent.getStringExtra("action").equalsIgnoreCase(Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS)) {
-                /*if(ZTarget.robolectricTesting) {
+                /*if(ZeTarget.robolectricTesting) {
                     System.out.println("Campaign Handler: simple event trigger received");
                 }*/
                 Log.i(TAG, "HANDLING SIMPLE EVENT TRIGGERS");
                 fetchNewCampaigns(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN);
                 final String eventName = intent.getStringExtra("eventType");
-               /* if(ZTarget.robolectricTesting) {
+               /* if(ZeTarget.robolectricTesting) {
                     System.out.println("Campaign Handler: simple event name- " + eventName);
                 }*/
                 triggerHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (eventName != null) {
-                            /*if(ZTarget.robolectricTesting) {
+                            /*if(ZeTarget.robolectricTesting) {
                                 System.out.println("Campaign Handler: simple event trigger being handled");
                             }*/
                             handleSimpleEventTrigger(eventName);
@@ -126,11 +126,11 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
     }
 
     private void handleSimpleEventTrigger(String eventType) {
-       /* if(ZTarget.robolectricTesting) {
+       /* if(ZeTarget.robolectricTesting) {
             System.out.println(idsMappedToEventName);
         }*/
         if(idsMappedToEventName.containsKey(eventType)){
-            /*if(ZTarget.robolectricTesting) {
+            /*if(ZeTarget.robolectricTesting) {
                 System.out.println("ZINTERACT: idsMapping found");
             }*/
             Log.i(TAG,"id Mapping to EventName working fine");
@@ -139,7 +139,7 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                 Log.i(TAG,"liveCampaign contains the key");
                 long timeStamp = System.currentTimeMillis();
                 if(liveCampaigns.get(campaignId).valid(getApplicationContext(), timeStamp)) {
-                   /* if(ZTarget.robolectricTesting) {
+                   /* if(ZeTarget.robolectricTesting) {
                         System.out.println("Campaign is valid");
                     }*/
                     liveCampaigns.get(campaignId).show(this, campaignId,timeStamp);

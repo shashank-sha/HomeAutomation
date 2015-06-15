@@ -16,12 +16,12 @@ import org.json.JSONObject;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 
-public class ZTargetTest extends ApplicationTestCase<Application> {
-    public ZTargetTest() {
+public class ZeTargetTest extends ApplicationTestCase<Application> {
+    public ZeTargetTest() {
         super(Application.class);
     }
 
-    private static final String TAG = "com.zemosolabs.zinteract.sdk.ZTargetTest";
+    private static final String TAG = "com.zemosolabs.zinteract.sdk.ZeTargetTest";
 
     private static final String promotionsForScreensJSON = "[{\"campaignId\": \"campaign1\",\"screenId\": \"SampleApp\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\", \"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": { \"actionType\": \"LINK\", \"actionButton\": {\"url\": \"http://www.flipkart.com\",\"buttonText\": \"GO\"},\"dismissButtonText\": \"NO THANKS\"}}},{\"campaignId\": \"campaign2\",\"screenId\": \"Activity2\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!! JUST RATE OUR APP\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\", \"onClickUrl\": \"http://www.google.com\", \"templateType\": \"REGULAR\", \"definition\": {\"actionType\": \"LINK\", \"actionButton\": {\"buttonText\": \"RATE US\"},\"dismissButtonText\": \"DON'T ASK ME AGAIN\",\"remindLaterButtonText: \"REMIND ME LATER\"}}},\"campaignId\": \"campaign3\",\"screenId\": \"Activity3\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Invite your friends now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\": \"SHARE\",\"actionButton\": {\"shareText\": \"This app is awesome!!! Check it out! Use promocode:sdeidk\",\"buttonText\": \"INVITE\"},\"dismissButtonText\": \"NO THANKS\"}}},{\"campaignId\": \"campaign4\",\"screenId\": \"Activity4\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\":\"NONE\",\"dismissButtonText\": \"GOT IT\"}}}]";
 
@@ -33,8 +33,8 @@ public class ZTargetTest extends ApplicationTestCase<Application> {
 
         getContext().getSharedPreferences(Constants.Z_SHARED_PREFERENCE_FILE_NAME,Context.MODE_PRIVATE).edit().clear().commit();
         dbHelper = DbHelper.getDatabaseHelper(getContext());
-        ZTarget.initializeWithContextAndKey(getContext(), "TestAndroidAPIKey");
-        ZTarget.enableDebugging();
+        ZeTarget.initializeWithContextAndKey(getContext(), "TestAndroidAPIKey");
+        ZeTarget.enableDebugging();
     }
 
     public void tearDown(){
@@ -43,26 +43,26 @@ public class ZTargetTest extends ApplicationTestCase<Application> {
     }
 
     public void testDefaultUserIdisSet(){
-        assertNotNull(ZTarget.getUserId());
+        assertNotNull(ZeTarget.getUserId());
     }
 
     public void testCustomUserId(){
         String customUserId = "CustomUserId";
-        ZTarget.setUserId(customUserId);
-        assertEquals(customUserId, ZTarget.getUserId());
+        ZeTarget.setUserId(customUserId);
+        assertEquals(customUserId, ZeTarget.getUserId());
     }
 
     public void testUserProperty(){
         String value = "John";
         String key = "firstname";
-        assertEquals("default", ZTarget.getUserProperty(key, "default"));
-        ZTarget.setUserProperty("firstname", value);
-        assertEquals(value, ZTarget.getUserProperty(key, "default"));
+        assertEquals("default", ZeTarget.getUserProperty(key, "default"));
+        ZeTarget.setUserProperty("firstname", value);
+        assertEquals(value, ZeTarget.getUserProperty(key, "default"));
     }
 
     public void testLogEvent(){
         String eventName = "click";
-        ZTarget.logEvent(eventName);
+        ZeTarget.logEvent(eventName);
 
         try {
             Thread.sleep(1000);
@@ -103,14 +103,14 @@ public class ZTargetTest extends ApplicationTestCase<Application> {
     public void testDownloadPromotionsAndDataStore(){
         //TODO use mocked API response
         try {
-            ZTarget.syncDataStore();
-            ZTarget.checkPromotions();
+            ZeTarget.syncDataStore();
+            ZeTarget.checkPromotions();
             Thread.sleep(20000);
             JSONObject promotion = dbHelper.getPromotionforScreen("ViewController4");
             assertNotNull(promotion);
-            assertEquals("app", ZTarget.getData("text", "default"));
-            assertEquals("55", ZTarget.getData("price", "default"));
-            assertEquals("66", ZTarget.getData("quantity", "default"));
+            assertEquals("app", ZeTarget.getData("text", "default"));
+            assertEquals("55", ZeTarget.getData("price", "default"));
+            assertEquals("66", ZeTarget.getData("quantity", "default"));
         }
         catch (Exception e){
             Log.e(TAG, "Exception :" + e);

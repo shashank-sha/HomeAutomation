@@ -15,20 +15,20 @@ import org.json.JSONObject;
 /**
  * Created by praveen on 30/01/15.
  */
-public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
     static Activity currentActivity;
     private ScreenEditor UIEditor;
     private ShakeListener shakeListener=null;
     TripleTapListener tripleTapListener;
 
-    public ZTargetActivityLifecycleCallbacks() {
+    public ZeTargetActivityLifecycleCallbacks() {
 
     }
 
     @Override
     public void onActivityStarted(final Activity activity) {
         currentActivity = activity;
-        ZTarget.currentActivity = activity;
+        ZeTarget.currentActivity = activity;
     }
 
 
@@ -47,7 +47,7 @@ public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLi
                     } catch (JSONException e) {
                         Log.e("CAMPAIGN VIEWED LOG","GeoNotification failed",e);
                     }
-                    ZTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
+                    ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
                     JSONObject properties = new JSONObject();
                     try {
@@ -55,16 +55,16 @@ public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLi
                     } catch (JSONException e) {
                         Log.e("CAMPAIGN VIEWED LOG","SimpleEvent Notification failed",e);
                     }
-                    ZTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
+                    ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }
             }
         }
-        ZTarget._startSession(activity);
+        ZeTarget._startSession(activity);
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        ZTarget._endSession();
+        ZeTarget._endSession();
         UIEditor.purge();
         if(shakeListener!=null) {
             shakeListener.purge();
@@ -83,7 +83,7 @@ public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLi
     public void onActivityResumed(Activity activity) {
         String packageName = activity.getPackageName();
         PackageManager pm = activity.getPackageManager();
-       // if(ZTarget.robolectricTesting==false) {
+       // if(ZeTarget.robolectricTesting==false) {
             Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
             ComponentName compName = launchIntent.getComponent();
             String launchingClassName = compName.getClassName();
@@ -92,7 +92,7 @@ public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLi
                     String campaignId = activity.getIntent()
                             .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
                     if (campaignId != null && !campaignId.isEmpty()) {
-                        ZTarget.updatePromotionAsSeen(campaignId);
+                        ZeTarget.updatePromotionAsSeen(campaignId);
                         Log.i("PushNotificationViewed", campaignId);
                     }
                 }
@@ -106,10 +106,10 @@ public class ZTargetActivityLifecycleCallbacks implements Application.ActivityLi
         } catch (PackageManager.NameNotFoundException e) {
             Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
         }
-        ZTarget.updateActivityDetails(label, name);
+        ZeTarget.updateActivityDetails(label, name);
 
 
-        if(ZTarget.isDebuggingOn()) {
+        if(ZeTarget.isDebuggingOn()) {
             shakeListener = ShakeListener.getInstance();
             shakeListener.initialize();
             tripleTapListener= new TripleTapListener();
