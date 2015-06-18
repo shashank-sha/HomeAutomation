@@ -356,7 +356,7 @@
             //would work.
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
-                Log.i(TAG,"currentActivityLabel is null");
+                Log.i(TAG, "currentActivityLabel is null");
                 return;
             }
             Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
@@ -683,6 +683,7 @@
                     if(promotion.getString("type").equals("screenFix")){
                         Log.i("screenFix", "Got screenFix");
                         dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
+                        addCount++;
                     }else if(promotion.getString("type").equals("promotion")) {
                         Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
@@ -693,27 +694,28 @@
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp",
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
+                        addCount++;
                     }else if(promotion.getString("type").equals("GEO")){
                         Log.i(TAG,"We have a geo event being saved to database");
-                        dbHelper.addGeoCampaign(promotion.toString(),promotion.getString("campaignId"),
-                                                        maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                        context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
-                                .putExtra("type",Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
+                        dbHelper.addGeoCampaign(promotion.toString(), promotion.getString("campaignId"),
+                                maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow);
+                        context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                .putExtra("type", Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
+                        addCount++;
                     }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
                         dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
                                                             maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                        Log.i(TAG,"We have a simple event being saved to database");
-                        context.startService(new Intent(context,CampaignHandlingService.class).putExtra("action",Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
-                                .putExtra("type",Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
+                        Log.i(TAG, "We have a simple event being saved to database");
+                        context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
+                                .putExtra("type", Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
+                        addCount++;
                     }else if(promotion.getString("type").equals("IBEACON")){
-
+                        addCount++;
                     }
-                    addCount++;
                 }
-
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
                 if(ZeTarget.isDebuggingOn()){
-                    Log.d(TAG,"Added "+addCount+" promotions in db");
+                    Log.d(TAG,"Added "+addCount+" campaigns in db");
                 }
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload

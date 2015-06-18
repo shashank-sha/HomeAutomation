@@ -346,28 +346,21 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
     View.OnClickListener imageClickHandler = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
-                try{
-                    Log.i("InAppIMAGE:","CLICKED");
-                    startActivity(openImageLinkInBrowser);
-                }catch (ActivityNotFoundException e){
-                    Log.i("Exception: ",e.toString());
-                }
-                dismiss();
+            Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
+            try{
+                Log.i("InAppIMAGE:","CLICKED");
+                startActivity(openImageLinkInBrowser);
+            }catch (ActivityNotFoundException e){
+                Log.i("Exception: ",e.toString());
+            }
+            ZeTarget.updatePromotionAsSeen(campaignId);
+            dismiss();
             }
     };
 
     View.OnClickListener askMeLater = new View.OnClickListener() {
         public void onClick(View v) {
-            try {
-                JSONObject j = new JSONObject();
-                j.put("campaignId", campaignId);
-                ZeTarget.updatePromotionAsSeen(campaignId);
-            }
-            catch (Exception e){
-                Log.e(TAG, "Exception: " + e);
-            }
-
+            ZeTarget.updatePromotionAsSeen(campaignId);
             dismiss();
         }
     };

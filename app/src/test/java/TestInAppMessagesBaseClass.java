@@ -101,10 +101,10 @@ abstract public class TestInAppMessagesBaseClass {
 
     @Before
     public void setUp() {
-        ZeTarget.robolectricTesting = true;
+        //ZeTarget.robolectricTesting = true;
         //Load Campaign String from file
 
-        promotionsForScreensJSON = readFile("app/src/test/java/CampaignTestCase.txt");
+        promotionsForScreensJSON = readFile("app/src/test/java/promotion_test_case.json");
 
         // Confirm the FakeHttpLayer is at its default state without and ResponseRules set.
         System.out.println("Checking if the fakeHttpLayer is functioning properly");
@@ -175,7 +175,7 @@ abstract public class TestInAppMessagesBaseClass {
 
     @After
     public void closeUP(){
-        ZeTarget.robolectricTesting = false;
+        //ZeTarget.robolectricTesting = false;
     }
 
     //Test methods

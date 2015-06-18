@@ -7,7 +7,6 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemoso.zinteract.ZinteractSampleApp.R;
-import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpPost;
@@ -19,11 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.tester.org.apache.http.HttpRequestInfo;
 import org.robolectric.util.ActivityController;
-import org.robolectric.util.ServiceController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,10 +42,10 @@ public class TestSessionId extends TestBaseClass{
 
     @Test
     public void test(){
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","MainActivity");
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","Activity2");
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","Activity3");
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","Activity4");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "MainActivity");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity2");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity3");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity4");
         doRepetitiveSetOfActionsContinuouslyFor(2);
         sessionIds = new ArrayList<>();
         fetchSessionInfo();
@@ -68,11 +65,11 @@ public class TestSessionId extends TestBaseClass{
 
     private void doRepetitiveSetOfActionsWithAGapExceedingThresholdForSessionFor(int i,long millis) {
         for(int j=0;j<i;j++) {
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("prev", "Activity5");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("prev", "Activity4");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity3");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity4");
-            executePendingTasksOnZinteractWorkers(millis);
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("prev", "Activity5");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("prev", "Activity4");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity3");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity4");
+            executePendingTasksOnZeTargetWorkers(millis);
             System.out.println("Waiting for "+millis/1000+" seconds");
             try {
                 Thread.sleep(millis);
@@ -84,10 +81,10 @@ public class TestSessionId extends TestBaseClass{
 
     private void doRepetitiveSetOfActionsContinuouslyFor(int i) {
         for(int j=0;j<i;j++){
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("prev","Activity5");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("prev","Activity4");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","Activity3");
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next","Activity4");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("prev", "Activity5");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("prev", "Activity4");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity3");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity4");
         }
     }
 
@@ -142,82 +139,58 @@ public class TestSessionId extends TestBaseClass{
     }
 
 
-    void resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity(String action, String activityName){
+    void resumeActivityDoActionInAppAndClickOnButtonForNextActivity(String action, String activityName){
         int nextButtonId,prevButtonId;
         Class nextActivity,prevActivity;
         ActivityController<Activity> currentActivityController;
         System.out.println("ResumeActivityDoAction: " + "Creating/Resuming the activity : " + activityName);
+        resumeActivity(activityName);
+        currentActivityController = ActivityController.of((Activity)currentActivity);
         switch(activityName){
             case "MainActivity":
-                if(mainActivityActivityController==null){
-                    mainActivityActivityController = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume().visible();
-                }
-                else{
-                    mainActivityActivityController.resume().visible();
-                }
-                currentActivity  = (MainActivity)mainActivityActivityController.get();
-                currentActivityController = ActivityController.of((Activity)currentActivity);
+
                 prevActivity = null;
                 nextActivity = Activity2.class;
                 nextButtonId = R.id.button1to2;
                 prevButtonId = -1;
                 break;
+
             case "Activity2":
-                if(activity2ActivityController==null){
-                    activity2ActivityController = Robolectric.buildActivity(Activity2.class).attach().create().start().resume().visible();
-                }
-                else{
-                    activity2ActivityController.resume().visible();
-                }
-                currentActivity  = (Activity2)activity2ActivityController.get();
+
                 currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = MainActivity.class;
                 nextActivity = Activity3.class;
                 nextButtonId = R.id.button2to3;
                 prevButtonId = R.id.button2to1;
                 break;
+
             case "Activity3":
-                if(activity3ActivityController==null){
-                    activity3ActivityController = Robolectric.buildActivity(Activity3.class).attach().create().start().resume().visible();
-                }
-                else{
-                    activity3ActivityController.resume().visible();
-                }
-                currentActivity  = (Activity3)activity3ActivityController.get();
+
                 currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = Activity2.class;
                 nextActivity = Activity4.class;
                 nextButtonId = R.id.button3to4;
                 prevButtonId = R.id.button3to2;
                 break;
+
             case "Activity4":
-                if(activity4ActivityController==null){
-                    activity4ActivityController = Robolectric.buildActivity(Activity4.class).attach().create().start().resume().visible();
-                }
-                else{
-                    activity4ActivityController.resume().visible();
-                }
-                currentActivity  = (Activity4)activity4ActivityController.get();
+
                 currentActivityController = ActivityController.of((Activity)currentActivity);
                 nextActivity = Activity5.class;
                 prevActivity = Activity3.class;
                 nextButtonId = R.id.button4to5;
                 prevButtonId = R.id.button4to3;
                 break;
+
             case "Activity5":
-                if(activity5ActivityController==null){
-                    activity5ActivityController = Robolectric.buildActivity(Activity5.class).attach().create().start().resume().visible();
-                }
-                else{
-                    activity5ActivityController.resume().visible();
-                }
-                currentActivity  = (Activity5)activity5ActivityController.get();
+
                 currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = Activity4.class;
                 nextActivity = MainActivity.class;
                 nextButtonId = R.id.button5to1;
                 prevButtonId = R.id.button5to4;
                 break;
+
             default:
                 assertTrue(false);
                 return;
@@ -246,5 +219,62 @@ public class TestSessionId extends TestBaseClass{
         System.out.println("ResumeActivityDoAction: " + "Pausing the activity : " + activityName);
         currentActivityController.pause();
         executeWorkerTasksForLogEvent();
+    }
+
+    protected void pauseActivity() {
+        ActivityController<Activity> currentActivityController = ActivityController.of((Activity)currentActivity);
+        currentActivityController.pause();
+    }
+
+    protected void resumeActivity(String activityName){
+        switch(activityName){
+            case "MainActivity":
+                if(mainActivityActivityController==null){
+                    mainActivityActivityController = Robolectric.buildActivity(MainActivity.class).attach().create().start().resume().visible();
+                }
+                else{
+                    mainActivityActivityController.resume().visible();
+                }
+                currentActivity  = (MainActivity)mainActivityActivityController.get();
+                break;
+            case "Activity2":
+                if(activity2ActivityController==null){
+                    activity2ActivityController = Robolectric.buildActivity(Activity2.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity2ActivityController.resume().visible();
+                }
+                currentActivity  = (Activity2)activity2ActivityController.get();
+                break;
+            case "Activity3":
+                if(activity3ActivityController==null){
+                    activity3ActivityController = Robolectric.buildActivity(Activity3.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity3ActivityController.resume().visible();
+                }
+                currentActivity  = (Activity3)activity3ActivityController.get();
+                break;
+            case "Activity4":
+                if(activity4ActivityController==null){
+                    activity4ActivityController = Robolectric.buildActivity(Activity4.class).attach().create().start().resume().visible();
+                }
+                else{
+                    activity4ActivityController.resume().visible();
+                }
+                currentActivity  = (Activity4)activity4ActivityController.get();
+                break;
+            case "Activity5":
+                if(activity5ActivityController==null){
+                    activity5ActivityController = Robolectric.buildActivity(Activity5.class).attach().create().start().resume().visible();
+                }
+                else {
+                    activity5ActivityController.resume().visible();
+                }
+                break;
+            default:
+                System.out.println("Wrong choice of Activity to Resume");
+                break;
+        }
     }
 }

@@ -1,6 +1,4 @@
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.widget.Button;
 
 import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
@@ -8,7 +6,6 @@ import com.zemoso.zinteract.ZinteractSampleApp.R;
 
 import org.json.JSONException;
 import org.robolectric.Robolectric;
-import org.robolectric.shadows.ShadowNotificationManager;
 
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class TestForSimpleEventTriggeredCampaigns extends TestForCampaigns {
     public void test() {
         List<Notification> listOfNotifications;
         int numberOfNotifications = 0;
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "MainActivity");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "MainActivity");
         Robolectric.clearHttpResponseRules();
         int maxNumberOfTimesToShow = 0;
         int minutesBeforeReshow = 0;
@@ -35,14 +32,14 @@ public class TestForSimpleEventTriggeredCampaigns extends TestForCampaigns {
             e.printStackTrace();
         }
         //First time show notification test if its present
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity2");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity2");
         listOfNotifications = goFromActivity2To4AndMakeAPurchase();
         assertTrue(notificationForCampaignExists(listOfNotifications, numberOfNotifications,0));
         numberOfNotifications = listOfNotifications.size();
         activity4ActivityController.pause();
 
         //Attempt to show second time before the time lapse test if no notification
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity2");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity2");
         listOfNotifications = goFromActivity2To4AndMakeAPurchase();
         assertTrue(listOfNotifications.size()==numberOfNotifications);
         activity4ActivityController.pause();
@@ -54,7 +51,7 @@ public class TestForSimpleEventTriggeredCampaigns extends TestForCampaigns {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity2");
+            resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity2");
             listOfNotifications = goFromActivity2To4AndMakeAPurchase();
             assertTrue(notificationForCampaignExists(listOfNotifications, numberOfNotifications,0));
             numberOfNotifications = listOfNotifications.size();
@@ -67,7 +64,7 @@ public class TestForSimpleEventTriggeredCampaigns extends TestForCampaigns {
         }
 
         //Test that the notification should not be shown anymore than the maxNumberOfTimesToShow
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity2");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity2");
         listOfNotifications = goFromActivity2To4AndMakeAPurchase();
         assertTrue(listOfNotifications.size()==numberOfNotifications);
         activity4ActivityController.pause();
@@ -75,7 +72,7 @@ public class TestForSimpleEventTriggeredCampaigns extends TestForCampaigns {
     }
 
     private List<Notification> goFromActivity2To4AndMakeAPurchase(){
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "Activity3");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "Activity3");
         if(activity4ActivityController==null){
             activity4ActivityController = Robolectric.buildActivity(Activity4.class).attach().create().start().resume().visible();
         }

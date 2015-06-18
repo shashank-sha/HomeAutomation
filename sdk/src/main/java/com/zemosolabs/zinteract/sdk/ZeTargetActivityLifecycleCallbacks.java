@@ -59,7 +59,7 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                 }
             }
         }
-        ZeTarget._startSession(activity);
+
     }
 
     @Override
@@ -83,8 +83,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
     public void onActivityResumed(Activity activity) {
         String packageName = activity.getPackageName();
         PackageManager pm = activity.getPackageManager();
-       // if(ZeTarget.robolectricTesting==false) {
-            Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
+
+        Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
+        if(launchIntent!=null) {
             ComponentName compName = launchIntent.getComponent();
             String launchingClassName = compName.getClassName();
             if (activity.getClass().getCanonicalName().equals(launchingClassName)) {
@@ -97,7 +98,7 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                     }
                 }
             }
-       // }
+        }
         /*PackageManager pm = activity.getPackageManager();*/
         String name = activity.getComponentName().getClassName();
         String label = null;
@@ -107,7 +108,7 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
             Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
         }
         ZeTarget.updateActivityDetails(label, name);
-
+        ZeTarget._startSession(activity);
 
         if(ZeTarget.isDebuggingOn()) {
             shakeListener = ShakeListener.getInstance();

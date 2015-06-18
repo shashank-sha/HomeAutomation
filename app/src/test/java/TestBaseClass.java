@@ -8,7 +8,6 @@ import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
 import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
 import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
 import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
-import com.zemosolabs.zinteract.sdk.ZeTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -57,7 +56,7 @@ public abstract class TestBaseClass {
 
     @Before
     public void setup(){
-        ZeTarget.robolectricTesting = true;
+        //ZeTarget.robolectricTesting = true;
         System.out.println("Checking if the fakeHttpLayer is functioning properly");
         FakeHttpLayer fakeHttpLayer = Robolectric.getFakeHttpLayer();
         assertFalse(fakeHttpLayer.hasPendingResponses());
@@ -97,10 +96,10 @@ public abstract class TestBaseClass {
 
     @After
     public void closeUP(){
-        ZeTarget.robolectricTesting = false;
+        //ZeTarget.robolectricTesting = false;
     }
 
-    protected void instantiateZinteractWorkers(){
+    protected void instantiateZeTargetWorkers(){
         if(logWorker==null||httpWorker==null||logWorkingLooper==null||
                 httpWorkingLooper==null||campaignWorker==null||campaignWorkLooper==null) {
             logWorker = (HandlerThread) getThreadByName("logWorker");
@@ -137,19 +136,13 @@ public abstract class TestBaseClass {
     }
 
 
-    protected void executeImmediateTasksOnZinteractWorkers(){
+    protected void executeImmediateTasksOnZeTargetWorkers(){
         executeImmediateTasksOnWorker(logWorkingLooper);
         executeImmediateTasksOnWorker(httpWorkingLooper);
         executeImmediateTasksOnWorker(campaignWorkLooper);
         executeImmediateTasksOnWorker(logWorkingLooper);
         executeImmediateTasksOnWorker(httpWorkingLooper);
         executeImmediateTasksOnWorker(campaignWorkLooper);
-        /*executeImmediateTasksOnWorker(logWorkingLooper);
-        executeImmediateTasksOnWorker(httpWorkingLooper);
-        executeImmediateTasksOnWorker(campaignWorkLooper);
-        executeImmediateTasksOnWorker(logWorkingLooper);
-        executeImmediateTasksOnWorker(httpWorkingLooper);
-        executeImmediateTasksOnWorker(campaignWorkLooper);*/
     }
 
     protected void executeImmediateTasksOnCampaignHandlerWorkers(){
@@ -157,7 +150,7 @@ public abstract class TestBaseClass {
         executeImmediateTasksOnWorker(triggerHandlingLooper);
     }
 
-    protected void executePendingTasksOnZinteractWorkers(long millis){
+    protected void executePendingTasksOnZeTargetWorkers(long millis){
         executePendingTasksOnWorker(logWorkingLooper, millis);
         executePendingTasksOnWorker(httpWorkingLooper, millis);
         executePendingTasksOnWorker(campaignWorkLooper, millis);
@@ -179,11 +172,11 @@ public abstract class TestBaseClass {
     }
 
     protected void executeWorkerTasksForLogEvent(){
-        instantiateZinteractWorkers();
-        executeImmediateTasksOnZinteractWorkers();
+        instantiateZeTargetWorkers();
+        executeImmediateTasksOnZeTargetWorkers();
         executeWorkerTasksOnCampaignHandler();
-        instantiateZinteractWorkers();
-        executeImmediateTasksOnZinteractWorkers();
+        instantiateZeTargetWorkers();
+        executeImmediateTasksOnZeTargetWorkers();
         executeWorkerTasksOnCampaignHandler();
         /*intentForService = shadowApplication.getNextStartedService();
         if(intentForService==null){
@@ -198,6 +191,17 @@ public abstract class TestBaseClass {
             executeImmediateTasksOnCampaignHandlerWorkers();
         }*/
     }
+
+    protected void executeWorkerTasksForInAppPromos(){
+        executeImmediateTasksOnWorker(logWorkingLooper);
+        Robolectric.runUiThreadTasks();
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);
+        executeImmediateTasksOnWorker(logWorkingLooper);
+        executeImmediateTasksOnWorker(httpWorkingLooper);
+        executeImmediateTasksOnWorker(campaignWorkLooper);
+    }
+
 
     protected void executeWorkerTasksOnCampaignHandler() {
         ShadowApplication shadowApplication = Robolectric.shadowOf(Robolectric.application);

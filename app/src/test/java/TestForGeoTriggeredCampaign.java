@@ -25,7 +25,7 @@ public class TestForGeoTriggeredCampaign extends TestForCampaigns {
     public void test() {
         List<Notification> listOfNotifications;
         int numberOfNotifications = 0;
-        resumeActivityDoActionInAppMessageAndClickOnButtonForNextActivity("next", "MainActivity");
+        resumeActivityDoActionInAppAndClickOnButtonForNextActivity("next", "MainActivity");
         Robolectric.clearHttpResponseRules();
         int maxNumberOfTimesToShow = 0;
         int minutesBeforeReshow = 0;

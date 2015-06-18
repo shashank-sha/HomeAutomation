@@ -29,7 +29,7 @@ public class TestForCampaigns extends TestSessionId {
         super.setup();
 
         try {
-            response = new JSONObject(readFile("app/src/test/java/campaignSimpleEvent.JSON"));
+            response = new JSONObject(readFile("app/src/test/java/campaigns.JSON"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -93,4 +93,6 @@ public class TestForCampaigns extends TestSessionId {
         System.out.println("No.of notifications = " + listOfNotifications.size());
         return listOfNotifications;
     }
+
+
 }
