@@ -3,7 +3,7 @@
     android:layout_width="@dimen/in_app_promo_width"
     android:orientation="vertical"
     android:layout_height="wrap_content"
-    tools:context="com.zemosolabs.zinteract.sdk.InAppMessage"
+    tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center">
     <ImageView
             android:layout_width="fill_parent"

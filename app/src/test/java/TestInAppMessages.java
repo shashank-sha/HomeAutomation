@@ -8,17 +8,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.zemoso.zinteract.ZinteractSampleApp.Activity2;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity2;
 
-import com.zemoso.zinteract.ZinteractSampleApp.Activity3;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
-import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity3;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity4;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity5;
+import com.zemoso.zetarget.ZeTargetSampleApp.MainActivity;
+import com.zemoso.zetarget.ZeTargetSampleApp.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -61,11 +60,11 @@ public class TestInAppMessages {
     ShadowIntent intent;
     ArrayList<JSONObject> currentlyUsedArrayListOfPromotions;
 
-    static final String screenLabel1 = "com.zemoso.zinteract.ZinteractSampleApp.MainActivity";
-    static final String screenLabel2 = "com.zemoso.zinteract.ZinteractSampleApp.Activity2";
-    static final String screenLabel3 = "com.zemoso.zinteract.ZinteractSampleApp.Activity3";
-    static final String screenLabel4 = "com.zemoso.zinteract.ZinteractSampleApp.Activity4";
-    static final String screenLabel5 = "com.zemoso.zinteract.ZinteractSampleApp.Activity5";
+    static final String screenLabel1 = "com.zemoso.zetarget.ZetargetSampleApp.MainActivity";
+    static final String screenLabel2 = "com.zemoso.zetarget.ZetargetSampleApp.Activity2";
+    static final String screenLabel3 = "com.zemoso.zetarget.ZetargetSampleApp.Activity3";
+    static final String screenLabel4 = "com.zemoso.zetarget.ZetargetSampleApp.Activity4";
+    static final String screenLabel5 = "com.zemoso.zetarget.ZetargetSampleApp.Activity5";
 
     static final int numOfScreens = 5;
 
@@ -93,10 +92,10 @@ public class TestInAppMessages {
     HandlerThread logWorker,httpWorker;
     ShadowLooper logWorkingLooper,httpWorkingLooper;
 
-    private final static String promotionsForScreensJSON = "[{\"campaignId\": \"campaign1\",\"screenId\": \"com.zemoso.zinteract.ZinteractSampleApp.MainActivity\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\", \"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": { \"actionType\": \"LINK\", \"actionButton\": {\"url\": \"http://www.flipkart.com\",\"buttonText\": \"GO\"},\"dismissButtonText\": \"NO THANKS\"}}}," +
-                                                           "{\"campaignId\": \"campaign2\",\"screenId\": \"com.zemoso.zinteract.ZinteractSampleApp.Activity2\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!! JUST RATE OUR APP\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\", \"onClickUrl\": \"http://www.google.com\", \"templateType\": \"REGULAR\", \"definition\": {\"actionType\": \"RATE\", \"actionButton\": {\"buttonText\": \"RATE US\"},\"dismissButtonText\": \"DON'T ASK ME AGAIN\",\"remindLaterButtonText\": \"REMIND ME LATER\"}}}," +
-                                                           "{\"campaignId\": \"campaign3\",\"screenId\": \"com.zemoso.zinteract.ZinteractSampleApp.Activity3\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Invite your friends now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\": \"SHARE\",\"actionButton\": {\"shareText\": \"This app is awesome!!! Check it out! Use promocode:sdeidk\",\"buttonText\": \"INVITE\"},\"dismissButtonText\": \"NO THANKS\"}}}," +
-                                                           "{\"campaignId\": \"campaign4\",\"screenId\": \"com.zemoso.zinteract.ZinteractSampleApp.Activity4\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\":\"NONE\",\"dismissButtonText\": \"GOT IT\"}}}]";
+    private final static String promotionsForScreensJSON = "[{\"campaignId\": \"campaign1\",\"screenId\": \"com.zemoso.zetarget.ZetargetSampleApp.MainActivity\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\", \"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": { \"actionType\": \"LINK\", \"actionButton\": {\"url\": \"http://www.flipkart.com\",\"buttonText\": \"GO\"},\"dismissButtonText\": \"NO THANKS\"}}}," +
+                                                           "{\"campaignId\": \"campaign2\",\"screenId\": \"com.zemoso.zetarget.ZetargetSampleApp.Activity2\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!! JUST RATE OUR APP\", \"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\", \"onClickUrl\": \"http://www.google.com\", \"templateType\": \"REGULAR\", \"definition\": {\"actionType\": \"RATE\", \"actionButton\": {\"buttonText\": \"RATE US\"},\"dismissButtonText\": \"DON'T ASK ME AGAIN\",\"remindLaterButtonText\": \"REMIND ME LATER\"}}}," +
+                                                           "{\"campaignId\": \"campaign3\",\"screenId\": \"com.zemoso.zetarget.ZetargetSampleApp.Activity3\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Invite your friends now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\": \"SHARE\",\"actionButton\": {\"shareText\": \"This app is awesome!!! Check it out! Use promocode:sdeidk\",\"buttonText\": \"INVITE\"},\"dismissButtonText\": \"NO THANKS\"}}}," +
+                                                           "{\"campaignId\": \"campaign4\",\"screenId\": \"com.zemoso.zetarget.ZetargetSampleApp.Activity4\",\"template\": {\"title\": \"Season sale! Heavy discounts!!!\",\"message\": \"Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!\",\"imageUrl\": \"http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg\",\"onClickUrl\": \"http://www.google.com\",\"templateType\": \"REGULAR\",\"definition\": {\"actionType\":\"NONE\",\"dismissButtonText\": \"GOT IT\"}}}]";
 
     @Before
     public void setUp() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.zemoso.zinteract.ZinteractSampleApp">
+    package="com.zemoso.zetarget.ZeTargetSampleApp">
 
     <!-- To access Google+ APIs: -->
 
@@ -10,9 +10,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <permission android:name="com.zemoso.zinteract.ZinteractSampleApp.permission.C2D_MESSAGE"
+    <permission android:name="com.zemoso.zetarget.ZeTargetSampleApp.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-    <uses-permission android:name="com.zemoso.zinteract.ZinteractSampleApp.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.zemoso.zetarget.ZeTargetSampleApp.permission.C2D_MESSAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 
@@ -25,18 +25,18 @@
             tools:node="replace"
             android:value="6587000" />
         <receiver
-            android:name="com.zemosolabs.zinteract.sdk.GcmBroadcastReceiver"
+            android:name="com.zemosolabs.zetarget.sdk.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.zemoso.zinteract.ZinteractSampleApp" />
+                <category android:name="com.zemoso.zetarget.ZeTargetSampleApp" />
             </intent-filter>
         </receiver>
 
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,19 +44,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity2"
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity2"
             android:label="@string/title_activity_activity2" >
         </activity>
         <activity
-            android:name=".Activity3"
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity3"
             android:label="@string/title_activity_activity3" >
         </activity>
         <activity
-            android:name=".Activity4"
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity4"
             android:label="@string/title_activity_activity4" >
         </activity>
         <activity
-            android:name=".Activity5"
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity5"
             android:label="@string/title_activity_activity5" >
         </activity>
         <meta-data

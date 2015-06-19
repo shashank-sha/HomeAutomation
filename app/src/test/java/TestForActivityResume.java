@@ -4,8 +4,8 @@ import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Pair;
 
-import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemosolabs.zinteract.sdk.ZeTarget;
+import com.zemoso.zetarget.ZeTargetSampleApp.MainActivity;
+import com.zemosolabs.zetarget.sdk.ZeTarget;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -20,10 +20,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
-import org.robolectric.shadows.ShadowZoomButtonsController;
 import org.robolectric.tester.org.apache.http.FakeHttpLayer;
 import org.robolectric.tester.org.apache.http.HttpRequestInfo;
-import org.robolectric.tester.org.apache.http.RequestMatcher;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;

@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 
-import com.zemosolabs.zinteract.sdk.*;
+import com.zemosolabs.zetarget.sdk.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ public class TestForGeoTriggeredCampaign extends TestForCampaigns {
             e.printStackTrace();
         }
         simulateLocationAndWaitForDWELL();
-       // assertTrue(Robolectric.shadowOf(Robolectric.application).getNextStartedService().getComponent().getClassName().equals("com.zemosolabs.zinteract.sdk.GeofenceTransitionsIntentService"));
+       // assertTrue(Robolectric.shadowOf(Robolectric.application).getNextStartedService().getComponent().getClassName().equals("com.zemosolabs.zetarget.sdk.GeofenceTransitionsIntentService"));
 
         //first time should show notification
         simulateTriggeringCampaignHandlerViaGeoTrigger();

@@ -1,4 +1,4 @@
-package com.zemosolabs.zinteract;
+package com.zemosolabs.zetarget;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

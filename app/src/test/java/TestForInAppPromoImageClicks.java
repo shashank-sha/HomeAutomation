@@ -15,7 +15,7 @@ public class TestForInAppPromoImageClicks extends TestForInAppPromosStructureAnd
         testPromotionsForActivity("MainActivity", UI_IMAGE);
         testPromotionsForActivity("Activity2", UI_IMAGE);
         testPromotionsForActivity("Activity3", UI_IMAGE);
-        testPromotionsForActivity("Activity4",UI_IMAGE);
-        testPromotionsForActivity("Activity5",UI_IMAGE);
+        testPromotionsForActivity("Activity4", UI_IMAGE);
+        testPromotionsForActivity("Activity5", UI_IMAGE);
     }
 }

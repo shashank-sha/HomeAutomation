@@ -8,7 +8,7 @@ class Constants {
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     //static final String Z_API_VERSION = "0.1";
-    static final String Z_NAMESPACE = "com.zemosolabs.zinteract.sdk";
+    static final String Z_NAMESPACE = "com.zemosolabs.zetarget.sdk";
     static final String Z_SHARED_PREFERENCE_FILE_NAME = Z_NAMESPACE;
     static final String Z_SHARED_PREFERENCE_DATASTORE_FILE_NAME = Z_NAMESPACE+".datastore";
     static final String Z_PREFKEY_USER_ID = Z_NAMESPACE+"userId";
@@ -94,7 +94,6 @@ class Constants {
     static String Z_SEND_SNAPSHOT_URL = "http://demo.zemosolabs.com/synchScreenToServer" ;
 
     //Promotions related
-    //static String Z_PROMOTION_URL = "http://private-9d06c-zinteractapi.apiary-mock.com/fetchPromo";
     static String Z_PROMOTION_URL = Z_BASE_URL+"fetchPromo";
     static final String Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME = Z_NAMESPACE+".lastcampaignsynctime";
 

@@ -1,8 +1,8 @@
 import android.app.Notification;
 import android.widget.Button;
 
-import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
-import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity4;
+import com.zemoso.zetarget.ZeTargetSampleApp.R;
 
 import org.json.JSONException;
 import org.robolectric.Robolectric;

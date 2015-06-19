@@ -2,12 +2,12 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.HandlerThread;
 
-import com.zemoso.zinteract.ZinteractSampleApp.Activity2;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity3;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
-import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemosolabs.zinteract.sdk.CampaignHandlingService;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity2;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity3;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity4;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity5;
+import com.zemoso.zetarget.ZeTargetSampleApp.MainActivity;
+import com.zemosolabs.zetarget.sdk.CampaignHandlingService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
@@ -184,7 +184,7 @@ public abstract class TestBaseClass {
         }
         compName = intentForService.getComponent();
         System.out.println("TEST: service started- " + compName.getClassName());
-        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
+        if (compName != null && compName.getClassName().equals("com.zemosolabs.zetarget.sdk.CampaignHandlingService")) {
             ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
             campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
             instantiateCampaignHandlerWorkers();
@@ -211,7 +211,7 @@ public abstract class TestBaseClass {
         }
         ComponentName compName = intentForService.getComponent();
         System.out.println("TEST: service started- "+compName.getClassName());
-        if (compName != null && compName.getClassName().equals("com.zemosolabs.zinteract.sdk.CampaignHandlingService")) {
+        if (compName != null && compName.getClassName().equals("com.zemosolabs.zetarget.sdk.CampaignHandlingService")) {
             ServiceController<CampaignHandlingService> campaignHandler = ServiceController.of(CampaignHandlingService.class);
             campaignHandler.attach().create().withIntent(intentForService).startCommand(0, 1);
             instantiateCampaignHandlerWorkers();

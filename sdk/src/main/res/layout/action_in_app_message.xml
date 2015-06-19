@@ -3,7 +3,7 @@
     android:layout_width="@dimen/in_app_promo_width"
     android:orientation="vertical"
     android:layout_height="wrap_content"
-    tools:context="com.zemosolabs.zinteract.user_interfaces.DefaultInAppNotification"
+    tools:context="com.zemosolabs.zetarget.user_interfaces.DefaultInAppNotification"
     android:layout_gravity="center"
     android:background="@drawable/white_card_bg">
 

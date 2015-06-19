@@ -1,12 +1,12 @@
 import android.app.Activity;
 import android.widget.Button;
 
-import com.zemoso.zinteract.ZinteractSampleApp.Activity2;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity3;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity4;
-import com.zemoso.zinteract.ZinteractSampleApp.Activity5;
-import com.zemoso.zinteract.ZinteractSampleApp.MainActivity;
-import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity2;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity3;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity4;
+import com.zemoso.zetarget.ZeTargetSampleApp.Activity5;
+import com.zemoso.zetarget.ZeTargetSampleApp.MainActivity;
+import com.zemoso.zetarget.ZeTargetSampleApp.R;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpPost;

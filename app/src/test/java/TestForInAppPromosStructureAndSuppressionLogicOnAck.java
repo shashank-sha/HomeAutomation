@@ -5,7 +5,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zemoso.zinteract.ZinteractSampleApp.R;
+import com.zemoso.zetarget.ZeTargetSampleApp.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,11 +40,11 @@ public class TestForInAppPromosStructureAndSuppressionLogicOnAck extends TestFor
     final String ACTION_TYPE_SHARE = "SHARE";
     final String ACTION_TYPE_NONE = "NONE";
 
-    final String SCREENLABEL1 = "com.zemoso.zinteract.ZinteractSampleApp.MainActivity";
-    final String SCREENLABEL2 = "com.zemoso.zinteract.ZinteractSampleApp.Activity2";
-    final String SCREENLABEL3 = "com.zemoso.zinteract.ZinteractSampleApp.Activity3";
-    final String SCREENLABEL4 = "com.zemoso.zinteract.ZinteractSampleApp.Activity4";
-    final String SCREENLABEL5 = "com.zemoso.zinteract.ZinteractSampleApp.Activity5";
+    final String SCREENLABEL1 = "com.zemoso.zetarget.ZetargetSampleApp.MainActivity";
+    final String SCREENLABEL2 = "com.zemoso.zetarget.ZetargetSampleApp.Activity2";
+    final String SCREENLABEL3 = "com.zemoso.zetarget.ZetargetSampleApp.Activity3";
+    final String SCREENLABEL4 = "com.zemoso.zetarget.ZetargetSampleApp.Activity4";
+    final String SCREENLABEL5 = "com.zemoso.zetarget.ZetargetSampleApp.Activity5";
 
     final String UI_STRUCTURE = "UI_STRUCTURAL_VALIDATION";
     final String UI_ACTION = "UI_ACTION_BUTTON_VALIDATION";

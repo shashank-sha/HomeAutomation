@@ -21,7 +21,7 @@
         "message": "We hope you enjoy your purchase",
         "contentClick": {
           "nextScreen": {
-            "deepLink": "com.zemoso.zinteract.ZinteractSampleApp.Activity2"
+            "deepLink": "com.zemoso.zetarget.ZetargetSampleApp.Activity2"
           }
         }
       }
@@ -64,14 +64,14 @@
         "message": "Have a nice day. Happy working!",
         "contentClick": {
           "nextScreen": {
-            "deepLink": "com.zemoso.zinteract.ZinteractSampleApp.Activity2"
+            "deepLink": "com.zemoso.zetarget.ZeTargetSampleApp.Activity2"
           }
         }
       }
     },
     {
       "campaignId": "campaign1",
-      "screenId": "com.zemoso.zinteract.ZinteractSampleApp.MainActivity",
+      "screenId": "com.zemoso.zetarget.ZeTargetSampleApp.MainActivity",
       "type":"promotion",
       "appVersionFrom": 1.0,
       "appVersionTo": 2.0,
@@ -99,7 +99,7 @@
     },
     {
       "campaignId": "campaign2",
-      "screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity2",
+      "screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity2",
       "type":"promotion",
       "appVersionFrom": 1.0,
       "appVersionTo": 2.0,
@@ -125,7 +125,7 @@
     },
     {
       "campaignId": "campaign3",
-      "screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity3",
+      "screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity3",
       "appVersionFrom": 1.0,
       "appVersionTo": 2.0,
       "type":"promotion",
@@ -152,7 +152,7 @@
     },
     {
       "campaignId": "campaign4",
-      "screenId": "com.zemoso.zinteract.ZinteractSampleApp.Activity4",
+      "screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity4",
       "type":"promotion",
       "campaignStartTime": 1432206344000,
       "campaignEndTime": 1500000000000,

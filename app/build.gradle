@@ -20,7 +20,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.zemoso.zinteract.sampleapp"
+        applicationId "com.zemoso.zetarget.sampleapp"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1

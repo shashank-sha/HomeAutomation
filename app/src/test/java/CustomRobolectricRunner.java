@@ -1,6 +1,3 @@
-
-import com.zemoso.zinteract.ZinteractSampleApp.BuildConfig;
-
 import org.junit.runners.model.InitializationError;
 import org.robolectric.AndroidManifest;
 import org.robolectric.RobolectricTestRunner;
@@ -60,11 +57,11 @@ public class CustomRobolectricRunner extends RobolectricTestRunner {
 
         /* BEGIN EDIT */
         if(mDefaultManifest != null) {
-            ResourcePath rpInjected = new ResourcePath(com.zemosolabs.zinteract.R.class, "com.zemosolabs.zinteract", Fs.fileFromPath("sdk/src/main/res"), Fs.fileFromPath("sdk/src/main/assets"));
+            ResourcePath rpInjected = new ResourcePath(com.zemosolabs.zetarget.R.class, "com.zemosolabs.zetarget", Fs.fileFromPath("sdk/src/main/res"), Fs.fileFromPath("sdk/src/main/assets"));
             appAndLibraryResourceLoaders.add(createResourceLoader(rpInjected));
             /*rpInjected = new ResourcePath(com.google.android.gms.R.class, "com.google.android.gms", Fs.fileFromPath("app/build/generated/source/r/debug"), mDefaultManifest.getAssetsDirectory());
             appAndLibraryResourceLoaders.add(createResourceLoader(rpInjected));
-            rpInjected = new ResourcePath(com.zemosolabs.zinteract.R.class, "com.zemosolabs.zinteract", Fs.fileFromPath("app/build/generated/source/r/debug"), mDefaultManifest.getAssetsDirectory());
+            rpInjected = new ResourcePath(com.zemosolabs.zetarget.R.class, "com.zemosolabs.zetarget", Fs.fileFromPath("app/build/generated/source/r/debug"), mDefaultManifest.getAssetsDirectory());
             appAndLibraryResourceLoaders.add(createResourceLoader(rpInjected));*/
         }
         /* END EDIT */

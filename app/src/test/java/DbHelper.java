@@ -22,7 +22,7 @@ import java.io.File;
 class DbHelper extends SQLiteOpenHelper {
 
     private static DbHelper instance;
-    private static final String TAG = "com.zemoso.zinteract.com.zemoso.zinteract.ZinteractSampleApp.DbHelper";
+    private static final String TAG = "com.zemoso.zetarget.ZeTargetSampleApp.DbHelper";
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;

@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_height="wrap_content"
     android:padding="1dp"
-    tools:context="com.zemosolabs.zinteract.sdk.InAppMessage"
+    tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center"
     android:background="@drawable/black_card_bg">
     <LinearLayout
