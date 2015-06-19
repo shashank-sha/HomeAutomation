@@ -21,7 +21,7 @@
         "message": "We hope you enjoy your purchase",
         "contentClick": {
           "nextScreen": {
-            "deepLink": "com.zemoso.zetarget.ZetargetSampleApp.Activity2"
+            "deepLink": "com.zemoso.zetarget.ZeTargetSampleApp.Activity2"
           }
         }
       }

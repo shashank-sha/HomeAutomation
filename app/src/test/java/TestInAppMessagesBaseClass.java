@@ -64,11 +64,11 @@ abstract public class TestInAppMessagesBaseClass {
     ShadowIntent intent;
     ArrayList<JSONObject> currentlyUsedArrayListOfPromotions;
 
-    static final String screenLabel1 = "com.zemoso.zetarget.ZetargetSampleApp.MainActivity";
-    static final String screenLabel2 = "com.zemoso.zetarget.ZetargetSampleApp.Activity2";
-    static final String screenLabel3 = "com.zemoso.zetarget.ZetargetSampleApp.Activity3";
-    static final String screenLabel4 = "com.zemoso.zetarget.ZetargetSampleApp.Activity4";
-    static final String screenLabel5 = "com.zemoso.zetarget.ZetargetSampleApp.Activity5";
+    static final String screenLabel1 = "com.zemoso.zetarget.ZeTargetSampleApp.MainActivity";
+    static final String screenLabel2 = "com.zemoso.zetarget.ZeTargetSampleApp.Activity2";
+    static final String screenLabel3 = "com.zemoso.zetarget.ZeTargetSampleApp.Activity3";
+    static final String screenLabel4 = "com.zemoso.zetarget.ZeTargetSampleApp.Activity4";
+    static final String screenLabel5 = "com.zemoso.zetarget.ZeTargetSampleApp.Activity5";
 
     static final int numOfScreens = 5;
 
