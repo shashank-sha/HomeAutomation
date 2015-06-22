@@ -95,7 +95,7 @@ class Constants {
     static String Z_START_SESSION_EVENT_LOG_URL = Z_BASE_URL+"sessionStart";
     //static String Z_INIT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/init";
     static String Z_INIT_LOG_URL = Z_BASE_URL+"init";
-    static String Z_SEND_SNAPSHOT_URL = "http://demo.zemosolabs.com/synchScreenToServer" ;
+    static String Z_SEND_SNAPSHOT_URL = "http://www.zetarget.com/synchScreenToServer" ;
 
     //Promotions related
     static String Z_PROMOTION_URL = Z_BASE_URL+"fetchPromo";
