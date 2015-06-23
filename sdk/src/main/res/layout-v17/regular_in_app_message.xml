@@ -6,90 +6,80 @@
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center">
     <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:adjustViewBounds="true"
-            android:id="@+id/img_container_regular"
-            android:contentDescription="@string/image_name" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:id="@+id/img_container_regular"
+        android:contentDescription="@string/image_name" />
     <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/title_text_default"
-            android:id="@+id/title_regular"
-            android:layout_gravity="center"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
-            android:textSize="14sp"
-            android:paddingTop="3dp"
-            android:paddingRight="3dp"
-            android:paddingLeft="6dp"
-            android:gravity="left"
-            android:textColor="#000"
-            android:background="@color/white"
-            android:paddingBottom="3dp"
-            android:paddingEnd="3dp"
-            android:paddingStart="6dp" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/title_text_default"
+        android:id="@+id/title_regular"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingTop="3dp"
+        android:paddingStart="6dp"
+        android:gravity="center"
+        android:textColor="#000"
+        android:background="@color/white"
+        android:paddingBottom="3dp"
+        android:paddingEnd="3dp" />
 
     <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/message_text_default"
-            android:layout_gravity="center"
-            android:id="@+id/message_regular"
-            android:fontFamily="sans-serif-light"
-            android:textStyle="normal"
-            android:padding="3dp"
-            android:textSize="14sp"
-            android:gravity="left"
-            android:textColor="#000"
-            android:background="@color/white"
-            android:paddingStart="6dp"
-            android:paddingEnd="3dp"
-            android:paddingBottom="3dp"
-            android:paddingRight="3dp"
-            android:paddingTop="3dp"
-            android:paddingLeft="6dp" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/message_text_default"
+        android:layout_gravity="center"
+        android:id="@+id/message_regular"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
+        android:padding="3dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="#000"
+        android:background="@color/white"
+        android:paddingEnd="3dp"
+        android:paddingBottom="3dp"
+        android:paddingTop="3dp"
+        android:paddingStart="6dp" />
 
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:paddingTop="2dp"
-            android:background="@color/lightgrey" />
-    
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/white_button_bg"
-            android:layout_gravity="center_horizontal">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/dismiss_button_text_default"
-                    android:id="@+id/dismiss_button_regular"
-                    android:fontFamily="sans-serif"
-                    android:textStyle="normal"
-                    android:textSize="14sp"
-                    android:textAlignment="center"
-                    android:paddingEnd="5dp"
-                    android:gravity="center"
-                    android:textColor="@color/greyForButtons"
-                    android:background="@drawable/white_button_bg"
-                    android:layout_gravity="bottom"
-                    android:layout_alignParentRight="true"
-                    android:paddingRight="5dp"
-                    android:paddingLeft="3dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:paddingStart="3dp" />
 
-        </RelativeLayout>
+    <!-- <RelativeLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:background="@drawable/white_button_bg"
+         android:layout_gravity="center_horizontal">
+-->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/dismiss_button_text_default"
+        android:id="@+id/dismiss_button_regular"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:paddingEnd="5dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:background="@drawable/blue_button_bg"
+        android:layout_gravity="bottom"
+        android:layout_alignParentEnd="true"
+        android:paddingStart="3dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp" />
 
-        <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+    <!--</RelativeLayout>-->
+
+    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
 </LinearLayout>

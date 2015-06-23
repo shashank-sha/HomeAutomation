@@ -21,18 +21,16 @@
         android:text="@string/title_text_default"
         android:id="@+id/title_action"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif"
-        android:textStyle="normal"
+        android:textStyle="bold"
         android:textSize="14sp"
         android:paddingTop="3dp"
-        android:paddingLeft="6dp"
         android:paddingStart="6dp"
-        android:paddingRight="3dp"
-        android:gravity="left"
-        android:textColor="#000"
+        android:gravity="center"
+        android:textColor="@color/dark_grey_campaign_button_text"
         android:background="@color/white"
         android:paddingBottom="3dp"
-        android:paddingEnd="3dp" />
+        android:paddingEnd="3dp"
+        android:layout_marginTop="3dp"/>
 
     <TextView
         android:layout_width="fill_parent"
@@ -41,26 +39,23 @@
         android:text="@string/message_text_default"
         android:layout_gravity="center"
         android:id="@+id/message_action"
-        android:fontFamily="sans-serif-light"
         android:textStyle="normal"
         android:textSize="14sp"
-        android:gravity="left"
-        android:textColor="#000"
+        android:gravity="center"
+        android:textColor="@color/dark_grey_campaign_button_text"
         android:background="@color/white"
-        android:paddingLeft="6dp"
         android:paddingStart="6dp"
         android:paddingTop="3dp"
-        android:paddingRight="3dp"
         android:paddingBottom="3dp"
         android:paddingEnd="3dp"
-        />
+        android:layout_marginTop="3dp"/>
 
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
-    <View
+    <!--<View
         android:layout_width="fill_parent"
         android:layout_height="1dip"
         android:paddingTop="2dp"
-        android:background="@color/lightgrey" />
+        android:background="@color/lightgrey" />-->
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -72,19 +67,18 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/dismiss_button_text_default"
             android:id="@+id/dismiss_button_action"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
+            android:textStyle="bold"
             android:textSize="14sp"
             android:textAlignment="center"
-            android:paddingEnd="5dp"
+            android:paddingEnd="10dp"
             android:gravity="center"
-            android:textColor="@color/greyForButtons"
+            android:textColor="@color/grey_campaign_button"
             android:background="@drawable/white_button_bg"
             android:layout_gravity="bottom"
-            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/action_button_action"
+            android:layout_toStartOf="@+id/action_button_action"
             android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingRight="5dp" />
+            android:paddingBottom="3dp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -92,19 +86,15 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/dismiss_button_text_default"
             android:id="@+id/action_button_action"
-            android:fontFamily="sans-serif"
-            android:textStyle="normal"
+            android:textStyle="bold"
             android:textSize="14sp"
             android:textAlignment="center"
             android:gravity="center"
-            android:textColor="@color/greyForButtons"
+            android:textColor="@color/blue_campaigns"
             android:background="@drawable/white_button_bg"
             android:layout_gravity="bottom"
-            android:layout_alignBottom="@+id/dismiss_button_action"
-            android:layout_toLeftOf="@+id/dismiss_button_action"
-            android:paddingEnd="5dp"
-            android:paddingRight="5dp"
-            android:paddingLeft="3dp"
+            android:layout_alignParentEnd="true"
+            android:paddingEnd="10dp"
             android:paddingStart="3dp"
             android:paddingTop="3dp"
             android:paddingBottom="3dp"/>

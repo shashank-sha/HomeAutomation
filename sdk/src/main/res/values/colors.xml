@@ -3,4 +3,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lightgrey">#33444444</color>
     <color name="greyForButtons">#999</color>
+    <color name="blue_campaigns">#66d3e4</color>
+    <color name="grey_campaign_button">#d2d6d9</color>
+    <color name="grey_campaign_button_bg">#ecedef</color>
+    <color name="dark_grey_campaign_button_text">#7d8995</color>
 </resources>
