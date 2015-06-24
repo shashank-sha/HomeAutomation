@@ -157,7 +157,7 @@ public class TestSessionId extends TestBaseClass{
 
             case "Activity2":
 
-                currentActivityController = ActivityController.of((Activity)currentActivity);
+                //currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = MainActivity.class;
                 nextActivity = Activity3.class;
                 nextButtonId = R.id.button2to3;
@@ -166,7 +166,7 @@ public class TestSessionId extends TestBaseClass{
 
             case "Activity3":
 
-                currentActivityController = ActivityController.of((Activity)currentActivity);
+               // currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = Activity2.class;
                 nextActivity = Activity4.class;
                 nextButtonId = R.id.button3to4;
@@ -175,7 +175,7 @@ public class TestSessionId extends TestBaseClass{
 
             case "Activity4":
 
-                currentActivityController = ActivityController.of((Activity)currentActivity);
+               // currentActivityController = ActivityController.of((Activity)currentActivity);
                 nextActivity = Activity5.class;
                 prevActivity = Activity3.class;
                 nextButtonId = R.id.button4to5;
@@ -184,7 +184,7 @@ public class TestSessionId extends TestBaseClass{
 
             case "Activity5":
 
-                currentActivityController = ActivityController.of((Activity)currentActivity);
+               // currentActivityController = ActivityController.of((Activity)currentActivity);
                 prevActivity = Activity4.class;
                 nextActivity = MainActivity.class;
                 nextButtonId = R.id.button5to1;
@@ -207,7 +207,7 @@ public class TestSessionId extends TestBaseClass{
                 assertEquals(intent.getIntentClass(),nextActivity);
                 break;
             case "prev":
-                System.out.println("ResumeActivityDoAction: "+"Clicking on the button for prev activity : "+prevActivity.getClass().getSimpleName());
+                System.out.println("ResumeActivityDoAction: "+"Clicking on the button for prev activity : "+currentActivity.getClass().getSimpleName());
                 ((Button)currentActivity.findViewById(prevButtonId)).performClick();
                 ShadowIntent intent2 = Robolectric.shadowOf(Robolectric.shadowOf(currentActivity).getNextStartedActivity());
                 assertEquals(intent2.getIntentClass(),prevActivity);
@@ -271,6 +271,7 @@ public class TestSessionId extends TestBaseClass{
                 else {
                     activity5ActivityController.resume().visible();
                 }
+                currentActivity  = (Activity5)activity5ActivityController.get();
                 break;
             default:
                 System.out.println("Wrong choice of Activity to Resume");

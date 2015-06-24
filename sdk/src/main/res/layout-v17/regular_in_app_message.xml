@@ -3,6 +3,7 @@
     android:layout_width="@dimen/in_app_promo_width"
     android:orientation="vertical"
     android:layout_height="wrap_content"
+    android:background="@drawable/white_card_bg"
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center">
     <ImageView
@@ -12,74 +13,85 @@
         android:adjustViewBounds="true"
         android:id="@+id/img_container_regular"
         android:contentDescription="@string/image_name" />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/title_text_default"
-        android:id="@+id/title_regular"
-        android:layout_gravity="center"
-        android:fontFamily="sans-serif"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:paddingTop="3dp"
-        android:paddingStart="6dp"
-        android:gravity="center"
-        android:textColor="#000"
-        android:background="@color/white"
-        android:paddingBottom="3dp"
-        android:paddingEnd="3dp" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/message_text_default"
-        android:layout_gravity="center"
-        android:id="@+id/message_regular"
-        android:fontFamily="sans-serif-light"
-        android:textStyle="normal"
-        android:padding="3dp"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:textColor="#000"
-        android:background="@color/white"
-        android:paddingEnd="3dp"
-        android:paddingBottom="3dp"
-        android:paddingTop="3dp"
-        android:paddingStart="6dp" />
-
-
-
-
-    <!-- <RelativeLayout
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:background="@drawable/white_button_bg"
-         android:layout_gravity="center_horizontal">
--->
-    <Button
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/dismiss_button_text_default"
-        android:id="@+id/dismiss_button_regular"
-        android:fontFamily="sans-serif"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:textAlignment="center"
-        android:paddingEnd="5dp"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:background="@drawable/blue_button_bg"
-        android:layout_gravity="bottom"
-        android:layout_alignParentEnd="true"
-        android:paddingStart="3dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp" />
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!--</RelativeLayout>-->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/title_text_default"
+                android:id="@+id/title_regular"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingTop="3dp"
+                android:paddingStart="6dp"
+                android:gravity="center"
+                android:textColor="#000"
+                android:background="@color/white"
+                android:paddingBottom="3dp"
+                android:paddingEnd="3dp" />
 
-    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/message_text_default"
+                android:layout_gravity="center"
+                android:id="@+id/message_regular"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="normal"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:background="@color/white"
+                android:paddingEnd="3dp"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:paddingStart="6dp" />
+
+
+
+
+            <!-- <RelativeLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:background="@drawable/white_button_bg"
+                 android:layout_gravity="center_horizontal">
+        -->
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/dismiss_button_text_default"
+                android:id="@+id/dismiss_button_regular"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                android:paddingEnd="5dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:background="@drawable/blue_button_bg"
+                android:layout_gravity="bottom"
+                android:layout_alignParentEnd="true"
+                android:paddingStart="3dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp" />
+
+            <!--</RelativeLayout>-->
+
+            <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

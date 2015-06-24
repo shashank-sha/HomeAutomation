@@ -4,9 +4,11 @@
     import android.app.Application;
     import android.app.Fragment;
     import android.app.FragmentTransaction;
+    import android.content.ComponentName;
     import android.content.Context;
     import android.content.Intent;
     import android.content.SharedPreferences;
+    import android.content.pm.PackageManager;
     import android.location.Location;
     import android.text.TextUtils;
     import android.util.Log;
@@ -114,13 +116,13 @@
             return deviceId;
         }
 
-        public static void deriveDeviceidFromUserid(){
+        /*public static void deriveDeviceidFromUserid(){
 
         }
 
         public static void doNotCaptureEventsAutomaticallyExceptForCampaignTracking(){
 
-        }
+        }*/
 
 
         /**
@@ -691,8 +693,17 @@
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                         } else {
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), "SampleApp",
-                                    maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
+                            String label = null;
+                            PackageManager pm = currentActivity.getPackageManager();
+                            ComponentName launchActivity = ((ComponentName)currentActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(currentActivity.getPackageName()).getComponent());
+                            try {
+                                label = pm.getActivityInfo(launchActivity,0).loadLabel(pm).toString();
+                            } catch (PackageManager.NameNotFoundException e) {
+                                Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
+                            }
+
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), label,
+                                    maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
                         addCount++;
                     }else if(promotion.getString("type").equals("GEO")){
