@@ -256,7 +256,8 @@ class DbHelper extends SQLiteOpenHelper {
 
     //Promotions related
     synchronized long addPromotion(String promotion, String campaign_id, String screen_id,int maximumNumberOfTimesToShow,int minimumDurationBeforeReshowInMin) {
-        long result = -1,result2=-1;
+        long result = -1;
+        long result2 = -1;
         try {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
@@ -320,9 +321,10 @@ class DbHelper extends SQLiteOpenHelper {
             cursor = db.query(PROMOTION_TABLE_NAME, null, "screen_id = ? AND status = ?", new String[]{screen_id, "0"}, null,
                     null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", null);
             Log.i(TAG,"Promotion count: "+cursor.getCount());
-            while (cursor.moveToNext()) {
+            for(int i=0;i<cursor.getCount();i++) {
+                cursor.moveToNext();
                 String campaignId = cursor.getString(1);
-                if(checkCampaignValidity(campaignId,System.currentTimeMillis())){
+                if(checkCampaignValidity(campaignId,System.currentTimeMillis(),true)){
                     String p = cursor.getString(4);
                     Log.i(TAG,"Length of Promotion fetched is"+promotion.length());
                     promotion = new JSONObject(p);
@@ -340,6 +342,7 @@ class DbHelper extends SQLiteOpenHelper {
             if (cursor != null) {
                 cursor.close();
             }
+            Log.i(TAG,"Closing DB from getPromotionForScreen()");
             close();
         }
         return promotion;
@@ -611,6 +614,10 @@ class DbHelper extends SQLiteOpenHelper {
     }
 
     synchronized boolean checkCampaignValidity(String campaignId, long timeStampOfOccurence){
+       return checkCampaignValidity(campaignId,timeStampOfOccurence,false);
+    }
+
+    synchronized boolean checkCampaignValidity(String campaignId,long timeStampOfOccurence, boolean internalCall){
         Cursor cursor = null;
         boolean valid = false;
         try {
@@ -638,7 +645,9 @@ class DbHelper extends SQLiteOpenHelper {
             if (cursor != null) {
                 cursor.close();
             }
-            close();
+            if(!internalCall) {
+                close();
+            }
         }
         return valid;
     }

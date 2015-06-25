@@ -422,8 +422,8 @@
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        FragmentTransaction ft = currentActivity.getFragmentManager().beginTransaction();
-                        Fragment prev = currentActivity.getFragmentManager().findFragmentByTag("dialog");
+                        FragmentTransaction ft = ZeTarget.currentActivity.getFragmentManager().beginTransaction();
+                        Fragment prev = ZeTarget.currentActivity.getFragmentManager().findFragmentByTag("dialog");
                         if (prev != null) {
                             ft.remove(prev);
                         }
@@ -455,12 +455,12 @@
                             }
                         }
                         newNotification.customize(context, campaignId, template);
-                        if(ZeTarget.currentActivity==currentActivity) {
-                            Log.i(TAG,"same Activity before In App Promotion launched");
+                        /*if(ZeTarget.currentActivity==currentActivity) {
+                            Log.i(TAG,"same Activity before In App Promotion launched");*/
                             newNotification.show(ft, "dialog");
-                        }else{
+                        /*}else{
                             Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
-                        }
+                        }*/
                     }
                 });
             }
@@ -612,7 +612,8 @@
 
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
-
+                    ScreenCapture.getInstance().createNewFile();
+                    ScreenCapture.getInstance().writeToFile(jsonResponse.toString());
                     fetchSuccess = true;
                     fetchingPromotionsCurrently.set(false);
                     logWorker.post(new Runnable() {
@@ -692,12 +693,14 @@
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
+                            Log.i(TAG,"screenId from promotion json is: "+promotion.getString("screenId"));
                         } else {
                             String label = null;
                             PackageManager pm = currentActivity.getPackageManager();
                             ComponentName launchActivity = ((ComponentName)currentActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(currentActivity.getPackageName()).getComponent());
                             try {
                                 label = pm.getActivityInfo(launchActivity,0).loadLabel(pm).toString();
+                                Log.i(TAG,"inserting the label : "+label);
                             } catch (PackageManager.NameNotFoundException e) {
                                 Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
                             }
