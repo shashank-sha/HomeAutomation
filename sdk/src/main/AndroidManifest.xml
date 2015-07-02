@@ -6,11 +6,7 @@
         android:allowBackup="true"
         android:label="@string/app_name" >
         <service android:name=".sdk.GcmIntentService" />
-        <service
-            android:name=".sdk.GeofenceTransitionsIntentService"
-            android:exported="false" >
-        </service>
-
+        <service android:name=".sdk.GeofenceTransitionsIntentService" />
         <receiver
             android:name=".sdk.MyGeofenceRelatedReceiver"
             android:enabled="true"
@@ -22,12 +18,8 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".sdk.CampaignHandlingService"
-            android:enabled="true"
-            android:permission=""
-            android:exported="false" >
-        </service>
+        <service android:name=".sdk.CampaignHandlingService"/>
+
     </application>
 
 </manifest>

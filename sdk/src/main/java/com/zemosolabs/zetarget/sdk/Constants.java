@@ -22,6 +22,11 @@ class Constants {
     static final String Z_PREFKEY_GCM_REGISTRATION_ID = Z_NAMESPACE+".gcm_registration_id";
     static final String Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME = Z_NAMESPACE+".gcm_registration_id_sync_time";
     static final long Z_GCM_REGISTRATION_ID_RENEWAL_PERIOD = 7*24*3600*1000;//1 day
+    static final String FNAME = "ZeTarget.keyForUserPropertyFName";
+    static final String LNAME = "ZeTarget.keyForUserPropertyLName";
+    static final String AGE = "ZeTarget.keyForUserPropertyAge";
+    static final String DOB = "ZeTarget.keyForUserPropertyDOB";
+    static final String GENDER = "ZeTarget.keyForUserPropertyGender";
 
 
     static final String Z_PREFKEY_APP_VERSION = Z_NAMESPACE+".app_version";
@@ -113,7 +118,7 @@ class Constants {
     static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";
 
     static final String Z_CAMPAIGN_TYPE_GEOCAMPAIGN = "GEO";
-    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE_EVENT";
+    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE EVENT";
     static final String Z_CAMPAIGN_TYPE_SCREEN_FIX_CAMPAIGN = "screenFix";
     static final String Z_CAMPAIGN_TYPE_BEACON_CAMPAIGN = "IBEACON";
     static final String Z_CAMPAING_TYPE_PROMOTION_CAMPAIGN = "promotion";
@@ -122,6 +127,10 @@ class Constants {
     static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_GEO_TRIGGERS = Z_NAMESPACE+".handleGeofenceTriggers";
     static final String Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_HANDLE_SIMPLE_EVENT_TRIGGERS = Z_NAMESPACE+".handleSimpleEventTriggers";
 
+    static final String DEFAULT_SCREEN = Z_NAMESPACE+".any_screen";
+    static final String KEY_IN_APP_LAST_SHOWN_TIME = Z_NAMESPACE+".inAppLastShownTimeInMS";
+
     public static final String Z_EVENT_TYPE = Z_NAMESPACE+".eventType";
     public static final String Z_CAMPAIGN_TYPE = Z_NAMESPACE+".campaignType" ;
+
 }

@@ -65,7 +65,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
     @Override
     public void onActivityPaused(Activity activity) {
         ZeTarget._endSession();
-        UIEditor.purge();
+        if(UIEditor!=null) {
+            UIEditor.purge();
+        }
         if(shakeListener!=null) {
             shakeListener.purge();
         }

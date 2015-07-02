@@ -88,7 +88,11 @@ abstract class NotificationCampaign {
                     .setContentTitle(title).setContentText(message).setAutoCancel(true);
             Class<?> launcherClass = null;
             try {
-                launcherClass = Class.forName(launchClassName);
+                if(launchClassName!=null) {
+                    launcherClass = Class.forName(launchClassName);
+                }else{
+                    launcherClass = Class.forName(context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).getComponent().getClassName());
+                }
             } catch (ClassNotFoundException e) {
                 Log.e(TAG,"launcher class not found",e);
             }

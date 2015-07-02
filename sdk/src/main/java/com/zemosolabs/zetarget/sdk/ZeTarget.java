@@ -23,6 +23,7 @@
     import org.json.JSONObject;
 
     import java.io.IOException;
+    import java.util.Calendar;
     import java.util.HashMap;
     import java.util.Map;
     import java.util.UUID;
@@ -356,21 +357,36 @@
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
             //would work.
+            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
+            long nowMS = System.currentTimeMillis();
+            if(lastShown>0&&(nowMS-lastShown<60000)){
+                return;
+            }
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 Log.i(TAG, "currentActivityLabel is null");
                 return;
             }
-            Log.i("ActivityDetails: ",currentActivityLabel+", "+currentActivityName);
+            Log.i("ActivityDetails: ", currentActivityLabel + ", " + currentActivityName);
 
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.removeSeenPromotions();
-            final JSONObject promotion = dbHelper.getPromotionforScreen(screen_id);
+            JSONObject promotionForScreen = dbHelper.getPromotionforScreen(screen_id);
+            JSONObject defaultPromotions = dbHelper.getPromotionforScreen(Constants.DEFAULT_SCREEN);
+            JSONObject probablePromotion;
+            if(promotionForScreen == null||promotionForScreen.length() == 0){
+                probablePromotion = defaultPromotions;
+            }else{
+                probablePromotion = promotionForScreen;
+            }
+
+            final JSONObject promotion = probablePromotion;
 
             if(promotion == null || promotion.length() == 0  ){
                 if(ZeTarget.isDebuggingOn()){
                     Log.d(TAG,"No Promotions found for "+screen_id);
                 }
+
                 return;
             }
 
@@ -455,12 +471,13 @@
                             }
                         }
                         newNotification.customize(context, campaignId, template);
-                        /*if(ZeTarget.currentActivity==currentActivity) {
-                            Log.i(TAG,"same Activity before In App Promotion launched");*/
+                        if(ZeTarget.currentActivity==currentActivity) {
+                            Log.i(TAG,"same Activity before In App Promotion launched");
                             newNotification.show(ft, "dialog");
-                        /*}else{
+                            setLastInAppSeen(System.currentTimeMillis());
+                        }else{
                             Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
-                        }*/
+                        }
                     }
                 });
             }
@@ -580,6 +597,7 @@
                 Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
             }
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
+
         }
 
         /**
@@ -597,6 +615,10 @@
         public static void removePromotion(String campaignId) {
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.markPromotionAsSeen(campaignId);
+        }
+
+        private static void setLastInAppSeen(long l) {
+            CommonUtils.getSharedPreferences(context).edit().putLong(Constants.KEY_IN_APP_LAST_SHOWN_TIME,l);
         }
 
         private static void fetchPromotions(){
@@ -695,35 +717,25 @@
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                             Log.i(TAG,"screenId from promotion json is: "+promotion.getString("screenId"));
                         } else {
-                            String label = null;
-                            PackageManager pm = currentActivity.getPackageManager();
-                            ComponentName launchActivity = ((ComponentName)currentActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(currentActivity.getPackageName()).getComponent());
-                            try {
-                                label = pm.getActivityInfo(launchActivity,0).loadLabel(pm).toString();
-                                Log.i(TAG,"inserting the label : "+label);
-                            } catch (PackageManager.NameNotFoundException e) {
-                                Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
-                            }
-
-                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), label,
+                            dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), Constants.DEFAULT_SCREEN,
                                     maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
                         addCount++;
-                    }else if(promotion.getString("type").equals("GEO")){
+                    }else if(promotion.getString("type").equalsIgnoreCase("GEO")){
                         Log.i(TAG,"We have a geo event being saved to database");
                         dbHelper.addGeoCampaign(promotion.toString(), promotion.getString("campaignId"),
                                 maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow);
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type", Constants.Z_CAMPAIGN_TYPE_GEOCAMPAIGN));
                         addCount++;
-                    }else if(promotion.getString("type").equals("SIMPLE_EVENT")){
+                    }else if(promotion.getString("type").equalsIgnoreCase(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
                         dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
                                                             maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
                         Log.i(TAG, "We have a simple event being saved to database");
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type", Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
                         addCount++;
-                    }else if(promotion.getString("type").equals("IBEACON")){
+                    }else if(promotion.getString("type").equalsIgnoreCase("IBEACON")){
                         addCount++;
                     }
                 }
@@ -1689,7 +1701,7 @@
             /*if(ZeTarget.robolectricTesting) {
                 System.out.println("ZETARGET: logging purchase completed event");
             }*/
-            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT,purchaseDetails);
+            logEvent(Constants.Z_PURCHASE_COMPLETED_EVENT, purchaseDetails);
         }
 
         /**
@@ -1700,5 +1712,48 @@
                 System.out.println("ZETARGET: logging purchase attempted event");
             }*/
             logEvent(Constants.Z_PURCHASE_ATTEMPTED_EVENT);
+        }
+        /**
+         * Method to set user property- first name
+         */
+        public static void setFirstName(String name){
+            setUserProperty(Constants.FNAME, name);
+        }
+        /**
+         * Method to set user property- last name
+         */
+        public static void setLastName(String name){
+            setUserProperty(Constants.LNAME,name);
+        }
+        /**
+         * Method to set user property- age
+         */
+        public static void setAge(String age){
+            setUserProperty(Constants.AGE,age);
+        }
+        /**
+         * Method to set user property- Date of Birth
+         * the parameter dob should be of the format yyyymmdd
+         */
+        public static void setDOB(String dob){
+            setUserProperty(Constants.DOB,dob);
+            int year = Integer.valueOf(dob.substring(0,4));
+            int month = Integer.valueOf(dob.substring(4,6));
+            int day = Integer.valueOf(dob.substring(6,8));
+            Calendar cal =Calendar.getInstance();
+            int currentYear = cal.get(Calendar.YEAR);
+            int currentMonth = cal.get(Calendar.MONTH);
+            int currentDay = cal.get(Calendar.DAY_OF_MONTH);
+            int age = currentYear - year;
+            if(month<currentMonth||(month==currentMonth&&day<currentDay)){
+                age--;
+            }
+            setAge(age+"");
+        }
+        /**
+         * Method to set user property- Gender
+         */
+        public static void setGender(String gender){
+            setUserProperty(Constants.GENDER,gender);
         }
     }
