@@ -1,121 +1,102 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/in_app_promo_width"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="1dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center"
     android:background="@drawable/white_card_bg">
     <ImageView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
-        android:adjustViewBounds="true"
         android:background="@drawable/white_imgview_rounded_borders"
         android:id="@+id/img_container_rate_me"
+        android:layout_above="@+id/title_rate_me"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:contentDescription="@string/image_name" />
-    <ScrollView
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:background="@drawable/white_card_bg">
+        android:layout_height="wrap_content"
+        android:text="@string/title_text_default"
+        android:id="@+id/title_rate_me"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="@color/dark_grey_campaign_button_text"
+        android:background="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/message_rate_me"
+        android:layout_marginTop="10dp"/>
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/message_text_default"
+        android:id="@+id/message_rate_me"
+        android:textStyle="normal"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:textColor="@color/dark_grey_campaign_button_text"
+        android:background="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp" />
 
-                android:text="@string/title_text_default"
-                android:id="@+id/title_rate_me"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:paddingTop="3dp"
-                android:gravity="center"
-                android:textColor="@color/dark_grey_campaign_button_text"
-                android:background="@color/white"
-                android:paddingStart="6dp"
-                android:paddingBottom="3dp"
-                android:paddingEnd="3dp"
-                android:layout_marginTop="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/message_rate_me"
+        android:background="@drawable/white_button_bg"
+        android:layout_gravity="center_horizontal">
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/message_text_default"
-                android:layout_gravity="center"
-                android:id="@+id/message_rate_me"
-                android:textStyle="normal"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:textColor="@color/dark_grey_campaign_button_text"
-                android:background="@color/white"
-                android:paddingStart="6dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingEnd="3dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="@+dimen/button_height_rate_me_campaign"
+            android:text="@string/later"
+            android:id="@+id/neutral_button_rate_me"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:background="@drawable/grey_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:background="@drawable/white_button_bg"
-                android:layout_gravity="center_horizontal">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_rate_me_campaign"
+            android:text="@string/dont_Ask"
+            android:id="@+id/dismiss_button_rate_me"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:background="@drawable/grey_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
 
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/later"
-                    android:id="@+id/neutral_button_rate_me"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:textColor="@color/dark_grey_campaign_button_text"
-                    android:background="@drawable/grey_button_bg"
-                    android:padding="10dp"
-                    android:layout_marginTop="10dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_rate_me_campaign"
+            android:text="@string/rate_me"
+            android:id="@+id/action_button_rate_me"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
 
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/dont_Ask"
-                    android:id="@+id/dismiss_button_rate_me"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:textColor="@color/dark_grey_campaign_button_text"
-                    android:background="@drawable/grey_button_bg"
-                    android:padding="10dp"
-                    android:layout_marginTop="10dp"/>
+    </LinearLayout>
 
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/rate_me"
-                    android:id="@+id/action_button_rate_me"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:textColor="@color/white"
-                    android:background="@drawable/blue_button_bg"
-                    android:padding="10dp"
-                    android:layout_marginTop="10dp"/>
+    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
-            </LinearLayout>
-
-            <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
-
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+</RelativeLayout>

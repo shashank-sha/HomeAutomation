@@ -3,7 +3,7 @@
   "promotions":[
     {
       "campaignId": "thankyouforpurchase",
-      "type": "SIMPLE_EVENT",
+      "type": "SIMPLE EVENT",
       "appVersionFrom": 1.0,
       "appVersionTo": 2.0,
       "simple_event": {

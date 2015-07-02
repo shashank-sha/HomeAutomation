@@ -109,7 +109,7 @@ class Constants {
     static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";
 
     static final String Z_CAMPAIGN_TYPE_GEOCAMPAIGN = "GEO";
-    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE_EVENT";
+    static final String Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN = "SIMPLE EVENT";
     static final String Z_CAMPAIGN_TYPE_SCREEN_FIX_CAMPAIGN = "screenFix";
     static final String Z_CAMPAIGN_TYPE_BEACON_CAMPAIGN = "IBEACON";
     static final String Z_CAMPAING_TYPE_PROMOTION_CAMPAIGN = "promotion";

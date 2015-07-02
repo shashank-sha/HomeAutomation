@@ -3,4 +3,7 @@
     <dimen name="border_radius_inAppMessage">10dp</dimen>
     <dimen name="bitmap_corner_radius">10dp</dimen>
     <dimen name="in_app_promo_width">300dp</dimen>
+    <dimen name="in_app_promo_height_action">160dp</dimen>
+    <dimen name="button_height_rate_me_campaign">25dp</dimen>
+    <dimen name="margin_between_buttons_rate_me">3dp</dimen>
 </resources>
