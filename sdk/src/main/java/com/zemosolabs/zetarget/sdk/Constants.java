@@ -7,6 +7,7 @@ class Constants {
     static final String Z_PLATFORM = "Android";
     static final String Z_VERSION = "0.1";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
+    public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
     //static String Z_BASE_URL = "http://192.168.1.19/";
     static String Z_BASE_URL = "http://api.zetarget.com/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
@@ -22,11 +23,11 @@ class Constants {
     static final String Z_PREFKEY_GCM_REGISTRATION_ID = Z_NAMESPACE+".gcm_registration_id";
     static final String Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME = Z_NAMESPACE+".gcm_registration_id_sync_time";
     static final long Z_GCM_REGISTRATION_ID_RENEWAL_PERIOD = 7*24*3600*1000;//1 day
-    static final String FNAME = "ZeTarget.keyForUserPropertyFName";
-    static final String LNAME = "ZeTarget.keyForUserPropertyLName";
-    static final String AGE = "ZeTarget.keyForUserPropertyAge";
-    static final String DOB = "ZeTarget.keyForUserPropertyDOB";
-    static final String GENDER = "ZeTarget.keyForUserPropertyGender";
+    static final String ZeTarget_keyForUserPropertyFName = "fname";
+    static final String ZeTarget_keyForUserPropertyLName = "lname";
+    static final String ZeTarget_keyForUserPropertyAge = "age";
+    static final String ZeTarget_keyForUserPropertyDOB = "dob";
+    static final String ZeTarget_keyForUserPropertyGender = "gender";
 
 
     static final String Z_PREFKEY_APP_VERSION = Z_NAMESPACE+".app_version";
