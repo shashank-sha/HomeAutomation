@@ -16,6 +16,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannedString;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -109,7 +111,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             canvas.drawRect(bottomRect,paint);
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             canvas.drawBitmap(bitmap,rect,rect,paint);
-//            imageBase64 = context.getString(R.string.base64ImageStringTest);
+//          imageBase64 = context.getString(R.string.base64ImageStringTest);
             return;*/
         }
         try {
@@ -152,8 +154,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                                 actionButtonUrl = actionButton.getString("url");
                             } else actionButtonUrl = null;
 
-                            if (actionButton.has("text") && actionButton.get("text") != JSONObject.NULL) {
-                                actionButtonText = actionButton.getString("text");
+                            if (actionButton.has("buttonText") && actionButton.get("buttonText") != JSONObject.NULL) {
+                                actionButtonText = actionButton.getString("buttonText");
                             } else actionButtonText = "GO";
                             break;
                         case "RATE":
@@ -242,6 +244,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                              Bundle savedInstanceState) {
         setCancelable(false);
         Log.i("inside Notification","control came here");
+        //String titleText = Html.fromHtml(title).toString().trim();
         View v = null;
         TextView mv = null;
         Typeface robotoMedium = Typeface.createFromAsset(context.getAssets(), "roboto_medium.ttf");
@@ -260,6 +263,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             if(title!=null){
                 Log.i("Title", "Updating");
                 tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
+                tv.setText(tv.getText().toString().trim());
             }
             else{
                 Log.i("Title","Being Removed");
@@ -280,6 +284,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             }
 
             mv = (TextView)v.findViewById(R.id.message_regular);
+            mv.setText(mv.getText().toString().trim());
             mv.setTypeface(robotoLight);
 
         }
@@ -305,6 +310,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             if (title != null) {
                 Log.i("Title", "Updating");
                 tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
+                tv.setText(tv.getText().toString().trim());
             } else {
                 Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
@@ -342,6 +348,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             if (title != null) {
                 Log.i("Title", "Updating");
                 tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
+                tv.setText(tv.getText().toString().trim());
             } else {
                 Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
@@ -363,8 +370,10 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             mv.setTypeface(robotoLight);
 
         }
+       // String msgText = Html.fromHtml(message).toString().trim();
 
         mv.setText(Html.fromHtml(message),TextView.BufferType.SPANNABLE);
+        mv.setText(mv.getText().toString().trim());
         Log.i("Message","Message Updated");
         return v;
     }
@@ -402,16 +411,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
 
     View.OnClickListener dontAskMeAgain = new View.OnClickListener() {
         public void onClick(View v) {
-           /* try {
-                JSONObject k = new JSONObject();
-                k.put("campaignId", campaignId);
-            }
-            catch (Exception e){
-                Log.e(TAG, "Exception: " + e);
-            }*/
             ZeTarget.removePromotion(campaignId);
             dismiss();
-
         }
     };
 
@@ -422,9 +423,9 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Intent rateMyApp = new Intent(Intent.ACTION_VIEW,uri);
             try{
                 Log.i("RATEME:","CLICKED");
+                ZeTarget.removePromotion(campaignId);
                 dismiss();
                 startActivity(rateMyApp);
-                ZeTarget.removePromotion(campaignId);
             }catch (ActivityNotFoundException e){
                 Log.i("Exception: ",e.toString());
             }
@@ -436,10 +437,10 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             if(actionType.toUpperCase(Locale.US).equals("LINK")){
                 Intent openLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(actionButtonUrl));
                 try{
-                    Log.i("ACTIONEVENT:","CLICKED");
+                    Log.i("ACTIONEVENT:", "CLICKED");
                     ZeTarget.updatePromotionAsSeen(campaignId);
-                    dismiss();
                     startActivity(openLinkInBrowser);
+                    dismiss();
                 }catch (ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }
@@ -449,10 +450,10 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 share.putExtra(Intent.EXTRA_TEXT,shareText);
                 share.setType("text/plain");
                 try{
-                    Log.i("SHAREEVENT:","CLICKED");
+                    Log.i("SHAREEVENT:", "CLICKED");
                     ZeTarget.updatePromotionAsSeen(campaignId);
-                    dismiss();
                     startActivity(share);
+                    dismiss();
                 }catch(ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }

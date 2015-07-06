@@ -357,11 +357,7 @@
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
             //would work.
-            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
-            long nowMS = System.currentTimeMillis();
-            if(lastShown>0&&(nowMS-lastShown<60000)){
-                return;
-            }
+
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 Log.i(TAG, "currentActivityLabel is null");
@@ -473,6 +469,11 @@
                         newNotification.customize(context, campaignId, template);
                         if(ZeTarget.currentActivity==currentActivity) {
                             Log.i(TAG, "same Activity before In App Promotion launched");
+                            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
+                            long nowMS = System.currentTimeMillis();
+                            if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
+                                return;
+                            }
                             newNotification.show(ft, "dialog");
                         }else{
                             Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
@@ -596,7 +597,6 @@
                 Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
             }
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
-
         }
 
         /**
@@ -617,7 +617,8 @@
         }
 
         private static void setLastInAppSeen(long l) {
-            CommonUtils.getSharedPreferences(context).edit().putLong(Constants.KEY_IN_APP_LAST_SHOWN_TIME,l);
+            Log.i("LastSeenTime",l+"");
+            CommonUtils.getSharedPreferences(context).edit().putLong(Constants.KEY_IN_APP_LAST_SHOWN_TIME,l).apply();
         }
 
         private static void fetchPromotions(){

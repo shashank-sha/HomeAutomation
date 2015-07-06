@@ -28,12 +28,12 @@
             android:text="@string/title_text_default"
             android:id="@+id/title_regular"
             android:textSize="14sp"
-            android:paddingLeft="20dp"
+            android:paddingStart="20dp"
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
             android:background="@color/white"
-            android:paddingRight="20dp"
-            android:layout_marginTop="10dp"/>
+            android:paddingEnd="20dp"
+            android:layout_marginTop="@dimen/margin_in_regular_in_app"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -44,9 +44,9 @@
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
             android:background="@color/white"
-            android:paddingRight="20dp"
-            android:paddingLeft="20dp"
-            android:layout_marginTop="10dp"/>
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/margin_in_regular_in_app"/>
 
         <Button
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             android:background="@drawable/blue_button_bg"
             android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="@dimen/margin_in_regular_in_app"/>
 
     </LinearLayout>
 

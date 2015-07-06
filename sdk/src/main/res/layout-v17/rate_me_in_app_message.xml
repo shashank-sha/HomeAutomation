@@ -24,17 +24,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
         android:background="@color/white">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/title_text_default"
             android:id="@+id/title_rate_me"
-            android:paddingBottom="5dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingTop="3dp"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
             android:textSize="16sp"
             android:textColor="@color/dark_grey_campaign_button_text" />
 
@@ -45,7 +43,7 @@
             android:layout_centerHorizontal="true"
             android:text="@string/message_text_default"
             android:id="@+id/message_rate_me"
-            android:paddingBottom="3dp"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
             android:gravity="center"
             android:textStyle="normal"
             android:textSize="14sp"
@@ -72,7 +70,7 @@
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
             android:background="@drawable/grey_button_bg"
-            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
 
         <Button
             android:layout_width="match_parent"
@@ -86,7 +84,7 @@
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
             android:background="@drawable/grey_button_bg"
-            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
 
         <Button
             android:layout_width="match_parent"
@@ -100,7 +98,7 @@
             android:gravity="center"
             android:textColor="@color/white"
             android:background="@drawable/blue_button_bg"
-            android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
 
     </RelativeLayout>
     </LinearLayout>
