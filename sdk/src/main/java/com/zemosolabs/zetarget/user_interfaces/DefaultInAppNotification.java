@@ -117,6 +117,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             JSONObject definition;
             if(template.has("message") && template.get("message")!=JSONObject.NULL) {
                 message = template.getString("message");
+                Log.i("Message InAPP",message);
                // message = "lksjdflkdsjklfjsdlfkaj;ldkfjsdlfkdjflksdjfslkdfslkdfjsdlfsfkjklsjflkdjfksldjfsdlkfjdskfdsflksdjf";
             }else message ="dMESSAGE";
             if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL) {
@@ -131,6 +132,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             } else onClickUrl = null;
             if (template.has("title") && template.get("title") != JSONObject.NULL) {
                 title = template.getString("title");
+                Log.i("Title InAPP",title);
                 //title = "LKDSjflksjflkdsjfklsdjfldksfjsf";
             } else title = "dTITLE";
             if(template.has("definition") && template.get("definition") != JSONObject.NULL) {

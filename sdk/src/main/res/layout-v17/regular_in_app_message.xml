@@ -25,9 +25,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="0dp"
-            android:lineSpacingMultiplier="1"
-            android:maxLines="1"
             android:text="@string/title_text_default"
             android:id="@+id/title_regular"
             android:textSize="14sp"
@@ -41,9 +38,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="0dp"
-            android:lineSpacingMultiplier="1"
-            android:maxLines="2"
             android:text="@string/message_text_default"
             android:id="@+id/message_regular"
             android:textSize="14sp"
