@@ -26,35 +26,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/title_text_default"
-            android:lineSpacingExtra="0dp"
-            android:lineSpacingMultiplier="1"
-            android:maxLines="1"
             android:id="@+id/title_action"
             android:layout_gravity="center"
             android:textSize="16sp"
             android:paddingStart="20dp"
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
-            android:background="@color/white"
-            android:paddingEnd="20dp"
-            android:layout_marginTop="10dp"/>
+            android:paddingEnd="20dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/message_text_default"
-            android:lineSpacingExtra="0dp"
-            android:lineSpacingMultiplier="1"
-            android:maxLines="1"
             android:layout_gravity="center"
             android:id="@+id/message_action"
             android:textSize="14sp"
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
-            android:background="@color/white"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:layout_marginTop="10dp"/>
+            android:paddingEnd="20dp"/>
 
         <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
         <!--<View
@@ -73,6 +63,7 @@
                 android:layout_height="50dp"
                 android:text="@string/dismiss_button_text_default"
                 android:id="@+id/dismiss_button_action"
+                style="?android:attr/borderlessButtonStyle"
                 android:textSize="14sp"
                 android:textAlignment="center"
                 android:gravity="center"
@@ -89,6 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/dismiss_button_text_default"
                 android:id="@+id/action_button_action"
+                style="?android:attr/borderlessButtonStyle"
                 android:textSize="14sp"
                 android:textAlignment="center"
                 android:gravity="center"

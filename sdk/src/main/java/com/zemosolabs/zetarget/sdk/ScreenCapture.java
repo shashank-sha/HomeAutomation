@@ -76,7 +76,7 @@ class ScreenCapture {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        createNewFile();
+        //createNewFile();
         //writeToFile(viewsInAPage.toString());
         ZeTarget.sendSnapshot(viewsInAPage);
     }
@@ -268,7 +268,7 @@ class ScreenCapture {
             return false;
     }
 
-    void writeToFile(String data){
+    /*void writeToFile(String data){
         Log.i("writeFile:","In the method");
         try {
             // FileOutputStream fOut = new FileOutputStream(file);
@@ -281,14 +281,14 @@ class ScreenCapture {
         } catch (Exception e) {
             Log.d("WRITE","ERROR"+e.toString());
         }
-    }
+    }*/
 
-    void createNewFile(){
+    /*void createNewFile(){
         try {
             file = new File("/sdcard/ZeTarget/fetchPromoJSONReceived.txt");
             file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

@@ -1,69 +1,72 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="20dp"
     android:paddingRight="20dp"
+    android:paddingLeft="20dp"
+    android:orientation="vertical"
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
-    android:layout_gravity="center"
-    android:background="@drawable/white_card_bg">
+    android:layout_gravity="center_vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/white_card_bg">
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         android:background="@drawable/white_imgview_rounded_borders"
         android:id="@+id/img_container_rate_me"
-        android:layout_above="@+id/title_rate_me"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:contentDescription="@string/image_name" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_text_default"
-        android:id="@+id/title_rate_me"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:textColor="@color/dark_grey_campaign_button_text"
-        android:background="@color/white"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_above="@+id/message_rate_me"
-        android:layout_marginTop="10dp"/>
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/message_text_default"
-        android:id="@+id/message_rate_me"
-        android:textStyle="normal"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:textColor="@color/dark_grey_campaign_button_text"
-        android:background="@color/white"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="10dp" />
+        android:padding="5dp"
+        android:background="@color/white">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_text_default"
+            android:id="@+id/title_rate_me"
+            android:paddingBottom="5dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:paddingTop="3dp"
+            android:textSize="16sp"
+            android:textColor="@color/dark_grey_campaign_button_text" />
 
-    <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_rate_me"
+            android:layout_centerHorizontal="true"
+            android:text="@string/message_text_default"
+            android:id="@+id/message_rate_me"
+            android:paddingBottom="3dp"
+            android:gravity="center"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="@color/dark_grey_campaign_button_text" />
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/message_rate_me"
         android:background="@drawable/white_button_bg"
         android:layout_gravity="center_horizontal">
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="@+dimen/button_height_rate_me_campaign"
+            android:layout_alignParentTop="true"
             android:text="@string/later"
             android:id="@+id/neutral_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
             android:textStyle="bold"
             android:textSize="14sp"
             android:gravity="center"
@@ -74,8 +77,10 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height_rate_me_campaign"
+            android:layout_below="@+id/neutral_button_rate_me"
             android:text="@string/dont_Ask"
             android:id="@+id/dismiss_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
             android:textStyle="bold"
             android:textSize="14sp"
             android:gravity="center"
@@ -86,8 +91,10 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height_rate_me_campaign"
+            android:layout_below="@+id/dismiss_button_rate_me"
             android:text="@string/rate_me"
             android:id="@+id/action_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
             android:textStyle="bold"
             android:textSize="14sp"
             android:gravity="center"
@@ -95,8 +102,8 @@
             android:background="@drawable/blue_button_bg"
             android:layout_marginTop="@dimen/margin_between_buttons_rate_me"/>
 
+    </RelativeLayout>
     </LinearLayout>
-
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 
-</RelativeLayout>
+</LinearLayout>

@@ -472,9 +472,8 @@
                         }
                         newNotification.customize(context, campaignId, template);
                         if(ZeTarget.currentActivity==currentActivity) {
-                            Log.i(TAG,"same Activity before In App Promotion launched");
+                            Log.i(TAG, "same Activity before In App Promotion launched");
                             newNotification.show(ft, "dialog");
-                            setLastInAppSeen(System.currentTimeMillis());
                         }else{
                             Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
                         }
@@ -587,7 +586,7 @@
          * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
          */
         public static void updatePromotionAsSeen(String campaignId){
-
+            setLastInAppSeen(System.currentTimeMillis());
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.updateCampaign(campaignId, System.currentTimeMillis());
             JSONObject promotionEvent = new JSONObject();
@@ -634,8 +633,8 @@
 
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
-                    ScreenCapture.getInstance().createNewFile();
-                    ScreenCapture.getInstance().writeToFile(jsonResponse.toString());
+                    /*ScreenCapture.getInstance().createNewFile();
+                    ScreenCapture.getInstance().writeToFile(jsonResponse.toString());*/
                     fetchSuccess = true;
                     fetchingPromotionsCurrently.set(false);
                     logWorker.post(new Runnable() {
@@ -1386,6 +1385,11 @@
                     logEvent(eventType, eventProperties, apiProperties, timestamp, checkSession);
                 }
             });
+
+        }
+
+        private static long logEvent(final String eventType, JSONObject eventProperties,
+                                     JSONObject apiProperties, long timestamp, boolean checkSession) {
             campaignWorker.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1397,10 +1401,6 @@
                     }
                 }
             });
-        }
-
-        private static long logEvent(String eventType, JSONObject eventProperties,
-                                     JSONObject apiProperties, long timestamp, boolean checkSession) {
             if (checkSession) {
                 startNewSessionIfNeeded(timestamp);
             }

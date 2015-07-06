@@ -55,6 +55,7 @@
         android:layout_height="50dp"
         android:text="@string/dismiss_button_text_default"
         android:id="@+id/dismiss_button_regular"
+        style="?android:attr/borderlessButtonStyle"
         android:textSize="14sp"
         android:textAlignment="center"
         android:gravity="center"

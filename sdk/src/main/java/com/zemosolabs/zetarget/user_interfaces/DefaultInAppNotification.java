@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -116,6 +117,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             JSONObject definition;
             if(template.has("message") && template.get("message")!=JSONObject.NULL) {
                 message = template.getString("message");
+               // message = "lksjdflkdsjklfjsdlfkaj;ldkfjsdlfkdjflksdjfslkdfslkdfjsdlfsfkjklsjflkdjfksldjfsdlkfjdskfdsflksdjf";
             }else message ="dMESSAGE";
             if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL) {
                 imageBase64 = template.getString("imageBase64");
@@ -129,6 +131,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             } else onClickUrl = null;
             if (template.has("title") && template.get("title") != JSONObject.NULL) {
                 title = template.getString("title");
+                //title = "LKDSjflksjflkdsjfklsdjfldksfjsf";
             } else title = "dTITLE";
             if(template.has("definition") && template.get("definition") != JSONObject.NULL) {
                 definition = template.getJSONObject("definition");
@@ -266,7 +269,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                // new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
-                    imgView.setOnClickListener(imageClickHandler);
+                    imgView.setOnTouchListener(imageClickHandler);
                 }
             }
             else{
@@ -310,7 +313,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
-                    imgView.setOnClickListener(imageClickHandler);
+                    imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
                 Log.i("Image", "ImgView made invisible");
@@ -347,7 +350,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 imgView.setImageBitmap(resultBitmap);
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 if(onClickUrl!=null){
-                    imgView.setOnClickListener(imageClickHandler);
+                    imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
                 Log.i("Image", "ImgView made invisible");
@@ -364,19 +367,28 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
         return v;
     }
 
-    View.OnClickListener imageClickHandler = new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-            Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
-            try{
-                Log.i("InAppIMAGE:","CLICKED");
-                startActivity(openImageLinkInBrowser);
-            }catch (ActivityNotFoundException e){
-                Log.i("Exception: ",e.toString());
+    View.OnTouchListener imageClickHandler = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if(event.getAction()==MotionEvent.ACTION_MOVE||event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_SCROLL){
+                return true;
+            }else{
+                onClick(v);
             }
-            ZeTarget.updatePromotionAsSeen(campaignId);
-            dismiss();
-            }
+            return false;
+        }
+        //onClickListener's method unchanged and used
+        private void onClick(View v) {
+        Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
+        try{
+            Log.i("InAppIMAGE:","CLICKED");
+            startActivity(openImageLinkInBrowser);
+        }catch (ActivityNotFoundException e){
+            Log.i("Exception: ",e.toString());
+        }
+        ZeTarget.updatePromotionAsSeen(campaignId);
+        dismiss();
+        }
     };
 
     View.OnClickListener askMeLater = new View.OnClickListener() {
@@ -397,6 +409,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             }*/
             ZeTarget.removePromotion(campaignId);
             dismiss();
+
         }
     };
 
@@ -407,12 +420,12 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Intent rateMyApp = new Intent(Intent.ACTION_VIEW,uri);
             try{
                 Log.i("RATEME:","CLICKED");
+                dismiss();
                 startActivity(rateMyApp);
                 ZeTarget.removePromotion(campaignId);
             }catch (ActivityNotFoundException e){
                 Log.i("Exception: ",e.toString());
             }
-            dismiss();
         }
     };
 
@@ -422,8 +435,9 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 Intent openLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(actionButtonUrl));
                 try{
                     Log.i("ACTIONEVENT:","CLICKED");
-                    startActivity(openLinkInBrowser);
                     ZeTarget.updatePromotionAsSeen(campaignId);
+                    dismiss();
+                    startActivity(openLinkInBrowser);
                 }catch (ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }
@@ -434,13 +448,13 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 share.setType("text/plain");
                 try{
                     Log.i("SHAREEVENT:","CLICKED");
-                    startActivity(share);
                     ZeTarget.updatePromotionAsSeen(campaignId);
+                    dismiss();
+                    startActivity(share);
                 }catch(ActivityNotFoundException e){
                     Log.i("Exception: ",e.toString());
                 }
             }
-            dismiss();
 
         }
     };
