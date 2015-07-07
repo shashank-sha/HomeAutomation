@@ -30,10 +30,10 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
             android:textSize="16sp"
-            android:paddingStart="20dp"
             android:gravity="center"
             android:textColor="@color/dark_grey_campaign_button_text"
-            android:paddingEnd="20dp" />
+            android:paddingStart="@dimen/padding_title_text_in_app"
+            android:paddingEnd="@dimen/padding_title_text_in_app" />
 
         <TextView
             android:layout_width="match_parent"
@@ -45,8 +45,8 @@
             android:gravity="center"
             android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
             android:textColor="@color/dark_grey_campaign_button_text"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"/>
+            android:paddingStart="@dimen/padding_message_text_in_app"
+            android:paddingEnd="@dimen/padding_message_text_in_app"/>
 
         <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
         <!--<View

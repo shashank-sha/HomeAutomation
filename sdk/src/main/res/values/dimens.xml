@@ -4,7 +4,9 @@
     <dimen name="bitmap_corner_radius">10dp</dimen>
     <dimen name="in_app_promo_width">300dp</dimen>
     <dimen name="in_app_promo_height_action">160dp</dimen>
-    <dimen name="button_height_rate_me_campaign">50dp</dimen>
+    <dimen name="button_height_rate_me_campaign">30dp</dimen>
     <dimen name="margin_between_buttons_rate_me_action">5dp</dimen>
     <dimen name="margin_in_regular_in_app">10dp</dimen>
+    <dimen name="padding_message_text_in_app">15dp</dimen>
+    <dimen name="padding_title_text_in_app">20dp</dimen>
 </resources>

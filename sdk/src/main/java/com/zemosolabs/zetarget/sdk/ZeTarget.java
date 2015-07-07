@@ -58,6 +58,7 @@
         private static AtomicBoolean synchingDataStoreCurrently = new AtomicBoolean(false);
         private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
         private static AtomicBoolean updatingUserPropsCurrently = new AtomicBoolean(false);
+        private static AtomicBoolean showingPromotion = new AtomicBoolean(false);
 
         private static boolean DEBUG = false;
 
@@ -357,7 +358,9 @@
             //The developer has to label all his activities where he needs to show promotions.
             //android:label is a optional attribute for all activities. Using the same as screen id
             //would work.
-
+            if(showingPromotion.get()){
+                return;
+            }
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 Log.i(TAG, "currentActivityLabel is null");
@@ -474,6 +477,7 @@
                             if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
                                 return;
                             }
+                            showingPromotion.set(true);
                             newNotification.show(ft, "dialog");
                         }else{
                             Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
@@ -597,6 +601,7 @@
                 Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
             }
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
+            showingPromotion.set(false);
         }
 
         /**
@@ -612,8 +617,10 @@
          */
 
         public static void removePromotion(String campaignId) {
+            setLastInAppSeen(System.currentTimeMillis());
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.markPromotionAsSeen(campaignId);
+            showingPromotion.set(false);
         }
 
         private static void setLastInAppSeen(long l) {
@@ -1718,26 +1725,26 @@
          * Method to set user property- first name
          */
         public static void setFirstName(String name){
-            setUserProperty(Constants.FNAME, name);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyFName, name);
         }
         /**
          * Method to set user property- last name
          */
         public static void setLastName(String name){
-            setUserProperty(Constants.LNAME,name);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyLName,name);
         }
         /**
          * Method to set user property- age
          */
         public static void setAge(String age){
-            setUserProperty(Constants.AGE,age);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyAge,age);
         }
         /**
          * Method to set user property- Date of Birth
          * the parameter dob should be of the format yyyymmdd
          */
         public static void setDOB(String dob){
-            setUserProperty(Constants.DOB,dob);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyDOB,dob);
             int year = Integer.valueOf(dob.substring(0,4));
             int month = Integer.valueOf(dob.substring(4,6));
             int day = Integer.valueOf(dob.substring(6,8));
@@ -1755,6 +1762,6 @@
          * Method to set user property- Gender
          */
         public static void setGender(String gender){
-            setUserProperty(Constants.GENDER,gender);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyGender,gender);
         }
     }

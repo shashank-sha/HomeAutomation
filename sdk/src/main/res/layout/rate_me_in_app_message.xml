@@ -7,8 +7,9 @@
     android:orientation="vertical"
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center_vertical">
+
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/white_card_bg">
@@ -34,7 +35,9 @@
             android:gravity="center"
             android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
             android:textSize="16sp"
-            android:textColor="@color/dark_grey_campaign_button_text" />
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:paddingLeft="@dimen/padding_title_text_in_app"
+            android:paddingRight="@dimen/padding_title_text_in_app"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -47,21 +50,24 @@
             android:gravity="center"
             android:textStyle="normal"
             android:textSize="14sp"
-            android:textColor="@color/dark_grey_campaign_button_text" />
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:paddingLeft="@dimen/padding_message_text_in_app"
+            android:paddingRight="@dimen/padding_message_text_in_app"/>
     </RelativeLayout>
 
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="165dp"
+        android:orientation="vertical"
         android:background="@drawable/white_button_bg"
         android:layout_gravity="center_horizontal">
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@+dimen/button_height_rate_me_campaign"
-            android:layout_alignParentTop="true"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="@string/later"
             android:id="@+id/neutral_button_rate_me"
             style="?android:attr/borderlessButtonStyle"
@@ -74,8 +80,8 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_rate_me_campaign"
-            android:layout_below="@+id/neutral_button_rate_me"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="@string/dont_Ask"
             android:id="@+id/dismiss_button_rate_me"
             style="?android:attr/borderlessButtonStyle"
@@ -88,8 +94,8 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_rate_me_campaign"
-            android:layout_below="@+id/dismiss_button_rate_me"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:text="@string/rate_me"
             android:id="@+id/action_button_rate_me"
             style="?android:attr/borderlessButtonStyle"
@@ -99,8 +105,7 @@
             android:textColor="@color/white"
             android:background="@drawable/blue_button_bg"
             android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
-
-    </RelativeLayout>
+    </LinearLayout>
     </LinearLayout>
     <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
 

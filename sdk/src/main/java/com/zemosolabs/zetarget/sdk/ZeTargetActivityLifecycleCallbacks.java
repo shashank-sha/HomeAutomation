@@ -91,14 +91,16 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
             ComponentName compName = launchIntent.getComponent();
             String launchingClassName = compName.getClassName();
             if (activity.getClass().getCanonicalName().equals(launchingClassName)) {
-                if (currentActivity == null || activity != currentActivity) {
+                Log.i("LaunchingActivity","Launched");
+                //if (currentActivity != null && activity == currentActivity) {
                     String campaignId = activity.getIntent()
                             .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
                     if (campaignId != null && !campaignId.isEmpty()) {
                         ZeTarget.updatePromotionAsSeen(campaignId);
+                        GcmIntentService.notificationCount=0;
                         Log.i("PushNotificationViewed", campaignId);
                     }
-                }
+               // }
             }
         }
         /*PackageManager pm = activity.getPackageManager();*/

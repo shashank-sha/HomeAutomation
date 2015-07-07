@@ -5,11 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class GcmIntentService extends IntentService {
@@ -60,7 +63,8 @@ public class GcmIntentService extends IntentService {
     // Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with
     // a GCM message.
-    private void sendNotification(Bundle bundle) {
+
+    private void sendNotification(Bundle bundle){
         Log.i(TAG,"sendNotification() called");
         String launcherClassName = null;
         launcherClassName = bundle.getString("url");
@@ -86,16 +90,48 @@ public class GcmIntentService extends IntentService {
                 contentIntent = PendingIntent.getActivity(this, 0,
                         notificationIntent, 0);
         }
+        String title = bundle.getString("title");
+        String message = bundle.getString("message");
+        /*String buttonText = null;
+        String buttonJson;
+        if(bundle.getString("button")!=null){
+            buttonJson = bundle.getString("button");
+            Log.i("GCM button", buttonJson);
+            try {
+                JSONObject button = new JSONObject(buttonJson);
+                buttonText = button.getString("buttonText");
+            } catch (JSONException e) {
+                Log.e("Error","json for button error in push");
+            }
+        }*/
 
-        notificationCount++;
+        /*RemoteViews contentForNotification = new RemoteViews(getPackageName(),R.layout.notification);
+        contentForNotification.setTextViewText(R.id.action_button_notification, "OK");
+        if(buttonText!=null) {
+            contentForNotification.setViewVisibility(R.id.action_button_notification, View.VISIBLE);
+        }
+        contentForNotification.setImageViewResource(R.id.image_left_notification, appIconId);
+        contentForNotification.setTextViewText(R.id.title_text_notification, title);
+        contentForNotification.setTextViewText(R.id.message_text_notification,message);*/
+        //notificationCount++;
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this).setSmallIcon(appIconId)
-        .setContentText(bundle.getString("message"));
-        mBuilder.setContentTitle(bundle.getString("title")).setAutoCancel(true);
+        .setContentText(message);
+        mBuilder.setContentTitle(title).setAutoCancel(true);
+        //mBuilder.setContent(contentForNotification);
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN) {
+            if(notificationCount>1){
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message).setSummaryText("+" + notificationCount + " messages"));
+            }else{
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+            }
+        }
+        /*mBuilder.addAction(getResources().)*/
         if(contentIntent!=null) {
             mBuilder.setContentIntent(contentIntent);
-            Log.i(TAG,"Pending Intent added to the Notification");
+            Log.i(TAG, "Pending Intent added to the Notification");
         }
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        notificationCount++;
     }
 }
