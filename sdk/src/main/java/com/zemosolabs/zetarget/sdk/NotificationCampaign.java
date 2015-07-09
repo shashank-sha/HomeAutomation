@@ -69,7 +69,7 @@ abstract class NotificationCampaign {
         if(lastShownTime>0){
             Log.i(TAG, timeStamp+" "+(lastShownTime+minimumMinutesBeforeReshow*6000));
             if(timeStamp<lastShownTime+ minimumMinutesBeforeReshow *60000){
-                Log.i("NotificationCampaign", "not yet to be shown");
+                Log.i(TAG, "not yet to be shown");
                 return;
             }
         }

@@ -22,7 +22,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             tools:node="replace"
-            android:value="6587000" />
+            android:value="7327000" />
         <receiver
             android:name="com.zemosolabs.zetarget.sdk.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >

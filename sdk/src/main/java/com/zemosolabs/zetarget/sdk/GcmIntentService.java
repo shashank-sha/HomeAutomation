@@ -85,12 +85,15 @@ public class GcmIntentService extends IntentService {
         PendingIntent contentIntent=null;
         if(launcher!=null){
             Intent notificationIntent = new Intent(this,launcher);
-                notificationIntent.putExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID, bundle.getString("campaignId"));
-
+                //notificationIntent.putExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID, bundle.getString("campaignId"));
+                notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 contentIntent = PendingIntent.getActivity(this, 0,
                         notificationIntent, 0);
         }
         String title = bundle.getString("title");
+        if(title==null||title.isEmpty()){
+            return;
+        }
         String message = bundle.getString("message");
         /*String buttonText = null;
         String buttonJson;
@@ -132,6 +135,14 @@ public class GcmIntentService extends IntentService {
             Log.i(TAG, "Pending Intent added to the Notification");
         }
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
         notificationCount++;
+        JSONObject promoEvent = new JSONObject();
+        try {
+            promoEvent.put("campaignId",bundle.getString("campaignId"));
+        } catch (JSONException e) {
+            Log.e(TAG,"campaign_id writing into event failed");
+        }
+        ZeTarget.uncheckedLogEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT,promoEvent);
     }
 }

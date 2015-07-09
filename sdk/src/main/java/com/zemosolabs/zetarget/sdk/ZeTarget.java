@@ -581,7 +581,7 @@
 
         /**
          * Method to update the viewing of In App Promotion
-         * @param campaignId campaignId passed to your custom subclass of ZeTargetInAppNotification used to
+         * @param promotionEvent promotionEvent should be a JSONObject containing the key campaignId which is passed to your custom subclass of ZeTargetInAppNotification used to
          *                   handle display of In App Promotions
          *
          * ZeTarget SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
@@ -590,23 +590,23 @@
          * When the user takes the responsibility of handling the display of the In App Promotions, he/she should also take the
          * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
          */
-        public static void updatePromotionAsSeen(String campaignId){
+        public static void updatePromotionAsSeen(JSONObject promotionEvent){
             setLastInAppSeen(System.currentTimeMillis());
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-            dbHelper.updateCampaign(campaignId, System.currentTimeMillis());
-            JSONObject promotionEvent = new JSONObject();
+            String campaignId = null;
             try {
-                promotionEvent.put("campaignId",campaignId);
+                campaignId = promotionEvent.getString("campaignId");
             } catch (JSONException e) {
-                Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
+                Log.e(TAG,"campaign_updation_failed");
             }
+            dbHelper.updateCampaign(campaignId, System.currentTimeMillis());
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
             showingPromotion.set(false);
         }
 
         /**
          * Method to remove Campaigns from database.
-         * @param campaignId campaignId passed to your custom subclass of ZeTargetInAppNotification used to
+         * @param promotionEvent promotionEvent should be a JSONObject containing the key campaignId which is passed to your custom subclass of ZeTargetInAppNotification used to
          *                   handle display of In App Promotions
          *
          * ZeTarget SDK keeps track of the number of times an In App Promotion is shown and the last time an In App Promotion
@@ -616,10 +616,17 @@
          * responsibility of updating the promotions when seen and removing them when necessary based on the app user's feedback.
          */
 
-        public static void removePromotion(String campaignId) {
+        public static void removePromotion(JSONObject promotionEvent) {
             setLastInAppSeen(System.currentTimeMillis());
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+            String campaignId = null;
+            try {
+                campaignId = promotionEvent.getString("campaignId");
+            } catch (JSONException e) {
+                Log.e(TAG,"campaign_updation_failed");
+            }
             dbHelper.markPromotionAsSeen(campaignId);
+            logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
             showingPromotion.set(false);
         }
 
@@ -1394,6 +1401,21 @@
                 }
             });
 
+        }
+        static void uncheckedLogEvent(String eventType){
+            uncheckedLogEvent(eventType,null);
+        }
+        static void uncheckedLogEvent(final String eventType,final JSONObject eventProperties){
+            if (TextUtils.isEmpty(eventType)) {
+                Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
+                return;
+            }
+            runOnLogWorker(new Runnable() {
+                @Override
+                public void run() {
+                    logEvent(eventType, eventProperties, null, System.currentTimeMillis(), false);
+                }
+            });
         }
 
         private static long logEvent(final String eventType, JSONObject eventProperties,

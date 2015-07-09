@@ -122,20 +122,19 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 Log.i("Message InAPP",message);
                // message = "lksjdflkdsjklfjsdlfkaj;ldkfjsdlfkdjflksdjfslkdfslkdfjsdlfsfkjklsjflkdjfksldjfsdlkfjdskfdsflksdjf";
             }else message ="dMESSAGE";
-            if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL) {
+            if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL && !template.getString("imageBase64").isEmpty()) {
                 imageBase64 = template.getString("imageBase64");
             } else{
                 imageBase64 = null;
                 Log.i(TAG,"imageBase64 is null");
             }
 
-            if (template.has("onClickUrl") && template.get("onClickUrl") != JSONObject.NULL) {
+            if (template.has("onClickUrl") && template.get("onClickUrl") != JSONObject.NULL && !template.getString("onClickUrl").isEmpty()) {
                 onClickUrl = template.getString("onClickUrl");
             } else onClickUrl = null;
             if (template.has("title") && template.get("title") != JSONObject.NULL) {
                 title = template.getString("title");
                 Log.i("Title InAPP",title);
-                //title = "LKDSjflksjflkdsjfklsdjfldksfjsf";
             } else title = "dTITLE";
             if(template.has("definition") && template.get("definition") != JSONObject.NULL) {
                 definition = template.getJSONObject("definition");
@@ -186,8 +185,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Log.i("Exception: ", e.toString());
         }
         if(imageBase64!=null) {
+
             byte[] decodedString = Base64.decode(imageBase64, Base64.DEFAULT);
-            //Bitmap bitmap = BitmapFactory.decodeStream(input);
             bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
             int width = metrics.widthPixels;
@@ -205,7 +204,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Paint paint = new Paint();
             paint.setAntiAlias(true);
             Canvas canvas = new Canvas(resultBitmap);
-            float cornerRadius = 10.0f;
+            float cornerRadius = 10.0f*(((float)metrics.densityDpi)/160.0f);
             canvas.drawARGB(0, 0, 0, 0);
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
             canvas.drawRect(bottomRect, paint);
@@ -390,28 +389,41 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
         }
         //onClickListener's method unchanged and used
         private void onClick(View v) {
-        Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
-        try{
-            Log.i("InAppIMAGE:","CLICKED");
-            startActivity(openImageLinkInBrowser);
-        }catch (ActivityNotFoundException e){
-            Log.i("Exception: ",e.toString());
-        }
-        ZeTarget.updatePromotionAsSeen(campaignId);
-        dismiss();
+            Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
+            try{
+                Log.i("InAppIMAGE:","CLICKED");
+                startActivity(openImageLinkInBrowser);
+            }catch (ActivityNotFoundException e){
+                Log.i("Exception: ",e.toString());
+            }
+            JSONObject promoEvent = getJSONWithCampaignId();
+            ZeTarget.updatePromotionAsSeen(promoEvent);
+        //dismiss();
         }
     };
 
+    private JSONObject getJSONWithCampaignId() {
+        JSONObject promotionEvent = new JSONObject();
+        try {
+            promotionEvent.put("campaignId",campaignId);
+        } catch (JSONException e) {
+            Log.e(TAG,"Exception in updatePromotionAsSeen: ",e);
+        }
+        return promotionEvent;
+    }
+
     View.OnClickListener askMeLater = new View.OnClickListener() {
         public void onClick(View v) {
-            ZeTarget.updatePromotionAsSeen(campaignId);
+            JSONObject promoEvent = getJSONWithCampaignId();
+            ZeTarget.updatePromotionAsSeen(promoEvent);
             dismiss();
         }
     };
 
     View.OnClickListener dontAskMeAgain = new View.OnClickListener() {
         public void onClick(View v) {
-            ZeTarget.removePromotion(campaignId);
+            JSONObject promoEvent = getJSONWithCampaignId();
+            ZeTarget.removePromotion(promoEvent);
             dismiss();
         }
     };
@@ -423,7 +435,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Intent rateMyApp = new Intent(Intent.ACTION_VIEW,uri);
             try{
                 Log.i("RATEME:","CLICKED");
-                ZeTarget.removePromotion(campaignId);
+                JSONObject promoEvent = getJSONWithCampaignId();
+                ZeTarget.removePromotion(promoEvent);
                 dismiss();
                 startActivity(rateMyApp);
             }catch (ActivityNotFoundException e){
@@ -438,7 +451,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 Intent openLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(actionButtonUrl));
                 try{
                     Log.i("ACTIONEVENT:", "CLICKED");
-                    ZeTarget.updatePromotionAsSeen(campaignId);
+                    JSONObject promoEvent = getJSONWithCampaignId();
+                    ZeTarget.updatePromotionAsSeen(promoEvent);
                     startActivity(openLinkInBrowser);
                     dismiss();
                 }catch (ActivityNotFoundException e){
@@ -451,7 +465,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 share.setType("text/plain");
                 try{
                     Log.i("SHAREEVENT:", "CLICKED");
-                    ZeTarget.updatePromotionAsSeen(campaignId);
+                    JSONObject promoEvent = getJSONWithCampaignId();
+                    ZeTarget.updatePromotionAsSeen(promoEvent);
                     startActivity(share);
                     dismiss();
                 }catch(ActivityNotFoundException e){
@@ -464,7 +479,8 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
 
     View.OnClickListener closeHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            ZeTarget.updatePromotionAsSeen(campaignId);
+            JSONObject promoEvent = getJSONWithCampaignId();
+            ZeTarget.updatePromotionAsSeen(promoEvent);
             dismiss();
         }
     };

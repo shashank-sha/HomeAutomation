@@ -96,7 +96,13 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                     String campaignId = activity.getIntent()
                             .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
                     if (campaignId != null && !campaignId.isEmpty()) {
-                        ZeTarget.updatePromotionAsSeen(campaignId);
+                        JSONObject promotionEvent = new JSONObject();
+                        try {
+                            promotionEvent.put("campaignId",campaignId);
+                        } catch (JSONException e) {
+                            Log.e("PUSH","PUSH VIEWED EVENT CREATION FAILURE",e);
+                        }
+                        ZeTarget.updatePromotionAsSeen(promotionEvent);
                         GcmIntentService.notificationCount=0;
                         Log.i("PushNotificationViewed", campaignId);
                     }
