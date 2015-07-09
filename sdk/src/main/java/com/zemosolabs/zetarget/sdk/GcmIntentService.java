@@ -124,7 +124,7 @@ public class GcmIntentService extends IntentService {
         //mBuilder.setContent(contentForNotification);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN) {
             if(notificationCount>1){
-                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message).setSummaryText("+" + notificationCount + " messages"));
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message).setSummaryText("+" +"more" + " messages"));
             }else{
                 mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
             }
