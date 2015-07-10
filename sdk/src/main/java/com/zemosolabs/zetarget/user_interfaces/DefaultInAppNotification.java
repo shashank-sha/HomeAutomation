@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
+import android.text.Spanned;
 import android.text.SpannedString;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -119,14 +120,14 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             JSONObject definition;
             if(template.has("message") && template.get("message")!=JSONObject.NULL) {
                 message = template.getString("message");
-                Log.i("Message InAPP",message);
+                //Log.i("Message InAPP",message);
                // message = "lksjdflkdsjklfjsdlfkaj;ldkfjsdlfkdjflksdjfslkdfslkdfjsdlfsfkjklsjflkdjfksldjfsdlkfjdskfdsflksdjf";
             }else message ="dMESSAGE";
             if (template.has("imageBase64") && template.get("imageBase64") != JSONObject.NULL && !template.getString("imageBase64").isEmpty()) {
                 imageBase64 = template.getString("imageBase64");
             } else{
                 imageBase64 = null;
-                Log.i(TAG,"imageBase64 is null");
+                //Log.i(TAG,"imageBase64 is null");
             }
 
             if (template.has("onClickUrl") && template.get("onClickUrl") != JSONObject.NULL && !template.getString("onClickUrl").isEmpty()) {
@@ -134,7 +135,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             } else onClickUrl = null;
             if (template.has("title") && template.get("title") != JSONObject.NULL) {
                 title = template.getString("title");
-                Log.i("Title InAPP",title);
+                //Log.i("Title InAPP",title);
             } else title = "dTITLE";
             if(template.has("definition") && template.get("definition") != JSONObject.NULL) {
                 definition = template.getJSONObject("definition");
@@ -190,12 +191,12 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
             int width = metrics.widthPixels;
-            Log.i(TAG,"height of bitmap is "+bitmap.getHeight()+"width of bitmap is "+bitmap.getWidth());
+            //Log.i(TAG,"height of bitmap is "+bitmap.getHeight()+"width of bitmap is "+bitmap.getWidth());
             float aspectRatio = (float)bitmap.getHeight()/(float)bitmap.getWidth();
             int finalWidth = 95*width/100;
-            Log.i(TAG,"final width is "+finalWidth);
+            //Log.i(TAG,"final width is "+finalWidth);
             int finalHeight = (int)((float)finalWidth*aspectRatio);
-            Log.i(TAG,"final height is "+finalHeight);
+            //Log.i(TAG,"final height is "+finalHeight);
             resultBitmap = Bitmap.createBitmap(finalWidth, finalHeight, Bitmap.Config.ARGB_8888);
 
             Rect rect = new Rect(0, 0, finalWidth, finalHeight);
@@ -242,7 +243,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setCancelable(false);
-        Log.i("inside Notification","control came here");
+        //Log.i("inside Notification","control came here");
         //String titleText = Html.fromHtml(title).toString().trim();
         View v = null;
         TextView mv = null;
@@ -254,23 +255,23 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             v = inflater.inflate(R.layout.regular_in_app_message, container, false);
             Button button = (Button)v.findViewById(R.id.dismiss_button_regular);
             button.setTypeface(robotoMedium);
-            Log.i("DismissButton", "Updating");
+            //Log.i("DismissButton", "Updating");
             button.setText(dismissButtonText);
             button.setOnClickListener(closeHandler);
             TextView tv = (TextView)v.findViewById(R.id.title_regular);
             tv.setTypeface(robotoRegular);
             if(title!=null){
-                Log.i("Title", "Updating");
-                tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
-                tv.setText(tv.getText().toString().trim());
+                //Log.i("Title", "Updating");
+                CharSequence titleText = trimSpacesFromHtmlString(Html.fromHtml(title));
+                tv.setText(titleText, TextView.BufferType.SPANNABLE);
             }
             else{
-                Log.i("Title","Being Removed");
+                //Log.i("Title","Being Removed");
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_regular);
             if(imageBase64!=null){
-                Log.i("Image","ImgView updating");
+                //Log.i("Image","ImgView updating");
                // new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
@@ -278,7 +279,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 }
             }
             else{
-                Log.i("Image","ImgView made invisible");
+                //Log.i("Image","ImgView made invisible");
                 imgView.setVisibility(View.GONE);
             }
 
@@ -300,30 +301,30 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Button rateItButton = (Button) v.findViewById(R.id.action_button_rate_me);
             rateItButton.setOnClickListener(rateMeEventHandler);
             rateItButton.setTypeface(robotoMedium);
-            Log.i("RateMeButton", "Updating");
+            //Log.i("RateMeButton", "Updating");
             rateItButton.setText(actionButtonText);
             askLaterButton.setText(remindButtonText);
             dontAskButton.setText(dismissButtonText);
             TextView tv = (TextView)v.findViewById(R.id.title_rate_me);
             tv.setTypeface(robotoRegular);
             if (title != null) {
-                Log.i("Title", "Updating");
-                tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
-                tv.setText(tv.getText().toString().trim());
+                //Log.i("Title", "Updating");
+                CharSequence titleText = trimSpacesFromHtmlString(Html.fromHtml(title));
+                tv.setText(titleText, TextView.BufferType.SPANNABLE);
             } else {
-                Log.i("Title", "Being Removed");
+                //Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_rate_me);
             if (imageBase64 != null) {
-                Log.i("Image", "ImgView updating");
+                //Log.i("Image", "ImgView updating");
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
                     imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
-                Log.i("Image", "ImgView made invisible");
+                //Log.i("Image", "ImgView made invisible");
                 imgView.setVisibility(View.GONE);
             }
 
@@ -334,34 +335,35 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             v = inflater.inflate(R.layout.action_in_app_message, container, false);
             Button dismissButton = (Button) v.findViewById(R.id.dismiss_button_action);
             dismissButton.setTypeface(robotoMedium);
-            Log.i("DismissButton", "Updating");
+            //Log.i("DismissButton", "Updating");
             dismissButton.setText(dismissButtonText);
             dismissButton.setOnClickListener(closeHandler);
             Button actionButton = (Button) v.findViewById(R.id.action_button_action);
             actionButton.setTypeface(robotoMedium);
-            Log.i("ActionButton", "Updating");
+            //Log.i("ActionButton", "Updating");
             actionButton.setText(actionButtonText);
             actionButton.setOnClickListener(actionEventHandler);
             TextView tv = (TextView)v.findViewById(R.id.title_action);
             tv.setTypeface(robotoRegular);
             if (title != null) {
-                Log.i("Title", "Updating");
-                tv.setText(Html.fromHtml(title), TextView.BufferType.SPANNABLE);
+                //Log.i("Title", "Updating");
+                CharSequence titleText = trimSpacesFromHtmlString(Html.fromHtml(title));
+                tv.setText(titleText, TextView.BufferType.SPANNABLE);
                 tv.setText(tv.getText().toString().trim());
             } else {
-                Log.i("Title", "Being Removed");
+                //Log.i("Title", "Being Removed");
                 tv.setVisibility(View.GONE);
             }
             ImageView imgView = (ImageView) v.findViewById(R.id.img_container_action);
             if (imageBase64 != null) {
-                Log.i("Image", "ImgView updating");
+                //Log.i("Image", "ImgView updating");
                 imgView.setImageBitmap(resultBitmap);
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 if(onClickUrl!=null){
                     imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
-                Log.i("Image", "ImgView made invisible");
+                //Log.i("Image", "ImgView made invisible");
                 imgView.setVisibility(View.GONE);
             }
 
@@ -369,12 +371,23 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             mv.setTypeface(robotoLight);
 
         }
-       // String msgText = Html.fromHtml(message).toString().trim();
-
-        mv.setText(Html.fromHtml(message),TextView.BufferType.SPANNABLE);
-        mv.setText(mv.getText().toString().trim());
-        Log.i("Message","Message Updated");
+        CharSequence messageFormattedText = trimSpacesFromHtmlString(Html.fromHtml(message));
+        mv.setText(messageFormattedText, TextView.BufferType.SPANNABLE);
         return v;
+    }
+
+    private CharSequence trimSpacesFromHtmlString(Spanned spanned) {
+        int end = spanned.length();
+        int length = end;
+        int start = 0;
+        char[] chars = spanned.toString().toCharArray();
+        while ((start < end) && (chars[start] <= ' ')) {
+            start++;
+        }
+        while ((start < end) && (chars[end - 1] <= ' ')) {
+            end--;
+        }
+        return ((start > 0) || (end < length)) ? spanned.subSequence(start,end) : spanned;
     }
 
     View.OnTouchListener imageClickHandler = new View.OnTouchListener() {
@@ -391,7 +404,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
         private void onClick(View v) {
             Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
             try{
-                Log.i("InAppIMAGE:","CLICKED");
+                //Log.i("InAppIMAGE:","CLICKED");
                 startActivity(openImageLinkInBrowser);
             }catch (ActivityNotFoundException e){
                 Log.i("Exception: ",e.toString());
@@ -434,7 +447,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             Uri uri = Uri.parse("market://details?id=?" + context.getPackageName());
             Intent rateMyApp = new Intent(Intent.ACTION_VIEW,uri);
             try{
-                Log.i("RATEME:","CLICKED");
+                //Log.i("RATEME:","CLICKED");
                 JSONObject promoEvent = getJSONWithCampaignId();
                 ZeTarget.removePromotion(promoEvent);
                 dismiss();
@@ -450,7 +463,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
             if(actionType.toUpperCase(Locale.US).equals("LINK")){
                 Intent openLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(actionButtonUrl));
                 try{
-                    Log.i("ACTIONEVENT:", "CLICKED");
+                    //Log.i("ACTIONEVENT:", "CLICKED");
                     JSONObject promoEvent = getJSONWithCampaignId();
                     ZeTarget.updatePromotionAsSeen(promoEvent);
                     startActivity(openLinkInBrowser);
@@ -464,7 +477,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 share.putExtra(Intent.EXTRA_TEXT,shareText);
                 share.setType("text/plain");
                 try{
-                    Log.i("SHAREEVENT:", "CLICKED");
+                    //Log.i("SHAREEVENT:", "CLICKED");
                     JSONObject promoEvent = getJSONWithCampaignId();
                     ZeTarget.updatePromotionAsSeen(promoEvent);
                     startActivity(share);

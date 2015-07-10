@@ -28,7 +28,7 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i(TAG,"Notified of push");
+        //Log.i(TAG,"Notified of push");
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
         //Log.i("log info ","GCMINTENT service --> onHandleintent");
@@ -65,7 +65,7 @@ public class GcmIntentService extends IntentService {
     // a GCM message.
 
     private void sendNotification(Bundle bundle){
-        Log.i(TAG,"sendNotification() called");
+        //Log.i(TAG,"sendNotification() called");
         String launcherClassName = null;
         launcherClassName = bundle.getString("url");
         if(launcherClassName==null||launcherClassName.isEmpty()) {
@@ -80,7 +80,9 @@ public class GcmIntentService extends IntentService {
         try {
             launcher= Class.forName(launcherClassName);  //bundle.getString("launcherClass")
         } catch (ClassNotFoundException e) {
-            Log.e(TAG,"Launcher Class Not Found", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"Launcher Class Not Found", e);
+            }
         }
         PendingIntent contentIntent=null;
         if(launcher!=null){
@@ -132,7 +134,7 @@ public class GcmIntentService extends IntentService {
         /*mBuilder.addAction(getResources().)*/
         if(contentIntent!=null) {
             mBuilder.setContentIntent(contentIntent);
-            Log.i(TAG, "Pending Intent added to the Notification");
+            //Log.i(TAG, "Pending Intent added to the Notification");
         }
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
@@ -141,8 +143,10 @@ public class GcmIntentService extends IntentService {
         try {
             promoEvent.put("campaignId",bundle.getString("campaignId"));
         } catch (JSONException e) {
-            Log.e(TAG,"campaign_id writing into event failed");
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"campaign_id writing into event failed");
+            }
         }
-        ZeTarget.uncheckedLogEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT,promoEvent);
+        ZeTarget.uncheckedLogEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promoEvent);
     }
 }

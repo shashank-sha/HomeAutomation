@@ -45,7 +45,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         properties.put("campaignId",campaignId);
                         properties.put("geofenceId",geofenceId);
                     } catch (JSONException e) {
-                        Log.e("CAMPAIGN VIEWED LOG","GeoNotification failed",e);
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e("CAMPAIGN VIEWED LOG","GeoNotification failed",e);
+                        }
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
@@ -53,7 +55,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                     try {
                         properties.put("campaignId",campaignId);
                     } catch (JSONException e) {
-                        Log.e("CAMPAIGN VIEWED LOG","SimpleEvent Notification failed",e);
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e("CAMPAIGN VIEWED LOG","SimpleEvent Notification failed",e);
+                        }
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }
@@ -91,7 +95,7 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
             ComponentName compName = launchIntent.getComponent();
             String launchingClassName = compName.getClassName();
             if (activity.getClass().getCanonicalName().equals(launchingClassName)) {
-                Log.i("LaunchingActivity","Launched");
+                //Log.i("LaunchingActivity","Launched");
                 //if (currentActivity != null && activity == currentActivity) {
                     String campaignId = activity.getIntent()
                             .getStringExtra(Constants.Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID);
@@ -100,11 +104,13 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         try {
                             promotionEvent.put("campaignId",campaignId);
                         } catch (JSONException e) {
-                            Log.e("PUSH","PUSH VIEWED EVENT CREATION FAILURE",e);
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.e("PUSH","PUSH VIEWED EVENT CREATION FAILURE",e);
+                            }
                         }
                         ZeTarget.updatePromotionAsSeen(promotionEvent);
                         GcmIntentService.notificationCount=0;
-                        Log.i("PushNotificationViewed", campaignId);
+                        //Log.i("PushNotificationViewed", campaignId);
                     }
                // }
             }
@@ -115,7 +121,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
         try {
             label = pm.getActivityInfo(activity.getComponentName(),0).loadLabel(pm).toString();
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
+            }
         }
         ZeTarget.updateActivityDetails(label, name);
         ZeTarget._startSession(activity);

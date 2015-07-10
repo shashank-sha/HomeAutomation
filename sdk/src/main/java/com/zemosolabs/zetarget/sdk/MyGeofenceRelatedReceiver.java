@@ -28,9 +28,11 @@ public class MyGeofenceRelatedReceiver extends BroadcastReceiver {
                     try {
                         locMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
                     } catch (Settings.SettingNotFoundException e) {
-                        Log.e(TAG, "Settings Couldn't be found", e);
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e(TAG, "Settings Couldn't be found", e);
+                        }
                     }
-                    Log.i(TAG,Integer.valueOf(locMode).toString());
+                    //Log.i(TAG,Integer.valueOf(locMode).toString());
                     if (locMode == Settings.Secure.LOCATION_MODE_OFF) {
                         CommonUtils.getSharedPreferences(context).edit().putBoolean(locationModeOff, true).apply();
                     } else if ((locMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING||locMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY)

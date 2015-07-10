@@ -28,7 +28,9 @@ public class UserProperties {
             setUserProperties(context,jsonObject);
         }
         catch (Exception e){
-            Log.e(TAG,"Exception: "+e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"Exception: "+e);
+            }
         }
     }
 

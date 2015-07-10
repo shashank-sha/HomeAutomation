@@ -153,10 +153,14 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put(EVENT_FIELD, event);
             result = db.insert(EVENT_TABLE_NAME, null, contentValues);
             if (result == -1) {
-                Log.w(TAG, "Insert failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Insert failed");
+                }
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "addEvent failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "addEvent failed", e);
+            }
             // Not much we can do, just start fresh
             delete();
         } finally {
@@ -186,7 +190,11 @@ class DbHelper extends SQLiteOpenHelper {
                 maxId = eventId;
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getEvents failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "getEvents failed", e);
+                }
+            }
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -204,7 +212,9 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteStatement statement = db.compileStatement(query);
             numberRows = statement.simpleQueryForLong();
         } catch (SQLiteException e) {
-            Log.e(TAG, "getNumberRows failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getNumberRows failed", e);
+            }
         } finally {
             close();
         }
@@ -222,10 +232,14 @@ class DbHelper extends SQLiteOpenHelper {
             try {
                 nthEventId = statement.simpleQueryForLong();
             } catch (SQLiteDoneException e) {
-                Log.w(TAG, e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, e);
+                }
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getNthEventId failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getNthEventId failed", e);
+            }
         } finally {
             close();
         }
@@ -237,7 +251,9 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(EVENT_TABLE_NAME, ID_FIELD + " <= " + maxId, null);
         } catch (SQLiteException e) {
-            Log.e(TAG, "removeEvents failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "removeEvents failed", e);
+            }
         } finally {
             close();
         }
@@ -248,7 +264,9 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             db.delete(EVENT_TABLE_NAME, ID_FIELD + " = " + id, null);
         } catch (SQLiteException e) {
-            Log.e(TAG, "removeEvent failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "removeEvent failed", e);
+            }
         } finally {
             close();
         }
@@ -264,7 +282,7 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put(Constants.Z_DB_PROMOTION_PROMOTION_FIELD_NAME, promotion);
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
-            Log.i(TAG,"Promotion for screenId: "+screen_id+" added");
+            //Log.i(TAG,"Promotion for screenId: "+screen_id+" added");
             ContentValues contentValues2 = new ContentValues();
             contentValues2.put("campaign_id", campaign_id);
             contentValues2.put("maximumNumberOfTimesToShow", maximumNumberOfTimesToShow);
@@ -273,11 +291,15 @@ class DbHelper extends SQLiteOpenHelper {
             result = db.insertWithOnConflict(PROMOTION_TABLE_NAME, null, contentValues,5);
             result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
             if (result == -1 || result2== -1) {
-                Log.w(TAG, "Insert failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Insert failed in addPromotion");
+                }
             }
 
         } catch (SQLiteException e) {
-            Log.e(TAG, "addPromotion failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "addPromotion failed", e);
+            }
             // Not much we can do, just start fresh
             delete();
         } finally {
@@ -290,10 +312,10 @@ class DbHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = getWritableDatabase();
             int count = db.delete(PROMOTION_TABLE_NAME, "status = 1", null);
-            Log.i(TAG,"Removing Promotions: "+count);
-
         } catch (SQLiteException e) {
-            Log.e(TAG, "removePromotion failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "removePromotion failed", e);
+            }
         } finally {
             close();
         }
@@ -305,9 +327,11 @@ class DbHelper extends SQLiteOpenHelper {
             ContentValues contentValues = new ContentValues();
             contentValues.put("status", 1);
             int count = db.update(PROMOTION_TABLE_NAME, contentValues, "campaign_id = ?", new String[]{campaign_id});
-            Log.i(TAG,"Updating Promotions: "+count+" "+campaign_id);
+            //Log.i(TAG,"Updating Promotions: "+count+" "+campaign_id);
         } catch (SQLiteException e) {
-            Log.e(TAG, "markPromotionAsSeen failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "markPromotionAsSeen failed", e);
+            }
         } finally {
             close();
         }
@@ -320,29 +344,33 @@ class DbHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getReadableDatabase();
             cursor = db.query(PROMOTION_TABLE_NAME, null, "screen_id = ? AND status = ?", new String[]{screen_id, "0"}, null,
                     null, Constants.Z_DB_PROMOTION_ID_FIELD_NAME + " DESC", null);
-            Log.i(TAG,"Promotion count: "+cursor.getCount());
+            //Log.i(TAG,"Promotion count: "+cursor.getCount());
             for(int i=0;i<cursor.getCount();i++) {
                 cursor.moveToNext();
                 String campaignId = cursor.getString(1);
                 if(checkCampaignValidity(campaignId,System.currentTimeMillis(),true)){
                     String p = cursor.getString(4);
-                    Log.i(TAG,"Length of Promotion fetched is"+promotion.length());
+                    //Log.i(TAG,"Length of Promotion fetched is"+promotion.length());
                     promotion = new JSONObject(p);
                     break;
                 }else{
-                    Log.i(TAG,"Promotion Campaign InValid for now "+campaignId);
+                    //Log.i(TAG, "Promotion Campaign InValid for now " + campaignId);
                 }
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getPromotionforScreen failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getPromotionforScreen failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getPromotionforScreen falied", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getPromotionforScreen falied", e);
+            }
         }
         finally {
             if (cursor != null) {
                 cursor.close();
             }
-            Log.i(TAG,"Closing DB from getPromotionForScreen()");
+            //Log.i(TAG,"Closing DB from getPromotionForScreen()");
             close();
         }
         return promotion;
@@ -361,15 +389,21 @@ class DbHelper extends SQLiteOpenHelper {
                 contentValues.put("propvalue", userProperties.getString(userProperties.names().getString(i)));
                 result = db.insertWithOnConflict(Constants.Z_DB_USER_PROPERTIES_TABLE_NAME, null, contentValues,5);
                 if (result == -1) {
-                    Log.w(TAG, "addUserProperty Insert failed");
+                    if(ZeTarget.isDebuggingOn()){
+                        Log.w(TAG, "addUserProperty Insert failed");
+                    }
                 }
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "addUserProperty failed", e);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.e(TAG, "addUserProperty failed", e);
+            }
             // Not much we can do, just start fresh
             delete();
         } catch(Exception e){
-            Log.e(TAG,"Exception : "+e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"Exception : "+e);
+            }
         } finally {
             close();
         }
@@ -388,9 +422,13 @@ class DbHelper extends SQLiteOpenHelper {
                 value = cursor.getString(2);
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getUserProperty failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getUserProperty failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getUserProperty falied", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getUserProperty falied", e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -415,9 +453,13 @@ class DbHelper extends SQLiteOpenHelper {
                 userProperties.put(key,value);
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getUserProperties failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getUserProperties failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getUserProperties falied", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getUserProperties falied", e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -433,7 +475,9 @@ class DbHelper extends SQLiteOpenHelper {
             close();
             file.delete();
         } catch (SecurityException e) {
-            Log.e(TAG, "delete failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "delete failed", e);
+            }
         }
     }
 
@@ -446,13 +490,17 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put("campaign_id", campaign_id);
             contentValues.put("screen_id", screen_id);
 
-            result = db.insertWithOnConflict(SCREEN_FIX_TABLE_NAME, null, contentValues,5);
+            result = db.insertWithOnConflict(SCREEN_FIX_TABLE_NAME, null, contentValues, 5);
             if (result == -1) {
-                Log.w(TAG, "Insert failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Insert failed");
+                }
             }
 
         } catch (SQLiteException e) {
-            Log.e(TAG, "addPromotion failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "addPromotion failed", e);
+            }
             // Not much we can do, just start fresh
             delete();
         } finally {
@@ -475,9 +523,13 @@ class DbHelper extends SQLiteOpenHelper {
                 promotion = new JSONObject(p);
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getScreenFixesFor() failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getScreenFixesFor() failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getScreenFixesFor() falied", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getScreenFixesFor() falied", e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -505,12 +557,16 @@ class DbHelper extends SQLiteOpenHelper {
             result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME, null, contentValues2, 5);
             if (result1 == -1||result2 == -1) {
                 success = false;
-                Log.w(TAG, "Insert failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Insert failed");
+                }
             }else{
                 success =true;
             }
         } catch (SQLiteException e) {
-            Log.i("DB Geo", result1 + "," + result2);
+            if(ZeTarget.isDebuggingOn()){
+                Log.i("DB Geo", result1 + "," + result2);
+            }
             // Not much we can do, just start fresh
             delete();
         } finally {
@@ -535,9 +591,13 @@ class DbHelper extends SQLiteOpenHelper {
                 promotion.put(new JSONObject(p).put("rowIdInTable",rowId));
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getGeoFenceCampaigns() failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getGeoFenceCampaigns() failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getGeoFenceCampaigns() failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getGeoFenceCampaigns() failed", e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -558,17 +618,18 @@ class DbHelper extends SQLiteOpenHelper {
                     null, Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_ID_FIELD_NAME + " DESC");
 
             while (cursor.moveToNext()) {
-                Log.i("DB","moving To Next");
                 String rowId = cursor.getString(0);
                 String p = cursor.getString(1);
-                Log.i("DB rowId: ",rowId+", "+p);
-
                 promotion.put(new JSONObject(p).put("rowIdInTable",rowId));
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "getSimpleEventCampaigns() failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getSimpleEventCampaigns() failed", e);
+            }
         } catch (Exception e){
-            Log.e(TAG, " getSimpleEventCampaigns() failed", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, " getSimpleEventCampaigns() failed", e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -597,18 +658,22 @@ class DbHelper extends SQLiteOpenHelper {
             result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
             if (result1 == -1||result2 == -1) {
                 success = false;
-                Log.w(TAG, "Insert failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Insert failed");
+                }
             }else{
                 success =true;
             }
 
         } catch (SQLiteException e) {
-            Log.e(TAG, "addPromotion failed", e);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.e(TAG, "add SimpleEvent failed", e);
+            }
             delete();
         } finally {
             close();
         }
-        Log.i("DB SimpleEvent", result1+","+result2);
+        //Log.i("DB SimpleEvent", result1+","+result2);
         return success;
 
     }
@@ -637,9 +702,13 @@ class DbHelper extends SQLiteOpenHelper {
                 valid = true;
             }
         } catch (SQLiteException e) {
-            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -653,7 +722,6 @@ class DbHelper extends SQLiteOpenHelper {
     }
 
     synchronized void updateCampaign(String campaignId, long timeStampOfOccurence) {
-        Log.i(TAG,"updating campaigns for suppressionLogic");
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
@@ -667,13 +735,17 @@ class DbHelper extends SQLiteOpenHelper {
             numberOfTimesShown++;
             ContentValues contentValues = new ContentValues();
             contentValues.put("numberOfTimesShown", numberOfTimesShown);
-            contentValues.put("lastShownTimeUnixTimeStamp",timeStampOfOccurence);
+            contentValues.put("lastShownTimeUnixTimeStamp", timeStampOfOccurence);
             db.update(SUPPRESSION_LOGIC_TABLE_NAME, contentValues, "campaign_id = ?", selectArgs);
-            Log.i(TAG,"updated suppression Logic Table");
+            //Log.i(TAG, "updated suppression Logic Table");
         } catch (SQLiteException e) {
-            Log.e(TAG, "updating suppressionLogic table failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating suppressionLogic table failed: "+campaignId, e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "updating suppressionLogic table failed not on SQLiteException: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating suppressionLogic table failed not on SQLiteException: "+campaignId, e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -692,9 +764,13 @@ class DbHelper extends SQLiteOpenHelper {
             db.delete(Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
             db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
-            Log.e(TAG,"failure in removing simple event campaign: "+campaignId,e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"failure in removing simple event campaign: "+campaignId,e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "removing simpleEventCampaign failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "removing simpleEventCampaign failed: "+campaignId, e);
+            }
         }
     }
 
@@ -705,9 +781,13 @@ class DbHelper extends SQLiteOpenHelper {
             db.delete(Constants.Z_DB_GEO_CAMPAIGNS_TABLE_NAME, "campaign_id = ?", whereArgs);
             db.delete(Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME, "campaign_id = ?", whereArgs);
         }catch(SQLiteException e){
-            Log.e(TAG,"failure in removing geo campaign: "+campaignId,e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"failure in removing geo campaign: "+campaignId,e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "removing geo campaign failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "removing geo campaign failed: "+campaignId, e);
+            }
         }
     }
 
@@ -724,9 +804,13 @@ class DbHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
             lastShownTime = cursor.getLong(1);
         } catch (SQLiteException e) {
-            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            }
         }
         finally {
             if (cursor != null) {
@@ -751,9 +835,13 @@ class DbHelper extends SQLiteOpenHelper {
             numberOfTimesShown= cursor.getInt(1);
 
         } catch (SQLiteException e) {
-            Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed: "+campaignId, e);
+            }
         } catch (Exception e){
-            Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "updating simpleEventCampaign failed not on SQLiteException: "+campaignId, e);
+            }
         }
         finally {
             if (cursor != null) {

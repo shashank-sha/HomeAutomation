@@ -68,7 +68,7 @@ public class ScreenEditor{
         prepareChanges();
         makeChanges();
         globalLayoutChangedbyMe = true;
-        Log.i("ScreenEditor","edited");
+        //Log.i("ScreenEditor","edited");
     }
 
     private void makeChanges() {
@@ -77,18 +77,20 @@ public class ScreenEditor{
                 change.make();
             }
         }
-        Log.i("ScreenEditor makeChng","Made changes to the screen");
+        //Log.i("ScreenEditor makeChng","Made changes to the screen");
     }
 
     private void prepareChanges() {
         for(int i=0;i<changes.size();i++){
             if(!changes.get(i).prepare()){
-                Log.i("Change Error",changes.get(i).toString());
+                if(ZeTarget.isDebuggingOn()){
+                    Log.i("Change Error",changes.get(i).toString());
+                }
                 continue;
             }
         }
 
-        Log.i("ScreenEditor prepare","Prepared changes for editing");
+        //Log.i("ScreenEditor prepare","Prepared changes for editing");
     }
 
     private void accumulateChanges(JSONArray changesJSON) {
@@ -97,10 +99,12 @@ public class ScreenEditor{
                 Change change = new Change(changesJSON.getJSONObject(i),currentActivity);
                 changes.add(change);
             } catch (JSONException e) {
-                Log.e("ScreenEditor accumulate", e.getMessage());
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e("ScreenEditor accumulate", e.getMessage());
+                }
             }
         }
-        Log.i("ScreenEditor","Accumulated Changes");
+        //Log.i("ScreenEditor","Accumulated Changes");
     }
 
     private JSONArray getChangesFor(Activity activity){
@@ -108,14 +112,16 @@ public class ScreenEditor{
         JSONArray toSendJSONArray = new JSONArray();
         DbHelper dbHelper = DbHelper.getDatabaseHelper(currentActivity.getApplicationContext());
         JSONObject screenFix = dbHelper.getScreenFixesFor(activityName);
-        Log.i("screenFix",screenFix.toString());
+        //Log.i("screenFix",screenFix.toString());
         if(screenFix.length()==0){
             return new JSONArray();
         }
         try {
             toSendJSONArray = screenFix.getJSONObject("fixInfo").getJSONArray("changes");
         } catch (JSONException e) {
-            Log.e("ScreenEditor", e.getMessage(),e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e("ScreenEditor", e.getMessage(),e);
+            }
         }
 
         return toSendJSONArray;
@@ -124,10 +130,10 @@ public class ScreenEditor{
     void purge(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
-            Log.i("Remove GlobalLayoutList", "Jelly Bean or higher");
+            //Log.i("Remove GlobalLayoutList", "Jelly Bean or higher");
         } else {
             rootView.getViewTreeObserver().removeGlobalOnLayoutListener(globalLayoutListener);
-            Log.i("Remove GlobalLayoutList", "Lower than Jelly Bean");
+            //Log.i("Remove GlobalLayoutList", "Lower than Jelly Bean");
         }
        changes = new ArrayList<>();
     }

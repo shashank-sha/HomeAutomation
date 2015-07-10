@@ -180,7 +180,9 @@ class ScreenCapture {
                 }
             }
         }catch(JSONException e){
-            Log.e("ScreenCapture","Writing Drawable to json",e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e("ScreenCapture","Writing Drawable to json",e);
+            }
         }
         return drawableProps;
     }
@@ -195,8 +197,8 @@ class ScreenCapture {
         int height = !value.getBounds().isEmpty()? value.copyBounds().height():value.getIntrinsicHeight();
         width = (width<=0)? 3 : width;
         height = (height<=0)? 3:height;
-        Log.i("ZeTarget","Base64BmpFromDrawable "+width);
-        Log.i("ZeTarget","Base64BmpFromDrawable "+height);
+        //Log.i("ZeTarget","Base64BmpFromDrawable "+width);
+        //Log.i("ZeTarget","Base64BmpFromDrawable "+height);
         Bitmap bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         value.setBounds(0,0,canvas.getWidth(),canvas.getHeight());

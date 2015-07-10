@@ -28,7 +28,7 @@ import android.view.WindowManager;
 
 public class DeviceDetails {
 
-    private static final String TAG = "com.zemoso.zetarget.DeviceDetails";
+    private static final String TAG = "ztarget.DevDetails";
 
     private boolean locationListening = true;
 
@@ -70,7 +70,7 @@ public class DeviceDetails {
         sB.append(String.format("%02d",hours));
         sB.append(String.format("%02d",mins));
         String offset = sB.toString();
-        Log.i("ostzOffset",offset);
+        //Log.i("ostzOffset",offset);
         return offset;
     }
 
@@ -124,7 +124,7 @@ public class DeviceDetails {
                 e.printStackTrace();
             }
         }
-        Log.i("osName",osName);
+        //Log.i("osName",osName);
         return osName;
     }
 
@@ -252,9 +252,13 @@ public class DeviceDetails {
                 Method getId = advertisingInfo.getClass().getMethod("getId");
                 advertisingId = (String) getId.invoke(advertisingInfo);
             } catch (ClassNotFoundException e) {
-                Log.w(TAG, "Google Play Services SDK not found!");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.w(TAG, "Google Play Services SDK not found!");
+                }
             } catch (Exception e) {
-                Log.e(TAG, "Encountered an error connecting to Google Play Services", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Encountered an error connecting to Google Play Services", e);
+                }
             }
         }
         return advertisingId;

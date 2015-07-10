@@ -56,7 +56,9 @@ abstract class NotificationCampaign {
                 }
             }
         }catch (JSONException e){
-            Log.e(TAG,"campaign json inflation error", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "campaign json inflation error", e);
+            }
             /*if(ZeTarget.robolectricTesting) {
                 e.printStackTrace();
             }*/
@@ -67,9 +69,9 @@ abstract class NotificationCampaign {
     void show(Context context,String details,long timeStamp){
         long lastShownTime = DbHelper.getDatabaseHelper(context).getLastShownTime(campaignId);
         if(lastShownTime>0){
-            Log.i(TAG, timeStamp+" "+(lastShownTime+minimumMinutesBeforeReshow*6000));
+            //Log.i(TAG, timeStamp+" "+(lastShownTime+minimumMinutesBeforeReshow*6000));
             if(timeStamp<lastShownTime+ minimumMinutesBeforeReshow *60000){
-                Log.i(TAG, "not yet to be shown");
+                //Log.i(TAG, "not yet to be shown");
                 return;
             }
         }
@@ -81,7 +83,9 @@ abstract class NotificationCampaign {
             title = template.getString("title");
             message = template.getString("message");
         } catch (JSONException e) {
-            Log.e(TAG,"title and message error",e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"title and message error",e);
+            }
         }
         if(title!=null&&message!=null) {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context).setSmallIcon(appIconId)
@@ -94,7 +98,9 @@ abstract class NotificationCampaign {
                     launcherClass = Class.forName(context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).getComponent().getClassName());
                 }
             } catch (ClassNotFoundException e) {
-                Log.e(TAG,"launcher class not found",e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"launcher class not found",e);
+                }
             }
             Intent launchIntent = null;
             if(launcherClass!=null) {
@@ -115,12 +121,12 @@ abstract class NotificationCampaign {
     abstract protected Intent addExtrasToIntent(Intent intent, String details);
 
     public boolean valid(Context context,long timeStamp) {
-        Log.i(TAG," "+campaignId+": "+timeStamp+" "+campaignEndTime);
+        //Log.i(TAG," "+campaignId+": "+timeStamp+" "+campaignEndTime);
         if(timeStamp>campaignEndTime) {
             return false;
         }
         int numberOfTimesShown = DbHelper.getDatabaseHelper(context).getNumberOfTimesShown(campaignId);
-        Log.i(TAG," "+ campaignId + ": " + numberOfTimesShown + " " + maximumNumberOfTimesToShow);
+        //Log.i(TAG," "+ campaignId + ": " + numberOfTimesShown + " " + maximumNumberOfTimesToShow);
         if(numberOfTimesShown>=maximumNumberOfTimesToShow){
             return false;
         }

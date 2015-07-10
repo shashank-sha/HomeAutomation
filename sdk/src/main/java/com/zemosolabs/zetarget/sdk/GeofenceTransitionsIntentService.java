@@ -26,7 +26,9 @@ public class GeofenceTransitionsIntentService extends IntentService {
         if(intent!=null){
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if (geofencingEvent.hasError()) {
-                Log.e(TAG, Integer.valueOf(geofencingEvent.getErrorCode()).toString());
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, Integer.valueOf(geofencingEvent.getErrorCode()).toString());
+                }
                 return;
             }
 
@@ -53,7 +55,9 @@ public class GeofenceTransitionsIntentService extends IntentService {
             }
             return jsonString;
         } catch (IOException e) {
-            Log.e(TAG, "Read failed");
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "Read failed");
+            }
             return null;
         }
     }

@@ -52,13 +52,13 @@ public class ShakeListener implements SensorEventListener {
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         if(accSensor!=null){
             sensorManager.registerListener(this,accSensor,2);
-            Log.i(TAG,"Linear Accelerometer");
+            //Log.i(TAG,"Linear Accelerometer");
         }else{
             accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this,accSensor,3);
-            Log.i(TAG,"Raw Accelerometer");
+            //Log.i(TAG,"Raw Accelerometer");
         }
-        Log.i(TAG, "initialized");
+        //Log.i(TAG, "initialized");
     }
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -72,7 +72,7 @@ public class ShakeListener implements SensorEventListener {
                             lastAccelerationY =event.values[1];
                             lastAccMag = getAccelerationMagnitude(event);
                             stateOfStroke=state.NO_STROKE;
-                            Log.i(TAG,"Invalid state");
+                            //Log.i(TAG,"Invalid state");
                         }
                         break;
                     case NO_STROKE:
@@ -80,7 +80,7 @@ public class ShakeListener implements SensorEventListener {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE1_1;
-                                Log.i(TAG, "stroke1_1 received");
+                                //Log.i(TAG, "stroke1_1 received");
                             }
                         }
                         break;
@@ -90,12 +90,12 @@ public class ShakeListener implements SensorEventListener {
                             if (event.timestamp - timeOfOccurence < thresholdTime) {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE1_2;
-                                Log.i(TAG, "stroke1_2 received");
+                                //Log.i(TAG, "stroke1_2 received");
                             }
                         } else {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 stateOfStroke = state.INVALID;
-                                Log.i(TAG, "time lag in the strokes");
+                                //Log.i(TAG, "time lag in the strokes");
                             } else {
                                 // Log.i(TAG,"Waiting for stroke1_2");
                             }
@@ -108,12 +108,12 @@ public class ShakeListener implements SensorEventListener {
                             if (event.timestamp - timeOfOccurence < thresholdTime) {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE2_1;
-                                Log.i(TAG, "stroke2_1 received");
+                                //Log.i(TAG, "stroke2_1 received");
                             }
                         } else {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 stateOfStroke = state.INVALID;
-                                Log.i(TAG, "time lag in the strokes");
+                                //Log.i(TAG, "time lag in the strokes");
                             } else {
                                 // Log.i(TAG,"Waiting for stroke2_1");
                             }
@@ -127,12 +127,12 @@ public class ShakeListener implements SensorEventListener {
                             if (event.timestamp - timeOfOccurence < thresholdTime) {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE2_2;
-                                Log.i(TAG, "stroke2_2 received");
+                                //Log.i(TAG, "stroke2_2 received");
                             }
                         } else {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 stateOfStroke = state.INVALID;
-                                Log.i(TAG, "time lag in the strokes");
+                                //Log.i(TAG, "time lag in the strokes");
                             } else {
                                 // Log.i(TAG,"Waiting for stroke2_2");
                             }
@@ -145,12 +145,12 @@ public class ShakeListener implements SensorEventListener {
                             if (event.timestamp - timeOfOccurence < thresholdTime) {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE3_1;
-                                Log.i(TAG, "stroke3_1 received");
+                                //Log.i(TAG, "stroke3_1 received");
                             }
                         } else {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 stateOfStroke = state.INVALID;
-                                Log.i(TAG, "time lag in the strokes");
+                                //Log.i(TAG, "time lag in the strokes");
                             } else {
                                 // Log.i(TAG,"Waiting for stroke3_1");
                             }
@@ -165,14 +165,14 @@ public class ShakeListener implements SensorEventListener {
                                 timeOfOccurence = event.timestamp;
                                 stateOfStroke = state.STROKE3_2;
 
-                                Log.i(TAG, "stroke3_2 received");
+                                //Log.i(TAG, "stroke3_2 received");
                                 doActionWhenZfound();
                             }
                         } else {
                             if (event.timestamp - timeOfOccurence > thresholdForStartOver) {
                                 stateOfStroke = state.INVALID;
 
-                                Log.i(TAG, "time lag in the strokes");
+                                //Log.i(TAG, "time lag in the strokes");
                             } else {
                                 // Log.i(TAG,"Waiting for stroke3_2");
                             }
@@ -203,7 +203,7 @@ public class ShakeListener implements SensorEventListener {
 
     private void doActionWhenZfound() {
 
-        Log.i(TAG, "Z motion found");
+        //Log.i(TAG, "Z motion found");
         if(ZeTarget.isDebuggingOn()) {
             ScreenCapture screenCapturer = ScreenCapture.getInstance();
             screenCapturer.initialize();
@@ -224,6 +224,6 @@ public class ShakeListener implements SensorEventListener {
     }
     void purge(){
         sensorManager.unregisterListener(this);
-        Log.i(TAG,"sensorManager unregistered");
+        //Log.i(TAG,"sensorManager unregistered");
     }
 }

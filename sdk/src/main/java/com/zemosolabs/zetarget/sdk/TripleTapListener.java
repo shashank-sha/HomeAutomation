@@ -13,7 +13,7 @@ public class TripleTapListener implements View.OnTouchListener {
     private long lastTimestamp;
 
     TripleTapListener(){
-        Log.i("TripleTapListener","Created");
+        //Log.i("TripleTapListener","Created");
         tapCount = 0;
         lastTimestamp = 0;
     }
@@ -21,9 +21,9 @@ public class TripleTapListener implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         long currentTime = System.currentTimeMillis();
-        Log.i("TOUCH:","Detected");
+        //Log.i("TOUCH:","Detected");
         if(event.getAction()==MotionEvent.ACTION_DOWN) {
-            Log.i("TAP:","Single time");
+            //Log.i("TAP:","Single time");
             if (tapCount == 0) {
                 lastTimestamp = currentTime;
                 tapCount++;

@@ -20,7 +20,7 @@ public class HttpHelper {
 
     private static HttpHelper httpHelper;
 
-    private static final String TAG = "com.zemosolabs.zetarget.sdk.HttpHelper";
+    private static final String TAG = "zetarget.sdk.HttpHelper";
 
 
     private HttpHelper(){
@@ -62,7 +62,7 @@ public class HttpHelper {
             stringResponse = EntityUtils.toString(response.getEntity());
             if(ZeTarget.isDebuggingOn()){
                 if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
-                    Log.i("HttpResponse",stringResponse);
+                    //Log.i("HttpResponse",stringResponse);
                 }
             }
         } catch (org.apache.http.conn.HttpHostConnectException e) {
@@ -72,15 +72,23 @@ public class HttpHelper {
             // Log.w(TAG,
             // "No internet connection found, unable to upload events");N
         } catch (ClientProtocolException e) {
-            Log.e(TAG, e.toString());
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, e.toString());
+            }
         } catch (IOException e) {
-            Log.e(TAG, e.toString());
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, e.toString());
+            }
         } catch (AssertionError e) {
             // This can be caused by a NoSuchAlgorithmException thrown by DefaultHttpClient
-            Log.e(TAG, "Exception:", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "Exception:", e);
+            }
         } catch (Exception e) {
             // Just log any other exception so things don't crash on upload
-            Log.e(TAG, "Exception:", e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "Exception:", e);
+            }
         } finally {
             if (client.getConnectionManager() != null) {
                 client.getConnectionManager().shutdown();
@@ -103,7 +111,9 @@ public class HttpHelper {
             return postParams;
         }
         catch (Exception e){
-            Log.e(TAG,"Exception: "+e);
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG,"Exception: "+e);
+            }
         }
         return postParams;
     }

@@ -46,7 +46,7 @@ public class Change {
             valid=false;
         }
         if(!pathValid()){
-            Log.i("Path invalid",this.viewName);
+            //Log.i("Path invalid",this.viewName);
             viewOfConcern=null;
             valid=false;
         }
@@ -72,7 +72,7 @@ public class Change {
                 if(matches(vElement,viewOfConcern,vElement.index,pos)) {
                     pathValid();
                 }else{
-                    Log.i("Path Not Valid","Look in Matches");
+                    //Log.i("Path Not Valid","Look in Matches");
                     return false;
                 }
             }
@@ -82,7 +82,7 @@ public class Change {
 
     void make() {
         if(viewOfConcern==null){
-            Log.i("make","view of concern is null. returning without making this change");
+            //Log.i("make","view of concern is null. returning without making this change");
             return;
         }
         try {

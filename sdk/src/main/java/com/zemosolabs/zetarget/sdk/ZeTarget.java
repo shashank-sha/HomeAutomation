@@ -260,18 +260,24 @@
                     Log.d(TAG,"Recieved registration id from GCM: "+regid);
                 }
             } catch (IOException ex) {
-                Log.e("GCM reg error","Exception in registerInBackground :",ex);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e("GCM reg error","Exception in registerInBackground :",ex);
+                }
             }
         }
 
         private static boolean checkPlayServices() {
             int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-            Log.i("resultCode", Integer.valueOf(resultCode).toString() + ";" + Integer.valueOf(ConnectionResult.SUCCESS).toString());
+            //Log.i("resultCode", Integer.valueOf(resultCode).toString() + ";" + Integer.valueOf(ConnectionResult.SUCCESS).toString());
             if (resultCode != ConnectionResult.SUCCESS) {
                 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                    Log.e(TAG,"Google Play services is not installed");
+                    if(ZeTarget.isDebuggingOn()){
+                        Log.e(TAG,"Google Play services is not installed");
+                    }
                 } else {
-                    Log.i(TAG, "This device is not supported for Push Notifications.");
+                    if(ZeTarget.isDebuggingOn()){
+                        //Log.i(TAG, "This device is not supported for Push Notifications.");
+                    }
                 }
                 return false;
             }
@@ -363,10 +369,10 @@
             }
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
-                Log.i(TAG, "currentActivityLabel is null");
+                //Log.i(TAG, "currentActivityLabel is null");
                 return;
             }
-            Log.i("ActivityDetails: ", currentActivityLabel + ", " + currentActivityName);
+            //Log.i("ActivityDetails: ", currentActivityLabel + ", " + currentActivityName);
 
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.removeSeenPromotions();
@@ -451,27 +457,39 @@
                             try {
                                 newNotification = (ZeTargetInAppNotification) Class.forName(classNameOfCustomDialogFragment).newInstance();
                             } catch (InstantiationException e) {
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             } catch (IllegalAccessException e){
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             } catch (ClassNotFoundException e){
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             }
                         }
                         else{
                             try {
                                 newNotification = (ZeTargetInAppNotification) Class.forName(classNameOfDefaultDialogFragment).newInstance();
                             } catch (InstantiationException e) {
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             } catch (IllegalAccessException e){
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             } catch (ClassNotFoundException e){
-                                Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.e(TAG,"Exception in creating Custom Notification: ", e);
+                                }
                             }
                         }
                         newNotification.customize(context, campaignId, template);
                         if(ZeTarget.currentActivity==currentActivity) {
-                            Log.i(TAG, "same Activity before In App Promotion launched");
+                            //Log.i(TAG, "same Activity before In App Promotion launched");
                             long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
                             long nowMS = System.currentTimeMillis();
                             if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
@@ -480,13 +498,15 @@
                             showingPromotion.set(true);
                             newNotification.show(ft, "dialog");
                         }else{
-                            Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
+                            //Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
                         }
                     }
                 });
             }
             catch (Exception e){
-                Log.e(TAG,"Exception in showProm: ",e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"Exception in showProm: ",e);
+                }
             }
 
         }
@@ -597,7 +617,9 @@
             try {
                 campaignId = promotionEvent.getString("campaignId");
             } catch (JSONException e) {
-                Log.e(TAG,"campaign_updation_failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"campaign_updation_failed");
+                }
             }
             dbHelper.updateCampaign(campaignId, System.currentTimeMillis());
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
@@ -623,7 +645,9 @@
             try {
                 campaignId = promotionEvent.getString("campaignId");
             } catch (JSONException e) {
-                Log.e(TAG,"campaign_updation_failed");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"campaign_updation_failed");
+                }
             }
             dbHelper.markPromotionAsSeen(campaignId);
             logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promotionEvent);
@@ -631,7 +655,7 @@
         }
 
         private static void setLastInAppSeen(long l) {
-            Log.i("LastSeenTime",l+"");
+            //Log.i("LastSeenTime",l+"");
             CommonUtils.getSharedPreferences(context).edit().putLong(Constants.KEY_IN_APP_LAST_SHOWN_TIME,l).apply();
         }
 
@@ -662,7 +686,9 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in fetchPromotion:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in fetchPromotion:", e);
+                }
             }
 
             if (!fetchSuccess) {
@@ -690,23 +716,23 @@
                     if(suppressionLogic.has("minimumDurationInMinutesBeforeReshow")){
                         minimumDurationInMinutesBeforeReshow = suppressionLogic.getInt("minimumDurationInMinutesBeforeReshow");
                     }
-                    Log.i("promotions: ",i+". "+promotion.toString());
+                    //Log.i("promotions: ",i+". "+promotion.toString());
                     final SharedPreferences prefs = CommonUtils.getSharedPreferences(context);
                     int currentAppVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION,-1);
                     int appVersionFrom,appVersionTo;
                     if(currentAppVersion!=-1) {
-                        Log.i(TAG, Integer.valueOf(currentAppVersion).toString());
+                        //Log.i(TAG, Integer.valueOf(currentAppVersion).toString());
                         if (promotion.has("appVersionFrom")) {
                             appVersionFrom = promotion.getInt("appVersionFrom");
                             if (currentAppVersion < appVersionFrom) {
-                                Log.i(TAG, "appVersionFrom problem");
+                                //Log.i(TAG, "appVersionFrom problem");
                                 continue;
                             }
                         }
                         if (promotion.has("appVersionTo")) {
                             appVersionTo = promotion.getInt("appVersionTo");
                             if (currentAppVersion > appVersionTo) {
-                                Log.i(TAG, "appVersionTo problem");
+                                //Log.i(TAG, "appVersionTo problem");
                                 continue;
                             }
                         }
@@ -715,28 +741,28 @@
                     if(promotion.has("campaignEndTime")){
                         long campaignEndTime = promotion.getLong("campaignEndTime");
                         if(campaignEndTime<timeStampNow){
-                            Log.i(TAG,"time limit problem"+" "+timeStampNow+" : "+campaignEndTime);
+                            //Log.i(TAG,"time limit problem"+" "+timeStampNow+" : "+campaignEndTime);
                             continue;
                         }
                     }
                     if(promotion.getString("type").equals("screenFix")){
-                        Log.i("screenFix", "Got screenFix");
+                        //Log.i("screenFix", "Got screenFix");
                         dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                         addCount++;
                     }else if(promotion.getString("type").equals("promotion")) {
-                        Log.i("PROMOTION","GOT PROMOTION");
+                        //Log.i("PROMOTION","GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                            Log.i(TAG,"screenId from promotion json is: "+promotion.getString("screenId"));
+                            //Log.i(TAG,"screenId from promotion json is: "+promotion.getString("screenId"));
                         } else {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), Constants.DEFAULT_SCREEN,
                                     maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
                         addCount++;
                     }else if(promotion.getString("type").equalsIgnoreCase("GEO")){
-                        Log.i(TAG,"We have a geo event being saved to database");
+                        //Log.i(TAG,"We have a geo event being saved to database");
                         dbHelper.addGeoCampaign(promotion.toString(), promotion.getString("campaignId"),
                                 maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow);
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
@@ -745,7 +771,7 @@
                     }else if(promotion.getString("type").equalsIgnoreCase(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
                         dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
                                                             maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                        Log.i(TAG, "We have a simple event being saved to database");
+                        //Log.i(TAG, "We have a simple event being saved to database");
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type", Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
                         addCount++;
@@ -759,7 +785,9 @@
                 }
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in addPromotion:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in addPromotion:", e);
+                }
             }
         }
 
@@ -834,7 +862,7 @@
                 public void run() {
                     clearEndSession();
                     uploadEvents();
-                    Log.i("EndSessionRunnable","Executed"+sessionId);
+                    //Log.i("EndSessionRunnable","Executed"+sessionId);
 
                 }
             };
@@ -947,7 +975,9 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in updateUserProps:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in updateUserProps:", e);
+                }
             }
             updatingUserPropsCurrently.set(false);
 
@@ -1006,7 +1036,7 @@
                     SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
                     long previousSessionId = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
                             -1);
-                    Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
+                    //Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
 
                     if (previousSessionId == -1) {
                         // Invalid session Id, create new sessionId
@@ -1015,9 +1045,9 @@
                         startNewSession(timestamp);
                     } else {
 
-                        Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
+                        //Log.i("previousSessionId",Long.valueOf(previousSessionId).toString());
                         sessionId = previousSessionId;
-                        Log.i("sessionId","updated at startNewSessionIfNeeded");
+                        //Log.i("sessionId","updated at startNewSessionIfNeeded");
                         if(ZeTarget.isDebuggingOn()){
                             Log.d(TAG,"starting new session is not required as very close previous session already exists");
                         }
@@ -1053,7 +1083,7 @@
             openSession();
 
             sessionId = timestamp;
-            Log.i("sessionId","updated at startNewSession()");
+            //Log.i("sessionId","updated at startNewSession()");
             SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
             preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID, sessionId).apply();
 
@@ -1126,7 +1156,9 @@
                 HttpHelper.doPost(url,postParams);
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in sendEvent:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in sendEvent:", e);
+                }
             }
         }
 
@@ -1194,7 +1226,9 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in checkAndUpdateDataStore:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in checkAndUpdateDataStore:", e);
+                }
             }
 
             if (!syncSuccess) {
@@ -1216,7 +1250,9 @@
                 dataStore.setData(context, values);
                 dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
-                Log.e(TAG, "Exception in updateDataStore:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in updateDataStore:", e);
+                }
             }
             if(ZeTarget.isDebuggingOn()){
                 Log.d(TAG, "DataStore update done, we have latest version now.");
@@ -1273,7 +1309,9 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in makeEventUploadRequest:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in makeEventUploadRequest:", e);
+                }
             }
 
             if (!uploadSuccess) {
@@ -1310,7 +1348,9 @@
                     });
                 } catch (JSONException e) {
                     uploadingCurrently.set(false);
-                    Log.e(TAG, e.toString());
+                    if(ZeTarget.isDebuggingOn()){
+                        Log.e(TAG, e.toString());
+                    }
                 }
             }
             else {
@@ -1388,7 +1428,9 @@
         private static void checkedLogEvent(final String eventType, final JSONObject eventProperties,
                                             final JSONObject apiProperties, final long timestamp, final boolean checkSession) {
             if (TextUtils.isEmpty(eventType)) {
-                Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
+                }
                 return;
             }
             if (!isContextAndApiKeySet("logEvent()")) {
@@ -1403,11 +1445,11 @@
 
         }
         static void uncheckedLogEvent(String eventType){
-            uncheckedLogEvent(eventType,null);
+            uncheckedLogEvent(eventType, null);
         }
         static void uncheckedLogEvent(final String eventType,final JSONObject eventProperties){
             if (TextUtils.isEmpty(eventType)) {
-                Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
+                //Log.e(TAG, "Argument eventType cannot be null or blank in logEvent()");
                 return;
             }
             runOnLogWorker(new Runnable() {
@@ -1442,7 +1484,7 @@
                 if(eventProperties == null){
                     eventProperties = new JSONObject();
                 }
-                Log.i("sessionId","In Log Event is "+Long.valueOf(sessionId).toString());
+                //Log.i("sessionId","In Log Event is "+Long.valueOf(sessionId).toString());
                 eventProperties.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
                 event.put("eventParams",CommonUtils.replaceWithJSONNull(eventProperties));
                 event.put("sessionId",CommonUtils.replaceWithJSONNull(sessionId));
@@ -1450,7 +1492,9 @@
 
                 event.put("eventTime", CommonUtils.replaceWithJSONNull(CommonUtils.getCurrentDateTime(timestamp)));
             } catch (JSONException e) {
-                Log.e(TAG, e.toString());
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, e.toString());
+                }
             }
 
             return logEvent(event);
@@ -1524,20 +1568,26 @@
                 HttpHelper.doPost(Constants.Z_SET_USER_URL,postParams);
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                Log.e(TAG, "Exception in setUserOnServer:", e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Exception in setUserOnServer:", e);
+                }
             }
         }
 
         private synchronized static boolean isContextAndApiKeySet(String methodName) {
             if (context == null) {
-                Log.e(TAG, "context cannot be null, set context with initialize() before calling "
-                        + methodName);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "context cannot be null, set context with initialize() before calling "
+                            + methodName);
+                }
                 return false;
             }
             if (TextUtils.isEmpty(apiKey)) {
-                Log.e(TAG,
-                        "apiKey cannot be null or empty, set apiKey with initialize() before calling "
-                                + methodName);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,
+                            "apiKey cannot be null or empty, set apiKey with initialize() before calling "
+                                    + methodName);
+                }
                 return false;
             }
             return true;
@@ -1700,7 +1750,7 @@
                     purchaseDetails.put("grand_total",grandTotal);
                 }else{
                     if(ZeTarget.isDebuggingOn()){
-                        Log.i("PurchaseCompletedEvent:", "grandTotal param missing in the method call");
+                        //Log.i("PurchaseCompletedEvent:", "grandTotal param missing in the method call");
                     }
                     return;
                 }
@@ -1726,7 +1776,9 @@
                     purchaseDetails.put("productsku",productsku);
                 }
             } catch (JSONException e) {
-                Log.e(TAG,"purchaseDetails",e);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"purchaseDetails",e);
+                }
             }
             /*if(ZeTarget.robolectricTesting) {
                 System.out.println("ZETARGET: logging purchase completed event");
