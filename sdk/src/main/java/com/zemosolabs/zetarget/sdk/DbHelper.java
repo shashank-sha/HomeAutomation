@@ -191,9 +191,7 @@ class DbHelper extends SQLiteOpenHelper {
             }
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
-                if(ZeTarget.isDebuggingOn()){
-                    Log.e(TAG, "getEvents failed", e);
-                }
+                Log.e(TAG, "getEvents failed", e);
             }
         } finally {
             if (cursor != null) {

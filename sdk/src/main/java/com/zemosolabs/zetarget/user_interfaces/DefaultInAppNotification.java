@@ -15,14 +15,13 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -63,6 +62,7 @@ import java.util.Locale;
  */
 public class DefaultInAppNotification extends ZeTargetInAppNotification {
 
+    private static final double THRESHHOLD_MOVEMENT = 10.0 ;
     private Context context;
     private String campaignId;
     private String title;
@@ -78,6 +78,9 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
     private String shareText;
     private Bitmap bitmap,resultBitmap;
     private boolean DEBUGGING_MODE = false;
+    private float onImageClickX;
+    private float onImageClickY;
+    private boolean simpleClick = false;
 
     private static final String TAG = "InAppNotification";
 
@@ -275,6 +278,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                // new UpdateImageViewAsyncTask(imageUrl,imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
+                    //Log.i(TAG,"imageClickHandler has been set up");
                     imgView.setOnTouchListener(imageClickHandler);
                 }
             }
@@ -321,6 +325,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 imgView.setImageBitmap(resultBitmap);
                 if(onClickUrl!=null){
+                    //Log.i(TAG,"imageClickHandler has been set up");
                     imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
@@ -360,6 +365,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
                 imgView.setImageBitmap(resultBitmap);
                 //new UpdateImageViewAsyncTask(imageUrl, imgView).execute();
                 if(onClickUrl!=null){
+                    //Log.i(TAG,"imageClickHandler has been set up");
                     imgView.setOnTouchListener(imageClickHandler);
                 }
             } else {
@@ -393,27 +399,44 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
     View.OnTouchListener imageClickHandler = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if(event.getAction()==MotionEvent.ACTION_MOVE||event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_SCROLL){
-                return true;
-            }else{
-                onClick(v);
+            Log.i(TAG,"touch event occured on image");
+
+            float prevXLoc = onImageClickX;
+            float prevYLoc = onImageClickY;
+            onImageClickX = event.getRawX();
+            onImageClickY = event.getRawY();
+            Log.i(TAG,prevXLoc+","+prevYLoc+":"+onImageClickX+","+onImageClickY);
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                //Log.i(TAG,"ACTION_DOWN");
+                simpleClick = true;
+            }else if(event.getAction()==MotionEvent.ACTION_MOVE){
+                //Log.i(TAG,"ACTION_MOVE");
+                if(Math.abs(prevXLoc-onImageClickX)>=THRESHHOLD_MOVEMENT||Math.abs(prevYLoc-onImageClickY)>=THRESHHOLD_MOVEMENT) {
+                    simpleClick = false;
+                }
+            }else if(event.getAction()==MotionEvent.ACTION_UP){
+                //Log.i(TAG,"ACTION_UP");
+                if(simpleClick){
+                    onClick();
+                }
             }
-            return false;
+            return true;
         }
         //onClickListener's method unchanged and used
-        private void onClick(View v) {
-            Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
-            try{
-                //Log.i("InAppIMAGE:","CLICKED");
-                startActivity(openImageLinkInBrowser);
-            }catch (ActivityNotFoundException e){
-                Log.i("Exception: ",e.toString());
-            }
-            JSONObject promoEvent = getJSONWithCampaignId();
-            ZeTarget.updatePromotionAsSeen(promoEvent);
-        //dismiss();
-        }
+
     };
+    private void onClick() {
+        Intent openImageLinkInBrowser = new Intent(Intent.ACTION_VIEW,Uri.parse(onClickUrl));
+        try{
+            //Log.i("InAppIMAGE:","CLICKED");
+            startActivity(openImageLinkInBrowser);
+        }catch (ActivityNotFoundException e){
+            Log.i("Exception: ",e.toString());
+        }
+        JSONObject promoEvent = getJSONWithCampaignId();
+        ZeTarget.updatePromotionAsSeen(promoEvent);
+        //dismiss();
+    }
 
     private JSONObject getJSONWithCampaignId() {
         JSONObject promotionEvent = new JSONObject();
