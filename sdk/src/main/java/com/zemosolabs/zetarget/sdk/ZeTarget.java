@@ -163,7 +163,8 @@
          *
          * @param context the application context
          * @param apiKey the api key found at zetarget account
-         * @param googleApiProjectNumber the Google API Project Number for Push Notifications
+         * @param googleApiProjectNumber the Google API Project Number for Push Notifications. This can be null if not
+         *                               required.
          * @param classNameOfCustomDialogFrag The class name of the the custom DialogFragment which subclasses
          *                                    ZeTargetInAppNotification to handle the displaying of In App
          *                                    Promotions.
@@ -178,6 +179,30 @@
             }
             initialize(context, apiKey,googleApiProjectNumber);
             classNameOfCustomDialogFragment = classNameOfCustomDialogFrag;
+        }
+
+        /**
+         * Method to initialize ZeTarget SDK
+         *
+         * @param context the application context
+         * @param apiKey the api key found at zetarget account
+         * @param googleApiProjectNumber the Google API Project Number for Push Notifications. This can be null if not required.
+         * @param classNameOfCustomDialogFrag The class name of the the custom DialogFragment which subclasses
+         *                                    ZeTargetInAppNotification to handle the displaying of In App
+         *                                    Promotions. This can be null if not required.
+         * @param userId In the case where ZeTarget user id is to be same as the user id used prior to ZeTarget
+         *               integration, the previous user id needs to passed as a String value in this parameter
+         *
+         */
+        public static void initializeWithContextAndKey(Context context, String apiKey, String googleApiProjectNumber,String classNameOfCustomDialogFrag,String userId) {
+            if(ZeTarget.isDebuggingOn()){
+                Log.d(TAG, "initializeWithContextAndKey() called");
+            }
+            setUserId(userId);
+            initialize(context, apiKey,googleApiProjectNumber);
+            if(classNameOfCustomDialogFrag!=null) {
+                classNameOfCustomDialogFragment = classNameOfCustomDialogFrag;
+            }
         }
 
         private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
@@ -1537,6 +1562,10 @@
          * @param userId the string value to set
          */
         public synchronized static void setUserId(String userId){
+            setUserId(context,userId);
+        }
+
+        private synchronized static void setUserId(Context context, String userId){
             CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_OLD_USER_ID, getUserId()).commit();
             CommonUtils.getSharedPreferences(context).edit().putString(Constants.Z_PREFKEY_USER_ID, userId).commit();
             ZeTarget.userId = userId;
