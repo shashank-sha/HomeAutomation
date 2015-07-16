@@ -128,23 +128,23 @@ public class DeviceDetails {
         return osName;
     }
 
-    public String getOsFamily() {
+    public static String getOsFamily() {
         return osFamily;
     }
 
-    public String getOSVersion() {
+    public static String getOSVersion() {
         return osVersion;
     }
 
-    public String getBrand() {
+    public static String getBrand() {
         return brand;
     }
 
-    public String getManufacturer() {
+    public static String getManufacturer() {
         return manufacturer;
     }
 
-    public String getModel() {
+    public static String getModel() {
         return model;
     }
 
@@ -153,8 +153,7 @@ public class DeviceDetails {
     }
 
     private static void setCarrier() {
-        TelephonyManager manager = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         carrier= manager.getNetworkOperatorName();
     }
 
@@ -228,7 +227,7 @@ public class DeviceDetails {
 
 
 
-    public String getLanguage() {
+    public static String getLanguage() {
         return language;
     }
 

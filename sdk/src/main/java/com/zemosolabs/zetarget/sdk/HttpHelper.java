@@ -107,6 +107,7 @@ public class HttpHelper {
 
             postParams.put("deviceId", CommonUtils.replaceWithJSONNull(ZeTarget.getDeviceId()));
             postParams.put("sdkId", CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
+            postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(DeviceDetails.getModel()));
             postParams.put("appVersion",CommonUtils.replaceWithJSONNull(ZeTarget.deviceDetails.getVersionName()));
             return postParams;
         }
