@@ -190,7 +190,7 @@
          *               the previous user id needs to passed as a String value in this parameter
          *
          */
-        public static void initializeWithContextKeyAndUserId(Context context,String apiKey,String userId){
+        public static void initializeWithContextAndKeyAndUserId(Context context, String apiKey, String userId){
             if(ZeTarget.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
             }
@@ -212,7 +212,7 @@
          *
          *
          */
-        public static void initializeWithContextKeyAndUserId(Context context, String apiKey, String userId, String googleApiProjectNumber,String classNameOfCustomDialogFrag) {
+        public static void initializeWithContextAndKeyAndUserId(Context context, String apiKey, String userId, String googleApiProjectNumber, String classNameOfCustomDialogFrag) {
             if(ZeTarget.isDebuggingOn()){
                 Log.d(TAG, "initializeWithContextAndKey() called");
             }
