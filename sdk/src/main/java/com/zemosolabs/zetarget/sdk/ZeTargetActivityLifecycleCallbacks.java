@@ -45,9 +45,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         properties.put("campaignId",campaignId);
                         properties.put("geofenceId",geofenceId);
                     } catch (JSONException e) {
-                        if(ZeTarget.isDebuggingOn()){
-                            Log.e("CAMPAIGN VIEWED LOG","GeoNotification failed",e);
-                        }
+                        /*if(ZeTarget.isDebuggingOn()){
+                            Log.e("ZeTarget.Campaigns","GeoNotification update failed",e);
+                        }*/
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
@@ -55,9 +55,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                     try {
                         properties.put("campaignId",campaignId);
                     } catch (JSONException e) {
-                        if(ZeTarget.isDebuggingOn()){
-                            Log.e("CAMPAIGN VIEWED LOG","SimpleEvent Notification failed",e);
-                        }
+                        /*if(ZeTarget.isDebuggingOn()){
+                            Log.e("ZeTarget.Campaigns","SimpleEvent Notification update failed",e);
+                        }*/
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }
@@ -104,9 +104,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         try {
                             promotionEvent.put("campaignId",campaignId);
                         } catch (JSONException e) {
-                            if(ZeTarget.isDebuggingOn()){
+                            /*if(ZeTarget.isDebuggingOn()){
                                 Log.e("PUSH","PUSH VIEWED EVENT CREATION FAILURE",e);
-                            }
+                            }*/
                         }
                         ZeTarget.updatePromotionAsSeen(promotionEvent);
                         GcmIntentService.notificationCount=0;
@@ -135,8 +135,8 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
             activity.getWindow().getDecorView().setOnTouchListener(tripleTapListener);
         }
 
-        UIEditor = ScreenEditor.getInstance(activity);
-        UIEditor.edit();
+        /*UIEditor = ScreenEditor.getInstance(activity);
+        UIEditor.edit();*/
 
     }
 

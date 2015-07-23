@@ -10,7 +10,7 @@ import org.json.JSONObject;
  */
 public class UserProperties {
 
-    private static final String TAG = "com.zemosolabs.zetarget.sdk.UserProperties";
+    private static final String TAG = "ZeTarget.UserProperties";
 
     protected static String getUserProperty(Context context,String key, String defaultValue){
         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);

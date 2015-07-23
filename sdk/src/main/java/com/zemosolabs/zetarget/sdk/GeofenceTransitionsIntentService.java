@@ -42,25 +42,4 @@ public class GeofenceTransitionsIntentService extends IntentService {
             }
         }
     }
-
-    private String getJSONStringFromFile() {
-        String jsonString = "";
-        String line;
-        try {
-            InputStream iS = getAssets().open("geofencesRelated.json");
-            InputStreamReader iSReader = new InputStreamReader(iS);
-            BufferedReader bufferedReader = new BufferedReader(iSReader);
-            while((line=bufferedReader.readLine())!=null){
-                jsonString=jsonString+"\n"+line;
-            }
-            return jsonString;
-        } catch (IOException e) {
-            if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG, "Read failed");
-            }
-            return null;
-        }
-    }
-
-
 }

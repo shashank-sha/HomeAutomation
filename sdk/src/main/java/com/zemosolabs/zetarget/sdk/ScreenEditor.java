@@ -84,7 +84,7 @@ public class ScreenEditor{
         for(int i=0;i<changes.size();i++){
             if(!changes.get(i).prepare()){
                 if(ZeTarget.isDebuggingOn()){
-                    Log.i("Change Error",changes.get(i).toString());
+                    //Log.i("Change Error",changes.get(i).toString());
                 }
                 continue;
             }
@@ -100,7 +100,7 @@ public class ScreenEditor{
                 changes.add(change);
             } catch (JSONException e) {
                 if(ZeTarget.isDebuggingOn()){
-                    Log.e("ScreenEditor accumulate", e.getMessage());
+                    //Log.e("ScreenEditor accumulate", e.getMessage());
                 }
             }
         }
@@ -120,7 +120,7 @@ public class ScreenEditor{
             toSendJSONArray = screenFix.getJSONObject("fixInfo").getJSONArray("changes");
         } catch (JSONException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.e("ScreenEditor", e.getMessage(),e);
+                //Log.e("ScreenEditor", e.getMessage(),e);
             }
         }
 

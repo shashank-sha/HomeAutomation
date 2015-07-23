@@ -201,9 +201,9 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
                     liveCampaigns.put(campaignId,geoNotificationCampaign);
                 }
             } catch (JSONException e) {
-                if(ZeTarget.isDebuggingOn()){
+                /*if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG,"jsonException",e);
-                }
+                }*/
             }
 
         }
@@ -247,9 +247,9 @@ public class CampaignHandlingService extends Service implements ResultCallback<S
             }
             //Log.i(TAGGEO,"geofences added to the list"+listOfGeofences.size());
         } catch (JSONException e) {
-            if(ZeTarget.isDebuggingOn()){
+            /*if(ZeTarget.isDebuggingOn()){
                 Log.e(TAG, "geoNotificationCampaign Failure", e);
-            }
+            }*/
         }
     }
 

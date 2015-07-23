@@ -20,7 +20,7 @@ public class HttpHelper {
 
     private static HttpHelper httpHelper;
 
-    private static final String TAG = "zetarget.sdk.HttpHelper";
+    private static final String TAG = "ZeTarget.HttpHelper";
 
 
     private HttpHelper(){
@@ -36,18 +36,7 @@ public class HttpHelper {
 
     static String doPost(String url, JSONObject postParams){
 
-        if(ZeTarget.isDebuggingOn()){
-            Log.d(TAG,"doPost() called");
-        }
-
         postParams = addRequiredParams(postParams);
-
-        /*if(ZeTarget.isDebuggingOn()){
-            Log.d(TAG, "Post parameters are: " + postParams.toString());
-            if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
-                ScreenCapture.getInstance().writeToFile(postParams.toString());
-            }
-        }*/
 
         HttpResponse response;
         String stringResponse = null;
@@ -60,17 +49,10 @@ public class HttpHelper {
             postRequest.setEntity(new StringEntity(jsonString));
             response = client.execute(postRequest);
             stringResponse = EntityUtils.toString(response.getEntity());
-            if(ZeTarget.isDebuggingOn()){
-                if(url.equalsIgnoreCase(Constants.Z_SEND_SNAPSHOT_URL)){
-                    //Log.i("HttpResponse",stringResponse);
-                }
-            }
         } catch (org.apache.http.conn.HttpHostConnectException e) {
-            // Log.w(TAG,
-            // "No internet connection found, unable to upload events");
+             Log.w(TAG, "No internet connection found, unable to upload events");
         } catch (java.net.UnknownHostException e) {
-            // Log.w(TAG,
-            // "No internet connection found, unable to upload events");N
+             Log.w(TAG, "No internet connection found, unable to upload events");
         } catch (ClientProtocolException e) {
             if(ZeTarget.isDebuggingOn()){
                 Log.e(TAG, e.toString());
@@ -95,7 +77,7 @@ public class HttpHelper {
             }
         }
         if(ZeTarget.isDebuggingOn()){
-            Log.d(TAG, "Post Response is: " + stringResponse);
+            //Log.d(TAG, "Post Response is: " + stringResponse);
         }
         return stringResponse;
     }

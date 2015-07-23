@@ -9,7 +9,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 public class MyGeofenceRelatedReceiver extends BroadcastReceiver {
-    private final static String TAG = "zint.GeofenceReceiver";
+    private final static String TAG = "ZeTarget.GeofenceRec";
     private final static String locationModeOff = "com.zemosolabs.zetarget.locationModeOff";
     private static Worker delayerForGeofenceReceiver = new Worker("delayerForGeofenceReceiver");
     static{

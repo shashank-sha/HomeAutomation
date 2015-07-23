@@ -123,6 +123,7 @@ public class GcmIntentService extends IntentService {
                 new NotificationCompat.Builder(this).setSmallIcon(appIconId)
         .setContentText(message);
         mBuilder.setContentTitle(title).setAutoCancel(true);
+        mBuilder.setDefaults(NotificationCompat.DEFAULT_SOUND);
         //mBuilder.setContent(contentForNotification);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN) {
             if(notificationCount>1){

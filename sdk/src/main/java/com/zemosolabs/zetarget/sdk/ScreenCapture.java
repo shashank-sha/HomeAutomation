@@ -181,7 +181,7 @@ class ScreenCapture {
             }
         }catch(JSONException e){
             if(ZeTarget.isDebuggingOn()){
-                Log.e("ScreenCapture","Writing Drawable to json",e);
+                //Log.e("ScreenCapture","Writing Drawable to json",e);
             }
         }
         return drawableProps;

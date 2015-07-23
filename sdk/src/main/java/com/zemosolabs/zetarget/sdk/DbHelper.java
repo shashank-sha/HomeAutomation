@@ -23,7 +23,7 @@ import android.util.Pair;
 class DbHelper extends SQLiteOpenHelper {
 
     private static DbHelper instance;
-    private static final String TAG = "com.zemoso.zint.DbHelpr";
+    private static final String TAG = "ZeTarget.Db";
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
@@ -153,13 +153,13 @@ class DbHelper extends SQLiteOpenHelper {
             contentValues.put(EVENT_FIELD, event);
             result = db.insert(EVENT_TABLE_NAME, null, contentValues);
             if (result == -1) {
-                if(ZeTarget.isDebuggingOn()){
+               /* if(ZeTarget.isDebuggingOn()){
                     Log.w(TAG, "Insert failed");
-                }
+                }*/
             }
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG, "addEvent failed", e);
+                Log.e(TAG, "SQLiteException", e);
             }
             // Not much we can do, just start fresh
             delete();
@@ -290,13 +290,13 @@ class DbHelper extends SQLiteOpenHelper {
             result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME,null,contentValues2,5);
             if (result == -1 || result2== -1) {
                 if(ZeTarget.isDebuggingOn()){
-                    Log.w(TAG, "Insert failed in addPromotion");
+                    Log.w(TAG, "Insert failed in add promotions");
                 }
             }
 
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG, "addPromotion failed", e);
+                Log.e(TAG, "Insert failed in add promotions", e);
             }
             // Not much we can do, just start fresh
             delete();
@@ -388,19 +388,19 @@ class DbHelper extends SQLiteOpenHelper {
                 result = db.insertWithOnConflict(Constants.Z_DB_USER_PROPERTIES_TABLE_NAME, null, contentValues,5);
                 if (result == -1) {
                     if(ZeTarget.isDebuggingOn()){
-                        Log.w(TAG, "addUserProperty Insert failed");
+                        Log.w(TAG, "UserProperty Insert failed");
                     }
                 }
             }
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()) {
-                Log.e(TAG, "addUserProperty failed", e);
+                Log.e(TAG, "adding UserProperty failed", e);
             }
             // Not much we can do, just start fresh
             delete();
         } catch(Exception e){
             if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG,"Exception : "+e);
+                Log.e(TAG,"add user property"+e);
             }
         } finally {
             close();
@@ -497,7 +497,7 @@ class DbHelper extends SQLiteOpenHelper {
 
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG, "addPromotion failed", e);
+                Log.e(TAG, "adding screenfix failed", e);
             }
             // Not much we can do, just start fresh
             delete();
@@ -555,15 +555,15 @@ class DbHelper extends SQLiteOpenHelper {
             result2 = db.insertWithOnConflict(SUPPRESSION_LOGIC_TABLE_NAME, null, contentValues2, 5);
             if (result1 == -1||result2 == -1) {
                 success = false;
-                if(ZeTarget.isDebuggingOn()){
+                /*if(ZeTarget.isDebuggingOn()){
                     Log.w(TAG, "Insert failed");
-                }
+                }*/
             }else{
                 success =true;
             }
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.i("DB Geo", result1 + "," + result2);
+                Log.i(TAG, result1 + "," + result2);
             }
             // Not much we can do, just start fresh
             delete();
@@ -665,7 +665,7 @@ class DbHelper extends SQLiteOpenHelper {
 
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()) {
-                Log.e(TAG, "add SimpleEvent failed", e);
+                Log.e(TAG, "add Simple Event failed", e);
             }
             delete();
         } finally {
