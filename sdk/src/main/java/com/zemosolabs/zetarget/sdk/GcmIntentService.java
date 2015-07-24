@@ -1,6 +1,7 @@
 package com.zemosolabs.zetarget.sdk;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -66,6 +67,7 @@ public class GcmIntentService extends IntentService {
 
     private void sendNotification(Bundle bundle){
         //Log.i(TAG,"sendNotification() called");
+        String campaignId = bundle.getString("campaignId");
         String launcherClassName = null;
         launcherClassName = bundle.getString("url");
         if(launcherClassName==null||launcherClassName.isEmpty()) {
@@ -137,17 +139,26 @@ public class GcmIntentService extends IntentService {
             mBuilder.setContentIntent(contentIntent);
             //Log.i(TAG, "Pending Intent added to the Notification");
         }
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        Notification notification = mBuilder.build();
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT) {
+            Bundle bundleForListener = notification.extras;
+            bundleForListener.putString("campaignId", campaignId);
+            notification.extras = bundleForListener;
+        }
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
 
         notificationCount++;
-        JSONObject promoEvent = new JSONObject();
-        try {
-            promoEvent.put("campaignId",bundle.getString("campaignId"));
-        } catch (JSONException e) {
-            if(ZeTarget.isDebuggingOn()){
-                Log.e(TAG,"campaign_id writing into event failed");
+
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.KITKAT) {
+            JSONObject promoEvent = new JSONObject();
+            try {
+                promoEvent.put("campaignId", campaignId);
+            } catch (JSONException e) {
+                if (ZeTarget.isDebuggingOn()) {
+                    Log.e(TAG, "campaign_id writing into event failed");
+                }
             }
+            ZeTarget.uncheckedLogEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promoEvent);
         }
-        ZeTarget.uncheckedLogEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, promoEvent);
     }
 }

@@ -9,7 +9,8 @@ class Constants {
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
     //static String Z_BASE_URL = "http://192.168.1.19/";
-    static String Z_BASE_URL = "http://api.zetarget.com/";
+    //static String Z_BASE_URL = "http://api.zetarget.com/";
+    static String Z_BASE_URL = "http://devapi.zetarget.com/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     //static final String Z_API_VERSION = "0.1";
@@ -46,6 +47,7 @@ class Constants {
     static final String Z_INIT_EVENT = "zmobile.app_init";
     static final String Z_SESSION_END_EVENT = "zmobile.session_ended";
     static final String Z_CAMPAIGN_VIEWED_EVENT = "zmobile.campaign_viewed";
+    static final String Z_CAMPAIGN_REJECTED_EVENT = "zmobile.campaign_rejected";
 //    static final String Z_CAMPAIGN_SHOW_LATER_EVENT = "zmobile.campaign_later";
 //    static final String Z_CAMPAIGN_RATE_EVENT = "zmobile.campaign_rate";
 //    static final String Z_CAMPAIGN_DONOT_SHOW_EVENT = "zmobile.campaign_dont_show";
