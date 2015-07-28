@@ -126,6 +126,25 @@
 
         }*/
 
+        /**
+         *
+         * Method to change the ZeTarget URL
+         *
+         * @param url the alternate url to ZeTarget URL
+         */
+
+        public static void setZeTargetURL(String url){
+            String url_desired_format = "^[([hH][Tt][Tt][Pp]://)|([Hh][Tt][Tt][Pp][Ss]://)]?.*zetarget.com[/]?$";
+            if(url.matches(url_desired_format)) {
+                if(!url.matches("/$")){
+                    url = url +"/";
+                }
+                if (!isInitialzed) {
+                    Constants.Z_BASE_URL = url;
+                }
+            }
+        }
+
 
         /**
          *

@@ -9,8 +9,8 @@ class Constants {
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
     //static String Z_BASE_URL = "http://192.168.1.19/";
-    //static String Z_BASE_URL = "http://api.zetarget.com/";
-    static String Z_BASE_URL = "http://devapi.zetarget.com/";
+    static String Z_BASE_URL = "http://api.zetarget.com/";
+    //static String Z_BASE_URL = "http://devapi.zetarget.com/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
 
     //static final String Z_API_VERSION = "0.1";
