@@ -128,7 +128,10 @@
 
         /**
          * Method to change the default ZeTarget URL: This method can be used to change the ZeTarget URL's domain
-         * to your preferred domain. But it has to be called before any of the initialize methods are called.
+         * to your custom domain in case one has been assigned to you. Custom domains are available only for
+         * enterprise accounts.
+         *
+         * This method has to be called before any of the initialize methods are called.
          *
          * The new server url should end with 'zetarget.com'
          *
