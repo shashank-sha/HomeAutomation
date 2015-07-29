@@ -127,10 +127,15 @@
         }*/
 
         /**
+         * Method to change the default ZeTarget URL: This method can be used to change the ZeTarget URL's domain
+         * to your preferred domain. But it has to be called before any of the initialize methods are called.
          *
-         * Method to change the ZeTarget URL
+         * The new server url should end with 'zetarget.com'
          *
-         * @param url the alternate url to ZeTarget URL
+         * For ex. (http://yourcompany.api.zetarget.com)
+         *
+         * @param url the alternate url to the default ZeTarget URL
+         *
          */
 
         public static void setZeTargetURL(String url){
