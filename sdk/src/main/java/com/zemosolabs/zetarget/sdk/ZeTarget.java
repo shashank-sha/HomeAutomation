@@ -624,7 +624,6 @@
                             && now - lastEndSessionTime < Constants.Z_MIN_TIME_BETWEEN_SESSIONS_MILLIS) {
                         DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                         dbHelper.removeEvent(previousEndSessionId);
-
                     }
                     //startSession() can be called in every activity by developer, hence upload events and sync datastore
                     // only if it is a new session
@@ -1338,8 +1337,6 @@
                 JSONObject postParams = new JSONObject();
                 postParams.put("eventList",CommonUtils.replaceWithJSONNull(new JSONArray(events)));
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(deviceDetails.getVersionName()));
-                /*ScreenCapture.getInstance().createNewFile();
-                ScreenCapture.getInstance().writeToFile(postParams.toString());*/
                 String response = HttpHelper.doPost(url,postParams);
                 if(response !=null){
                     JSONObject jsonResponse = new JSONObject(response);
