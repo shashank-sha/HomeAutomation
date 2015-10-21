@@ -142,7 +142,7 @@
          */
 
         public static void setZeTargetURL(String url){
-            String url_desired_format = "^[([hH][Tt][Tt][Pp]://)|([Hh][Tt][Tt][Pp][Ss]://)]?.*zetarget.com[/]?$";
+            String url_desired_format = "^[([hH][Tt][Tt][Pp]://)|([Hh][Tt][Tt][Pp][Ss]://)]?.*[/]?$";
             if(url.matches(url_desired_format)) {
                 if(!url.matches("/$")){
                     url = url +"/";
