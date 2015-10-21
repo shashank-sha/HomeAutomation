@@ -133,16 +133,13 @@
          *
          * This method has to be called before any of the initialize methods are called.
          *
-         * The new server url should end with 'zetarget.com'
-         *
-         * For ex. (http://yourcompany.api.zetarget.com)
          *
          * @param url the alternate url to the default ZeTarget URL
          *
          */
 
         public static void setZeTargetURL(String url){
-            String url_desired_format = "^[([hH][Tt][Tt][Pp]://)|([Hh][Tt][Tt][Pp][Ss]://)]?.*[/]?$";
+            String url_desired_format = "^[([hH][Tt][Tt][Pp]://)|([Hh][Tt][Tt][Pp][Ss]://)]?.*[/]?";
             if(url.matches(url_desired_format)) {
                 if(!url.matches("/$")){
                     url = url +"/";
