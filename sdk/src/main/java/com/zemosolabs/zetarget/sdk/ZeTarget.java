@@ -456,7 +456,7 @@
 
             if(promotion == null || promotion.length() == 0  ){
                 if(ZeTarget.isDebuggingOn()){
-                    Log.d(TAG,"No In Campaigns found for "+screen_id);
+                    Log.d(TAG,"No In Campaigns found for the user");
                 }
                 return;
             }
