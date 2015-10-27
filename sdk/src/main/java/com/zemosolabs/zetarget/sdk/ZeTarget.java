@@ -339,11 +339,11 @@
             if (resultCode != ConnectionResult.SUCCESS) {
                 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                     if(ZeTarget.isDebuggingOn()){
-                        Log.e(TAG,"Google Play services is not installed");
+                        Log.e(TAG,"Google Play services is not installed, Push notifications will not work.");
                     }
                 } else {
                     if(ZeTarget.isDebuggingOn()){
-                        //Log.i(TAG, "This device is not supported for Push Notifications.");
+                        Log.e(TAG, "This device is not supported for Push Notifications.");
                     }
                 }
                 return false;
@@ -455,10 +455,9 @@
             final JSONObject promotion = probablePromotion;
 
             if(promotion == null || promotion.length() == 0  ){
-                /*if(ZeTarget.isDebuggingOn()){
-                    Log.d(TAG,"No Promotions found for "+screen_id);
+                if(ZeTarget.isDebuggingOn()){
+                    Log.d(TAG,"No In Campaigns found for "+screen_id);
                 }
-*/
                 return;
             }
 
@@ -562,9 +561,15 @@
                             if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
                                 return;
                             }
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Showing In App campaign...");
+                            }
                             showingPromotion.set(true);
                             newNotification.show(ft, "dialog");
                         }else{
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Activity changed so could not show In App Campaign");
+                            }
                             //Log.i(TAG,"Activity changed so dropping from launching In App Promotion");
                         }
                     }
