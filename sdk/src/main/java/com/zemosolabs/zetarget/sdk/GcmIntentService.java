@@ -20,7 +20,7 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     public static int notificationCount=0;
-    private static final String TAG = "Zint.GcmIntentService";
+    private static final String TAG = "ZeTarget.GcmIntentService";
 
     public GcmIntentService() {
         super("GcmIntentService");

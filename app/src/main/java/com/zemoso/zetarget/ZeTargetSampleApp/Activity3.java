@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 
 public class Activity3 extends Activity {
-    private static final String TAG = "SampleApp.Activity3" ;
+    private static final String TAG = "com.zemoso.zetarget.ZeTargetSampleApp.Activity3" ;
     long inTime;
     long outTime;
 

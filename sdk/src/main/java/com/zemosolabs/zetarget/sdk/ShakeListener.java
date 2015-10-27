@@ -25,7 +25,7 @@ public class ShakeListener implements SensorEventListener {
     private Float lastAccelerationX;
     private Float lastAccelerationY;
     private Double lastAccMag;
-    private static final String TAG = "Zint.ShakeListener";
+    private static final String TAG = "ZeTarget.ShakeListener";
     private Worker delayer = new Worker("delayer");
     private boolean calibrated;
     private int calibrationCount;

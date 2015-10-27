@@ -28,7 +28,7 @@ import android.view.WindowManager;
 
 public class DeviceDetails {
 
-    private static final String TAG = "ztarget.DevDetails";
+    private static final String TAG = "ZeTarget.DevDetails";
 
     private boolean locationListening = true;
 

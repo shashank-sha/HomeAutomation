@@ -82,7 +82,7 @@ public class DefaultInAppNotification extends ZeTargetInAppNotification {
     private float onImageClickY;
     private boolean simpleClick = false;
 
-    private static final String TAG = "InAppNotification";
+    private static final String TAG = "ZeTarget.DefaultInAppNotification";
 
     public void customize(Context context, String campaignId, JSONObject template) {
         this.campaignId = campaignId;

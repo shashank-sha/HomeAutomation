@@ -15,7 +15,7 @@ import java.util.List;
 
 
 public class GeofenceTransitionsIntentService extends IntentService {
-    private static final String TAG = "zint.GeofenceIntentSrvc";
+    private static final String TAG = "ZeTarget.GeofenceTransitionsIntentService";
 
     public GeofenceTransitionsIntentService() {
         super("GeofenceTransitionsIntentService");

@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * Created by vedaprakash on 8/5/15.
  */
 abstract class NotificationCampaign {
-    private static final String TAG = "ZeTarget.NotificationCamp";
+    private static final String TAG = "ZeTarget.NotificationCampaign";
     protected long campaignEndTime;
     protected long campaignStartTime;
     protected long uniqueId;

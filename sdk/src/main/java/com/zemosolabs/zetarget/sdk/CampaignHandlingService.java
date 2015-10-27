@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CampaignHandlingService extends Service implements ResultCallback<Status>,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
-    private static final String TAG = "CampaignHandler";
-    private static final String TAGGEO = TAG+"GEO";
-    private static final String TAGSIMPLE = TAG+"SIMPLE";
+    private static final String TAG = "ZeTarget.CampaignHandler";
+    private static final String TAGGEO = TAG+".GEO";
+    private static final String TAGSIMPLE = TAG+".SIMPLE";
     private static Worker fetcher = new Worker("campaignFetcher");
     private static Worker triggerHandler = new Worker("campaignTriggerHandler");
     private static HashMap<String,NotificationCampaign> liveCampaigns = new HashMap<>();

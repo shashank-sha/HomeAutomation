@@ -23,7 +23,7 @@ import android.util.Pair;
 class DbHelper extends SQLiteOpenHelper {
 
     private static DbHelper instance;
-    private static final String TAG = "ZeTarget.Db";
+    private static final String TAG = "ZeTarget.DbHelper";
 
     private static final String EVENT_TABLE_NAME = Constants.Z_DB_EVENT_TABLE_NAME;
     private static final String PROMOTION_TABLE_NAME = Constants.Z_DB_PROMOTION_TABLE_NAME;
