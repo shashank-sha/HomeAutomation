@@ -23,9 +23,9 @@ public class MainActivity extends Activity {
         /*Initialize ZeTarget with Context and key provided upon registration on ZeTarget website.
         Optionally the Google Api Project key and custom class for IN APP PROMOTION can be passed
         in as arguments.*/
-
+        ZeTarget.enableDebugging();
         ZeTarget.initializeWithContextAndKey(getApplicationContext(),
-                "43eb-a23d-0106af662c83", "914500168484");
+                "ZemosoL", "914500168484");
 
         /* Setting the user properties(optional).
          Provide the user properties which can be useful to segment users. Once the user properties

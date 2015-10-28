@@ -434,6 +434,11 @@
             if(showingPromotion.get()){
                 return;
             }
+            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
+            long nowMS = System.currentTimeMillis();
+            if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
+                return;
+            }
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
                 //Log.i(TAG, "currentActivityLabel is null");
@@ -456,7 +461,7 @@
 
             if(promotion == null || promotion.length() == 0  ){
                 if(ZeTarget.isDebuggingOn()){
-                    Log.d(TAG,"No In Campaigns found for the user");
+                    Log.d(TAG,"No InApp Campaigns found for the user");
                 }
                 return;
             }
@@ -478,9 +483,9 @@
                 long currentTime = System.currentTimeMillis();
                 if(minimumDurationInMinutesBeforeReshow!=-1) {
                     if (currentTime < dbHelper.getLastShownTime(campaignId) + minimumDurationInMinutesBeforeReshow * 60 * 1000) {
-                        /*if (ZeTarget.isDebuggingOn()) {
-                            Log.d(TAG, "Not so soon " + campaignId);
-                        }*/
+                        if (ZeTarget.isDebuggingOn()) {
+                            Log.d(TAG, "Not so soon, this campaign can be shown again after " +minimumDurationInMinutesBeforeReshow+" minutes "+ campaignId);
+                        }
                         return;
                     }
                 }// In case the minimumDurationInMinutes value is not found, then the campaign will be shown only once.
@@ -556,16 +561,20 @@
                         newNotification.customize(context, campaignId, template);
                         if(ZeTarget.currentActivity==currentActivity) {
                             //Log.i(TAG, "same Activity before In App Promotion launched");
-                            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
-                            long nowMS = System.currentTimeMillis();
-                            if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
-                                return;
+//                            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
+//                            long nowMS = System.currentTimeMillis();
+//                            if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
+//                                return;
+//                            }
+
+                            //showingPromotion.set(true);
+                            if(!showingPromotion.getAndSet(true)){
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG,"Showing In App campaign...");
+                                }
+                                newNotification.show(ft, "dialog");
                             }
-                            if(ZeTarget.isDebuggingOn()){
-                                Log.d(TAG,"Showing In App campaign...");
-                            }
-                            showingPromotion.set(true);
-                            newNotification.show(ft, "dialog");
+
                         }else{
                             if(ZeTarget.isDebuggingOn()){
                                 Log.d(TAG,"Activity changed so could not show In App Campaign");
@@ -769,6 +778,10 @@
 
         private static void addPromotions(JSONObject json){
             int addCount;
+            if(!json.has("promotions")){
+                return;
+            }
+            boolean gotNewInAppPromotion = false;
             try {
                 JSONArray promotions = json.getJSONArray("promotions");
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
@@ -821,7 +834,8 @@
                         dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                         addCount++;
                     }else if(promotion.getString("type").equals("promotion")) {
-                        //Log.i("PROMOTION","GOT PROMOTION");
+                        gotNewInAppPromotion = true;
+                        //Log.d(TAG,"GOT PROMOTION");
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
@@ -851,6 +865,9 @@
                     }
                 }
                 setLastCampaignSyncTime(json.getString("lastCampaignSynchedTime"));
+                if(gotNewInAppPromotion){
+                    showPromotion(ZeTarget.currentActivity);
+                }
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
                 if(ZeTarget.isDebuggingOn()){
