@@ -16,6 +16,7 @@ import org.json.JSONObject;
  * Created by praveen on 30/01/15.
  */
 public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+    private static final String TAG = "ZeTarget.ZALcycleCbcks";
     static Activity currentActivity;
     private ScreenEditor UIEditor;
     private ShakeListener shakeListener=null;
@@ -45,9 +46,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         properties.put("campaignId",campaignId);
                         properties.put("geofenceId",geofenceId);
                     } catch (JSONException e) {
-                        /*if(ZeTarget.isDebuggingOn()){
-                            Log.e("ZeTarget.Campaigns","GeoNotification update failed",e);
-                        }*/
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e(TAG,"GeoNotification update failed",e);
+                        }
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }else if(startingIntent.getStringExtra(Constants.Z_CAMPAIGN_TYPE).equals(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
@@ -55,9 +56,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                     try {
                         properties.put("campaignId",campaignId);
                     } catch (JSONException e) {
-                        /*if(ZeTarget.isDebuggingOn()){
-                            Log.e("ZeTarget.Campaigns","SimpleEvent Notification update failed",e);
-                        }*/
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e(TAG,"SimpleEvent Notification update failed",e);
+                        }
                     }
                     ZeTarget.logEvent(Constants.Z_CAMPAIGN_VIEWED_EVENT, properties);
                 }
@@ -104,9 +105,9 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                         try {
                             promotionEvent.put("campaignId",campaignId);
                         } catch (JSONException e) {
-                            /*if(ZeTarget.isDebuggingOn()){
-                                Log.e("PUSH","PUSH VIEWED EVENT CREATION FAILURE",e);
-                            }*/
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.e(TAG,"PUSH VIEWED EVENT CREATION FAILURE",e);
+                            }
                         }
                         ZeTarget.updatePromotionAsSeen(promotionEvent);
                         GcmIntentService.notificationCount=0;
@@ -122,8 +123,12 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
             label = pm.getActivityInfo(activity.getComponentName(),0).loadLabel(pm).toString();
         } catch (PackageManager.NameNotFoundException e) {
             if(ZeTarget.isDebuggingOn()){
-                Log.e("ActivityDetails","PackageManager Not Found in ActivityLifeCycles",e);
+                Log.e(TAG,"PackageManager Not Found in ActivityLifeCycles",e);
             }
+        }
+
+        if(ZeTarget.isDebuggingOn()){
+            Log.d(TAG,"updateActivityDetails with label:"+label);
         }
         ZeTarget.updateActivityDetails(label, name);
         ZeTarget._startSession(activity);

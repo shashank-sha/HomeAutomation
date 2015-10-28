@@ -97,7 +97,13 @@
                 if (context.getApplicationContext() instanceof Application) {
                     final Application app = (Application) context.getApplicationContext();
                     app.registerActivityLifecycleCallbacks((new ZeTargetActivityLifecycleCallbacks()));
+                    if(ZeTarget.isDebuggingOn()) {
+                        Log.d(TAG, "Registered for ActivityLifecycleCallback successfully");
+                    }
                 }
+            }
+            else {
+                Log.e(TAG,"This android version is not supported by ZeTarget. Zetarget requires API level >=16");
             }
         }
 
@@ -249,15 +255,11 @@
 
         private synchronized static void initialize(Context context, String apiKey, String googleApiProjectNumber) {
             if (context == null) {
-                if(ZeTarget.isDebuggingOn()) {
-                    Log.e("Initialize Error", "Application context cannot be null in initializeWithContextAndKey()");
-                }
+                Log.e(TAG, "Application context cannot be null in initializeWithContextAndKey()");
                 return;
             }
             if (apiKey == null||TextUtils.isEmpty(apiKey) ) {
-                if(ZeTarget.isDebuggingOn()) {
-                    Log.e("Initialize Error", "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
-                }
+                Log.e(TAG, "Application apiKey cannot be null or blank in initializeWithContextAndKey()");
                 return;
             }
             if (!isInitialzed) {
@@ -286,6 +288,9 @@
                         }
                     });
                 }
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Initialization complete with userId:"+userId+", deviceId:"+deviceId);
+                }
                 registerZeTargetActivityLifecycleCallbacks();
                 isInitialzed = true;
             }
@@ -293,6 +298,9 @@
 
         private static void registerForPushNotifications(){
             if(googleApiProjectNumber == null){
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Google API Project number is not provided, hence Push Notifications will not work");
+                }
                 return;
             }
             if (checkPlayServices()) {
@@ -437,11 +445,16 @@
             long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
             long nowMS = System.currentTimeMillis();
             if(lastShown>0&&(nowMS-lastShown<Constants.Z_TIMEOUT_BETWEEN_IN_APP)){
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Too soon to show In App campaign, will not try to show any In App campaign, please wait for sometime");
+                }
                 return;
             }
             String screen_id =currentActivityLabel ;
             if(screen_id==null){
-                //Log.i(TAG, "currentActivityLabel is null");
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Somehow could not get Activity identifier, hence could not show In App campaign");
+                }
                 return;
             }
             //Log.i("ActivityDetails: ", currentActivityLabel + ", " + currentActivityName);
@@ -461,7 +474,7 @@
 
             if(promotion == null || promotion.length() == 0  ){
                 if(ZeTarget.isDebuggingOn()){
-                    Log.d(TAG,"No InApp Campaigns found for the user");
+                    Log.d(TAG,"No InApp Campaigns found for the user at this point of time");
                 }
                 return;
             }
@@ -492,14 +505,17 @@
                 else{
                     if(dbHelper.getNumberOfTimesShown(campaignId)>=1) {
                         dbHelper.markPromotionAsSeen(campaignId);
+                        if(ZeTarget.isDebuggingOn()) {
+                            Log.d(TAG, "Found one already shown In App campaign, cannot show it again");
+                        }
                         return;
                     }
                 }
                 if(maximumNumberOfTimesToShow!=-1) {
                     if (dbHelper.getNumberOfTimesShown(campaignId) >= maximumNumberOfTimesToShow) {
-                        /*if (ZeTarget.isDebuggingOn()) {
+                        if (ZeTarget.isDebuggingOn()) {
                             Log.d(TAG, "Already shown too many times " + campaignId);
-                        }*/
+                        }
                         dbHelper.markPromotionAsSeen(campaignId);
                         return;
                     }
@@ -507,6 +523,9 @@
                 else{
                     if(dbHelper.getNumberOfTimesShown(campaignId)>=1) {
                         dbHelper.markPromotionAsSeen(campaignId);
+                        if(ZeTarget.isDebuggingOn()) {
+                            Log.d(TAG, "Found one already shown In App campaign, cannot show it again");
+                        }
                         return;
                     }
                 }
@@ -559,6 +578,9 @@
                             }
                         }
                         newNotification.customize(context, campaignId, template);
+                        if(ZeTarget.isDebuggingOn()) {
+                            Log.d(TAG, "Preparing the campaign to show...");
+                        }
                         if(ZeTarget.currentActivity==currentActivity) {
                             //Log.i(TAG, "same Activity before In App Promotion launched");
 //                            long lastShown = getSharedPreferenceValueByKey(Constants.KEY_IN_APP_LAST_SHOWN_TIME);
@@ -568,6 +590,9 @@
 //                            }
 
                             //showingPromotion.set(true);
+                            if(ZeTarget.isDebuggingOn()) {
+                                Log.d(TAG, "Found one In App Campaign, lets show it if there is not already being shown");
+                            }
                             if(!showingPromotion.getAndSet(true)){
                                 if(ZeTarget.isDebuggingOn()){
                                     Log.d(TAG,"Showing In App campaign...");
@@ -740,9 +765,9 @@
         }
 
         private static void fetchPromotions(){
-            /*if(ZeTarget.isDebuggingOn()){
-                Log.d(TAG,"httpWorker is now making server request to fetch Promotions");
-            }*/
+            if(ZeTarget.isDebuggingOn()){
+                Log.d(TAG,"Lets check server if there are any new campaigns for the user");
+            }
             boolean fetchSuccess = false;
             try {
 
@@ -786,6 +811,9 @@
                 JSONArray promotions = json.getJSONArray("promotions");
                 DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 addCount = 0;
+                if(ZeTarget.isDebuggingOn()){
+                    Log.d(TAG,"Fetched campaigns from server: "+promotions.length());
+                }
                 for(int i =0; i < promotions.length(); i++){
                     JSONObject promotion = promotions.getJSONObject(i);
                     JSONObject suppressionLogic = new JSONObject();
@@ -809,14 +837,20 @@
                         if (promotion.has("appVersionFrom")) {
                             appVersionFrom = promotion.getInt("appVersionFrom");
                             if (currentAppVersion < appVersionFrom) {
-                                //Log.i(TAG, "appVersionFrom problem");
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG, Integer.valueOf(currentAppVersion).toString());
+                                    Log.d(TAG,"Sorry this In App Campaign requires min appVersion:"+appVersionFrom+" hence not storing this In App Campaign");
+                                }
                                 continue;
                             }
                         }
                         if (promotion.has("appVersionTo")) {
                             appVersionTo = promotion.getInt("appVersionTo");
                             if (currentAppVersion > appVersionTo) {
-                                //Log.i(TAG, "appVersionTo problem");
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG, Integer.valueOf(currentAppVersion).toString());
+                                    Log.d(TAG,"Sorry this In App Campaign requires max appVersion:"+appVersionTo+" hence not storing this In App Campaign");
+                                }
                                 continue;
                             }
                         }
@@ -825,29 +859,36 @@
                     if(promotion.has("campaignEndTime")){
                         long campaignEndTime = promotion.getLong("campaignEndTime");
                         if(campaignEndTime<timeStampNow){
-                            //Log.i(TAG,"time limit problem"+" "+timeStampNow+" : "+campaignEndTime);
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Sorry this In App Campaign has expired, hence not storing this In App Campaign");
+                            }
                             continue;
                         }
                     }
                     if(promotion.getString("type").equals("screenFix")){
-                        //Log.i("screenFix", "Got screenFix");
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.d(TAG,"Saving this screenFix type campaign");
+                        }
                         dbHelper.addScreenFix(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"));
                         addCount++;
                     }else if(promotion.getString("type").equals("promotion")) {
                         gotNewInAppPromotion = true;
-                        //Log.d(TAG,"GOT PROMOTION");
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.d(TAG,"Saving this promotion type campaign");
+                        }
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                            //Log.i(TAG,"screenId from promotion json is: "+promotion.getString("screenId"));
                         } else {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), Constants.DEFAULT_SCREEN,
                                     maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
                         }
                         addCount++;
                     }else if(promotion.getString("type").equalsIgnoreCase("GEO")){
-                        //Log.i(TAG,"We have a geo event being saved to database");
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.d(TAG,"Saving this GEO type campaign");
+                        }
                         dbHelper.addGeoCampaign(promotion.toString(), promotion.getString("campaignId"),
                                 maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow);
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
@@ -856,7 +897,9 @@
                     }else if(promotion.getString("type").equalsIgnoreCase(Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN)){
                         dbHelper.addSimpleEventCampaign(promotion.toString(), promotion.getString("campaignId"),
                                                             maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
-                        //Log.i(TAG, "We have a simple event being saved to database");
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.d(TAG,"Saving this simple event type campaign");
+                        }
                         context.startService(new Intent(context, CampaignHandlingService.class).putExtra("action", Constants.Z_INTENT_EXTRA_CAMPAIGNS_ACTION_KEY_VALUE_UPDATE_CAMPAIGNS)
                                 .putExtra("type", Constants.Z_CAMPAIGN_TYPE_SIMPLE_EVENT_CAMPAIGN));
                         addCount++;
@@ -1307,9 +1350,9 @@
 
             } catch (Exception e) {
                 // Just log any other exception so things don't crash on upload
-                /*if(ZeTarget.isDebuggingOn()){
+                if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG, "Exception in checkAndUpdateDataStore:", e);
-                }*/
+                }
             }
 
             if (!syncSuccess) {
@@ -1324,16 +1367,19 @@
             }*/
             try {
                 JSONObject variables = newDataStore.getJSONObject("variables");
+                if(variables.length() ==0){
+                    return;
+                }
                 Map<String,String> values = new HashMap<>();
                 for(int i = 0; i<variables.names().length(); i++){
                     values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                 }
                 dataStore.setData(context, values);
-                dataStore.setDataStoreVersion(context,newDataStore.getString("lastDataStoreSynchedTime"));
+                dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
-               /* if(ZeTarget.isDebuggingOn()){
+               if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG, "Exception in updating DataStore:", e);
-                }*/
+                }
             }
            /* if(ZeTarget.isDebuggingOn()){
                 Log.d(TAG, "DataStore update done, we have latest version now.");
