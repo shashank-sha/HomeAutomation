@@ -152,6 +152,9 @@
                 }
                 if (!isInitialzed) {
                     Constants.Z_BASE_URL = url;
+                    if(ZeTarget.isDebuggingOn()) {
+                        Log.d(TAG, "Setting Z_BASE_URL to: "+url);
+                    }
                 }
             }
         }
@@ -470,7 +473,10 @@
             if(promotionForScreen == null||promotionForScreen.length() == 0){
                 probablePromotion = defaultPromotions;
                 if(ZeTarget.isDebuggingOn()) {
-                    Log.d(TAG, "Did not find any In App Campaign for Screen:"+screen_id+" , but found one for Any Screen");
+                    Log.d(TAG, "Did not find any In App Campaign for Screen:"+screen_id+"");
+                    if(defaultPromotions == null || defaultPromotions.length() == 0){
+                        Log.d(TAG, "Did not find any In App Campaign for Any Screen");
+                    }
                 }
             }else{
                 probablePromotion = promotionForScreen;
@@ -882,16 +888,19 @@
                         addCount++;
                     }else if(promotion.getString("type").equals("promotion")) {
                         gotNewInAppPromotion = true;
-                        if(ZeTarget.isDebuggingOn()){
-                            Log.d(TAG,"Saving this promotion type campaign");
-                        }
 //Temperorily using showing the campaign on MainScreen when no screenId is available in the JSON.
                         if (promotion.has("screenId") && promotion.getString("screenId") != JSONObject.NULL) {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), promotion.getString("screenId"),
                                     maximumNumberOfTimesToShow,minimumDurationInMinutesBeforeReshow);
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Saving this promotion type campaign: "+promotion.getString("campaignId")+" for screen: "+promotion.getString("screenId"));
+                            }
                         } else {
                             dbHelper.addPromotion(promotion.toString(), promotion.getString("campaignId"), Constants.DEFAULT_SCREEN,
                                     maximumNumberOfTimesToShow, minimumDurationInMinutesBeforeReshow); //promotion.getString("screenId"));
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Saving this promotion type campaign: "+promotion.getString("campaignId")+" for screen: "+Constants.DEFAULT_SCREEN);
+                            }
                         }
                         addCount++;
                     }else if(promotion.getString("type").equalsIgnoreCase("GEO")){
