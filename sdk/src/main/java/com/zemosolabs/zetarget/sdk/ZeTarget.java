@@ -469,6 +469,9 @@
             JSONObject probablePromotion;
             if(promotionForScreen == null||promotionForScreen.length() == 0){
                 probablePromotion = defaultPromotions;
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Did not find any In App Campaign for Screen:"+screen_id+" , but found one for Any Screen");
+                }
             }else{
                 probablePromotion = promotionForScreen;
                 if(ZeTarget.isDebuggingOn()) {
