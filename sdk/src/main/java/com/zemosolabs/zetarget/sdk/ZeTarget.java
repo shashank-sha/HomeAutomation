@@ -458,6 +458,9 @@
                 return;
             }
             //Log.i("ActivityDetails: ", currentActivityLabel + ", " + currentActivityName);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.d(TAG, "Lets check db if we have any In App Campaign for Screen:"+screen_id);
+            }
 
             DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
             dbHelper.removeSeenPromotions();
@@ -468,6 +471,9 @@
                 probablePromotion = defaultPromotions;
             }else{
                 probablePromotion = promotionForScreen;
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Found one In App Campaign for Screen:"+screen_id);
+                }
             }
 
             final JSONObject promotion = probablePromotion;
