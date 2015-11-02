@@ -8,7 +8,7 @@
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center_vertical">
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/white_card_bg">
