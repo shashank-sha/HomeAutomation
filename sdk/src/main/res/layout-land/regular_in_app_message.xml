@@ -1,9 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:orientation="vertical"
-    android:layout_height="wrap_content"
-    android:padding="20dp"
+    android:layout_width="wrap_content"
+    android:orientation="horizontal"
+    android:layout_height="fill_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
     android:layout_gravity="center">
 
@@ -14,16 +15,18 @@
         android:background="@drawable/white_card_bg">
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:maxHeight="@dimen/zetarget_in_app_max_image_size"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
+            android:src="@drawable/test_img"
             android:id="@+id/img_container_regular"
             android:contentDescription="@string/image_name" />
 
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/title_text_default"
             android:id="@+id/title_regular"
@@ -36,7 +39,7 @@
             android:paddingRight="@dimen/padding_title_text_in_app"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/message_text_default"
             android:id="@+id/message_regular"

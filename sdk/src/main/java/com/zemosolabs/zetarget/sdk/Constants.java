@@ -5,7 +5,7 @@ package com.zemosolabs.zetarget.sdk;
  */
 class Constants {
     static final String Z_PLATFORM = "Android";
-    static final String Z_VERSION = "0.2";
+    static final String Z_VERSION = "0.3";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
     //static String Z_BASE_URL = "http://192.168.1.19/";

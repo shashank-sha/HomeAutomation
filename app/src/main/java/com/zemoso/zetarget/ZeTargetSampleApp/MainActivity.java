@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
         in as arguments.*/
         ZeTarget.enableDebugging();
         ZeTarget.initializeWithContextAndKey(getApplicationContext(),
-                "ZemosoL", "914500168484");
+                "87c0e3f5-94c9-42cd-a838-2bec61209507", "914500168484");
 
         /* Setting the user properties(optional).
          Provide the user properties which can be useful to segment users. Once the user properties

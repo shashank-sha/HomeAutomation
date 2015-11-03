@@ -1,0 +1,118 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:orientation="vertical"
+    tools:context="com.zemosolabs.zetarget.sdk.InAppMessage"
+    android:layout_gravity="center">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/white_card_bg">
+    <ImageView
+        android:layout_width="fill_parent"
+        android:maxHeight="@dimen/zetarget_in_app_max_image_size"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_imgview_rounded_borders"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:src="@drawable/test_img"
+        android:id="@+id/img_container_rate_me"
+        android:contentDescription="@string/image_name" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_text_default"
+            android:id="@+id/title_rate_me"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
+            android:textSize="16sp"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:paddingLeft="@dimen/padding_title_text_in_app"
+            android:paddingRight="@dimen/padding_title_text_in_app"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_rate_me"
+            android:layout_centerHorizontal="true"
+            android:text="@string/message_text_default"
+            android:id="@+id/message_rate_me"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"
+            android:gravity="center"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:paddingLeft="@dimen/padding_message_text_in_app"
+            android:paddingRight="@dimen/padding_message_text_in_app"/>
+    </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="165dp"
+        android:orientation="vertical"
+        android:background="@drawable/white_button_bg"
+        android:layout_gravity="center_vertical">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/later"
+            android:id="@+id/neutral_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:background="@drawable/grey_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/dont_Ask"
+            android:id="@+id/dismiss_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/dark_grey_campaign_button_text"
+            android:background="@drawable/grey_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/rate_me"
+            android:id="@+id/action_button_rate_me"
+            style="?android:attr/borderlessButtonStyle"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_button_bg"
+            android:layout_marginTop="@dimen/margin_between_buttons_rate_me_action"/>
+    </LinearLayout>
+    </LinearLayout>
+    <!--http://stackoverflow.com/questions/12128331/how-to-change-fontfamily-of-textview-in-android -->
+
+</RelativeLayout>
