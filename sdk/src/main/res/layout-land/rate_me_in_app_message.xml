@@ -20,7 +20,6 @@
         android:background="@drawable/white_imgview_rounded_borders"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:src="@drawable/test_img"
         android:id="@+id/img_container_rate_me"
         android:contentDescription="@string/image_name" />
 
