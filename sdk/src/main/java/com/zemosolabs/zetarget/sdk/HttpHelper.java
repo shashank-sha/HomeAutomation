@@ -86,7 +86,7 @@ public class HttpHelper {
         try {
             postParams.put("apiKey",CommonUtils.replaceWithJSONNull(ZeTarget.getApiKey()));
             postParams.put("userId",CommonUtils.replaceWithJSONNull(ZeTarget.getUserId()));
-
+            postParams.put("locale",CommonUtils.replaceWithJSONNull(DeviceDetails.getLocaleString()));
             postParams.put("deviceId", CommonUtils.replaceWithJSONNull(ZeTarget.getDeviceId()));
             postParams.put("sdkId", CommonUtils.replaceWithJSONNull(Constants.Z_SDK_ID));
             postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(DeviceDetails.getModel()));

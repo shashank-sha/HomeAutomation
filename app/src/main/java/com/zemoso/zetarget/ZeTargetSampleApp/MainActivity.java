@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
          website for dynamic editing or to read the logs for troubleshooting */
         TextView myAwesomeTextView = (TextView)findViewById(R.id.visibleText);
         myAwesomeTextView.setText(R.string.hello_world);
+        setTitle(R.string.app_name);
     }
 
 

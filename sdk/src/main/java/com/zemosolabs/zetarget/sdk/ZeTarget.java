@@ -42,8 +42,16 @@
 
         private static final DataStore dataStore = DataStore.getDataStore();
         private static Map<String,String> inAppTexts = new HashMap<String,String>();
+        private static boolean inAppTextsLoaded = false;
 
+        static Map<String, String> getInAppTexts() {
+            return inAppTexts;
+        }
 
+        synchronized static void setInAppTexts(Map<String, String> inAppTexts) {
+            ZeTarget.inAppTexts = inAppTexts;
+            inAppTextsLoaded = true;
+        }
 
         static DeviceDetails deviceDetails;
 
@@ -265,11 +273,9 @@
                 return;
             }
             if (!isInitialzed) {
-                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 setContext(context.getApplicationContext());
                 setApiKey(apiKey);
                 deviceDetails = new DeviceDetails(context);
-                inAppTexts = dbHelper.getInAppTexts(DeviceDetails.getLanguage());
                 initializeDeviceDetails();
                 deviceId = initializeDeviceId();
                 userId = getSavedUserId();
@@ -1393,7 +1399,6 @@
                         values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                     }
                     dataStore.setData(context, values);
-                    dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
                 }
 
                 //In App stuff
@@ -1404,7 +1409,7 @@
                         JSONObject t = texts.getJSONObject(i);
                         String locale = t.getString("locale");
                         boolean needToUpdate = false;
-                        if(locale.equalsIgnoreCase(DeviceDetails.getLanguage())){
+                        if(locale.equalsIgnoreCase(DeviceDetails.getLocaleString())){
                             needToUpdate = true;
                         }
                         JSONArray localeTexts = t.getJSONArray("changed_text");
@@ -1418,7 +1423,7 @@
                         }
                     }
                 }
-
+                dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
                if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG, "Exception in updating DataStore:", e);
@@ -2017,8 +2022,13 @@
         }
 
         public static Context  attachBaseContext(Activity act, Context ctx)  {
-            ZContext zctx = new ZContext(ctx);
-            zctx.setActivityClassName(act);
+            String activityName = act.getClass().getName();
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(ctx);
+            if(!ZeTarget.inAppTextsLoaded) {
+                ZeTarget.setInAppTexts(dbHelper.getInAppTexts(DeviceDetails.getLocaleString()));
+            }
+            ZContext zctx = new ZContext(ctx,activityName.substring(0, activityName.lastIndexOf(".")));
+            //zctx.setActivityClassName(act);
             Log.d(TAG,"method doPQR called for"+ act.getClass().getName()+"called");
             return zctx;
         }

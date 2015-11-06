@@ -12,7 +12,7 @@
     <string name="visibleTextString">Visible text</string>
     <string name="hiddenTextString">Hidden text</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content"></string>
+    <string name="dummy_content">Dummy Content</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
