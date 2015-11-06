@@ -930,4 +930,17 @@ class DbHelper extends SQLiteOpenHelper {
         }
         return texts;
     }
+
+    synchronized void clearInAppTextForLocale(String locale) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            db.delete(INAPPTEXT_TABLE_NAME, "locale = ?" + locale, null);
+        } catch (SQLiteException e) {
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "clearInAppText failed", e);
+            }
+        } finally {
+            close();
+        }
+    }
 }

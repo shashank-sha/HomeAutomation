@@ -53,6 +53,10 @@
             inAppTextsLoaded = true;
         }
 
+        synchronized static void resetInAppTexts() {
+            ZeTarget.inAppTexts = new HashMap<String,String>();
+        }
+
         static DeviceDetails deviceDetails;
 
         private static long sessionId = -1;
@@ -1411,6 +1415,8 @@
                         boolean needToUpdate = false;
                         if(locale.equalsIgnoreCase(DeviceDetails.getLocaleString())){
                             needToUpdate = true;
+                            ZeTarget.resetInAppTexts();
+                            dbHelper.clearInAppTextForLocale(locale);
                         }
                         JSONArray localeTexts = t.getJSONArray("changed_text");
                         for(int j=0; j< localeTexts.length();j++){
