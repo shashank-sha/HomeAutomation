@@ -1,11 +1,13 @@
 package com.zemoso.zetarget.ZeTargetSampleApp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.zemosolabs.zetarget.sdk.ZeTarget;
@@ -37,8 +39,8 @@ public class MainActivity extends Activity {
 
         /*enableDebugging method should only be used for uploading screens for to the ZeTarget
          website for dynamic editing or to read the logs for troubleshooting */
-
-        ZeTarget.enableDebugging();
+        TextView myAwesomeTextView = (TextView)findViewById(R.id.visibleText);
+        myAwesomeTextView.setText(R.string.hello_world);
     }
 
 
@@ -86,5 +88,10 @@ public class MainActivity extends Activity {
     public void show(View view){
         findViewById(R.id.visibleText).setVisibility(View.VISIBLE);
         findViewById(R.id.hiddenText).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void attachBaseContext(Context ctx) {
+        super.attachBaseContext(ZeTarget.attachBaseContext(this,ctx));
     }
 }

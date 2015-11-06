@@ -88,6 +88,8 @@ class Constants {
     static final String Z_DB_USER_PROPERTIES_TABLE_NAME = "userproperties";
     static final String Z_DB_USER_PROPERTIES_ID_FIELD_NAME = "id";
 
+    static final String Z_DB_INAPPTEXT_TABLE_NAME = "inapptexts";
+
     static final String Z_PURCHASE_COMPLETED_EVENT = "zmobile.purchase_completed";
     static final String Z_PURCHASE_ATTEMPTED_EVENT = "zmobile.purchase_attempt_start";
 

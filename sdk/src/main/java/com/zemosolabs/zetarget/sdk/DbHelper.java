@@ -4,6 +4,8 @@ package com.zemosolabs.zetarget.sdk;
  * Created by praveen on 21/01/15.
  */
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +33,7 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String SCREEN_FIX_TABLE_NAME = Constants.Z_DB_SCREEN_FIX_TABLE_NAME;
     private static final String SIMPLE_EVENT_CAMPAIGN_TABLE_NAME = Constants.Z_DB_SIMPLE_EVENT_CAMPAIGNS_TABLE_NAME;
     private static final String SUPPRESSION_LOGIC_TABLE_NAME = Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME;
+    private static final String INAPPTEXT_TABLE_NAME = Constants.Z_DB_INAPPTEXT_TABLE_NAME;
 
     private static final String ID_FIELD = Constants.Z_DB_EVENT_ID_FIELD_NAME;
     private static final String EVENT_FIELD = Constants.Z_DB_EVENT_EVENTS_FIELD_NAME;
@@ -85,6 +88,14 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION = "CREATE UNIQUE INDEX suppression_campaign_idx" + " on "
             + Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME +" (campaign_id);";
 
+    private static final String CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY = "CREATE UNIQUE INDEX locale_key_idx" +
+            " on "+ INAPPTEXT_TABLE_NAME+" (locale,key);";
+
+    private static final String CREATE_INAPPTEXT_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + INAPPTEXT_TABLE_NAME + " ("
+            + "id INTEGER PRIMARY KEY AUTOINCREMENT, locale TEXT, key TEXT, status INTEGER DEFAULT 0,"
+            + "value TEXT);";
+
     private File file;
 
     static DbHelper getDatabaseHelper(Context context) {
@@ -111,12 +122,14 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_GEOCAMPAIGNS_TABLE);
         db.execSQL(CREATE_SIMPLE_EVENT_CAMPAIGNS_TABLE);
         db.execSQL(CREATE_SUPPRESSION_LOGIC_TABLE_FOR_CAMPAIGNS);
+        db.execSQL(CREATE_INAPPTEXT_TABLE);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_PROPNAME);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_SCREEN_ID);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY);
         if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Db created successfully");
         }
@@ -131,6 +144,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ SIMPLE_EVENT_CAMPAIGN_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SCREEN_FIX_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SUPPRESSION_LOGIC_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + INAPPTEXT_TABLE_NAME);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_PROMOTIONS_TABLE);
         db.execSQL(CREATE_USERPROPERTIES_TABLE);
@@ -144,6 +158,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY);
         if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Db updated successfully");
         }
@@ -854,5 +869,65 @@ class DbHelper extends SQLiteOpenHelper {
             close();
         }
         return numberOfTimesShown;
+    }
+
+    //In App Text related
+    synchronized long addInAppText(String locale, String key, String value) {
+        long result = -1;
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("locale", locale);
+            contentValues.put("key", key);
+            contentValues.put("value", value);
+            result = db.insertWithOnConflict(INAPPTEXT_TABLE_NAME, null, contentValues, 5);
+            if (result == -1) {
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG, "Insert failed in addInAppText");
+                }
+            }
+
+        } catch (SQLiteException e) {
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "Insert failed in addInAppText", e);
+            }
+            // Not much we can do, just start fresh
+            delete();
+        } finally {
+            close();
+        }
+        return result;
+    }
+
+    synchronized Map getInAppTexts(String locale){
+        Map<String,String> texts = new HashMap<String,String>();
+        Cursor cursor = null;
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.query(INAPPTEXT_TABLE_NAME, null, "locale = ?", new String[]{locale}, null,
+                    null, null, null);
+            for(int i=0;i<cursor.getCount();i++) {
+                cursor.moveToNext();
+                String key = cursor.getString(2);
+                String value = cursor.getString(4);
+                texts.put(key,value);
+            }
+        } catch (SQLiteException e) {
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getInAppTexts failed", e);
+            }
+        } catch (Exception e){
+            if(ZeTarget.isDebuggingOn()){
+                Log.e(TAG, "getInAppTexts falied", e);
+            }
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            //Log.i(TAG,"Closing DB from getInAppTexts()");
+            close();
+        }
+        return texts;
     }
 }

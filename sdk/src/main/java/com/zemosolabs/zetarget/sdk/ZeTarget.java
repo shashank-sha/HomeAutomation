@@ -4,11 +4,9 @@
     import android.app.Application;
     import android.app.Fragment;
     import android.app.FragmentTransaction;
-    import android.content.ComponentName;
     import android.content.Context;
     import android.content.Intent;
     import android.content.SharedPreferences;
-    import android.content.pm.PackageManager;
     import android.location.Location;
     import android.text.TextUtils;
     import android.util.Log;
@@ -43,6 +41,7 @@
 
 
         private static final DataStore dataStore = DataStore.getDataStore();
+        private static Map<String,String> inAppTexts = new HashMap<String,String>();
 
 
 
@@ -266,9 +265,11 @@
                 return;
             }
             if (!isInitialzed) {
+                DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                 setContext(context.getApplicationContext());
                 setApiKey(apiKey);
                 deviceDetails = new DeviceDetails(context);
+                inAppTexts = dbHelper.getInAppTexts(DeviceDetails.getLanguage());
                 initializeDeviceDetails();
                 deviceId = initializeDeviceId();
                 userId = getSavedUserId();
@@ -1385,15 +1386,39 @@
             }*/
             try {
                 JSONObject variables = newDataStore.getJSONObject("variables");
-                if(variables.length() ==0){
-                    return;
+                JSONArray texts = newDataStore.getJSONArray("inapptext");
+                if(variables.length() > 0){
+                    Map<String,String> values = new HashMap<>();
+                    for(int i = 0; i<variables.names().length(); i++){
+                        values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
+                    }
+                    dataStore.setData(context, values);
+                    dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
                 }
-                Map<String,String> values = new HashMap<>();
-                for(int i = 0; i<variables.names().length(); i++){
-                    values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
+
+                //In App stuff
+
+                if(texts.length() > 0){
+                    DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                    for(int i=0; i < texts.length();i++){
+                        JSONObject t = texts.getJSONObject(i);
+                        String locale = t.getString("locale");
+                        boolean needToUpdate = false;
+                        if(locale.equalsIgnoreCase(DeviceDetails.getLanguage())){
+                            needToUpdate = true;
+                        }
+                        JSONArray localeTexts = t.getJSONArray("changed_text");
+                        for(int j=0; j< localeTexts.length();j++){
+                            JSONObject kV = localeTexts.getJSONObject(j);
+                            //TODO check if all can be inserted in one query
+                            dbHelper.addInAppText(locale, kV.getString("key"), kV.getString("value"));
+                            if(needToUpdate){
+                                inAppTexts.put(kV.getString("key"),kV.getString("value"));
+                            }
+                        }
+                    }
                 }
-                dataStore.setData(context, values);
-                dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
+
             } catch (Exception e){
                if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG, "Exception in updating DataStore:", e);
@@ -1989,5 +2014,15 @@
          */
         public static void setGender(String gender){
             setUserProperty(Constants.ZeTarget_keyForUserPropertyGender,gender);
+        }
+
+        public static Context  attachBaseContext(Activity act, Context ctx)  {
+            ZContext zctx = new ZContext(ctx);
+            zctx.setActivityClassName(act);
+            Log.d(TAG,"method doPQR called for"+ act.getClass().getName()+"called");
+            return zctx;
+        }
+        public static void doXYZ(Activity act,Context ctx){
+
         }
     }
