@@ -88,13 +88,13 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION = "CREATE UNIQUE INDEX suppression_campaign_idx" + " on "
             + Constants.Z_DB_SUPPRESSION_LOGIC_TABLE_NAME +" (campaign_id);";
 
-    private static final String CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY = "CREATE UNIQUE INDEX locale_key_idx" +
-            " on "+ INAPPTEXT_TABLE_NAME+" (locale,key);";
+    private static final String CREATE_UNIQUE_INDEX_ON_LOCALE = "CREATE UNIQUE INDEX locale_idx" +
+            " on "+ INAPPTEXT_TABLE_NAME+" (locale);";
 
     private static final String CREATE_INAPPTEXT_TABLE = "CREATE TABLE IF NOT EXISTS "
             + INAPPTEXT_TABLE_NAME + " ("
-            + "id INTEGER PRIMARY KEY AUTOINCREMENT, locale TEXT, key TEXT, status INTEGER DEFAULT 0,"
-            + "value TEXT);";
+            + "locale TEXT, texts TEXT, status INTEGER DEFAULT 0"
+            + ");";
 
     private File file;
 
@@ -129,7 +129,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
-        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE);
         if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Db created successfully");
         }
@@ -158,7 +158,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_GEOCAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SIMPLE_EVENT_CAMPAIGNS);
         db.execSQL(CREATE_UNIQUE_INDEX_ON_CAMPAIGN_ID_SUPPRESSION);
-        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE_AND_KEY);
+        db.execSQL(CREATE_UNIQUE_INDEX_ON_LOCALE);
         if(ZeTarget.isDebuggingOn()){
             Log.d(TAG, "Db updated successfully");
         }
@@ -872,14 +872,14 @@ class DbHelper extends SQLiteOpenHelper {
     }
 
     //In App Text related
-    synchronized long addInAppText(String locale, String key, String value) {
+    //texts is JSON array to string text
+    synchronized long addInAppText(String locale, String texts) {
         long result = -1;
         try {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put("locale", locale);
-            contentValues.put("key", key);
-            contentValues.put("value", value);
+            contentValues.put("texts", texts);
             result = db.insertWithOnConflict(INAPPTEXT_TABLE_NAME, null, contentValues, 5);
             if (result == -1) {
                 if(ZeTarget.isDebuggingOn()){
@@ -899,18 +899,17 @@ class DbHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    synchronized Map getInAppTexts(String locale){
-        Map<String,String> texts = new HashMap<String,String>();
+    synchronized JSONArray getInAppTexts(String locale){
+        JSONArray texts = null;
         Cursor cursor = null;
         try {
             SQLiteDatabase db = getReadableDatabase();
             cursor = db.query(INAPPTEXT_TABLE_NAME, null, "locale = ?", new String[]{locale}, null,
-                    null, null, null);
+                    null, null, "1");
             for(int i=0;i<cursor.getCount();i++) {
                 cursor.moveToNext();
-                String key = cursor.getString(2);
-                String value = cursor.getString(4);
-                texts.put(key,value);
+                String changedText = cursor.getString(1);
+                texts = new JSONArray(changedText);
             }
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
@@ -931,10 +930,10 @@ class DbHelper extends SQLiteOpenHelper {
         return texts;
     }
 
-    synchronized void clearInAppTextForLocale(String locale) {
+    synchronized void clearInAppTextForLocale() {
         try {
             SQLiteDatabase db = getWritableDatabase();
-            db.delete(INAPPTEXT_TABLE_NAME, "locale = ?" + locale, null);
+            db.delete(INAPPTEXT_TABLE_NAME, null, null);
         } catch (SQLiteException e) {
             if(ZeTarget.isDebuggingOn()){
                 Log.e(TAG, "clearInAppText failed", e);

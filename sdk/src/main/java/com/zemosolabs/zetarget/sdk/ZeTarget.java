@@ -48,11 +48,6 @@
             return inAppTexts;
         }
 
-        synchronized static void setInAppTexts(Map<String, String> inAppTexts) {
-            ZeTarget.inAppTexts = inAppTexts;
-            inAppTextsLoaded = true;
-        }
-
         synchronized static void resetInAppTexts() {
             ZeTarget.inAppTexts = new HashMap<String,String>();
         }
@@ -1354,7 +1349,7 @@
             try {
                 JSONObject postParams = new JSONObject();
                 postParams.put("lastDataStoreSynchedTime", CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
-                String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL,postParams);
+                String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL, postParams);
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
                     if ("OUT_OF_SYNCH".equals(jsonResponse.getString("status"))) {
@@ -1396,7 +1391,6 @@
             }*/
             try {
                 JSONObject variables = newDataStore.getJSONObject("variables");
-                JSONArray texts = newDataStore.getJSONArray("inapptext");
                 if(variables.length() > 0){
                     Map<String,String> values = new HashMap<>();
                     for(int i = 0; i<variables.names().length(); i++){
@@ -1406,24 +1400,23 @@
                 }
 
                 //In App stuff
-
+                JSONArray texts = newDataStore.getJSONArray("inapptext");
                 if(texts.length() > 0){
                     DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
+                    dbHelper.clearInAppTextForLocale();
                     for(int i=0; i < texts.length();i++){
                         JSONObject t = texts.getJSONObject(i);
                         String locale = t.getString("locale");
                         boolean needToUpdate = false;
                         if(locale.equalsIgnoreCase(DeviceDetails.getLocaleString())){
                             needToUpdate = true;
-                            ZeTarget.resetInAppTexts();
-                            dbHelper.clearInAppTextForLocale(locale);
                         }
                         JSONArray localeTexts = t.getJSONArray("changed_text");
-                        for(int j=0; j< localeTexts.length();j++){
-                            JSONObject kV = localeTexts.getJSONObject(j);
-                            //TODO check if all can be inserted in one query
-                            dbHelper.addInAppText(locale, kV.getString("key"), kV.getString("value"));
-                            if(needToUpdate){
+                        dbHelper.addInAppText(locale,localeTexts.toString());
+                        if(needToUpdate){
+                            ZeTarget.resetInAppTexts();
+                            for(int j=0; j< localeTexts.length();j++){
+                                JSONObject kV = localeTexts.getJSONObject(j);
                                 inAppTexts.put(kV.getString("key"),kV.getString("value"));
                             }
                         }
@@ -2029,16 +2022,30 @@
 
         public static Context  attachBaseContext(Activity act, Context ctx)  {
             String activityName = act.getClass().getName();
-            DbHelper dbHelper = DbHelper.getDatabaseHelper(ctx);
             if(!ZeTarget.inAppTextsLoaded) {
-                ZeTarget.setInAppTexts(dbHelper.getInAppTexts(DeviceDetails.getLocaleString()));
+                ZeTarget.fetchInAppTextsFromDb(ctx);
             }
             ZContext zctx = new ZContext(ctx,activityName.substring(0, activityName.lastIndexOf(".")));
             //zctx.setActivityClassName(act);
             Log.d(TAG,"method doPQR called for"+ act.getClass().getName()+"called");
             return zctx;
         }
-        public static void doXYZ(Activity act,Context ctx){
-
+        public static synchronized void fetchInAppTextsFromDb(Context ctx){
+            DbHelper dbHelper = DbHelper.getDatabaseHelper(ctx);
+            JSONArray localeTexts = dbHelper.getInAppTexts(DeviceDetails.getLocaleString());
+            if(localeTexts != null){
+                for(int j=0; j< localeTexts.length();j++){
+                    JSONObject kV = null;
+                    try {
+                        kV = localeTexts.getJSONObject(j);
+                        inAppTexts.put(kV.getString("key"),kV.getString("value"));
+                    } catch (JSONException e) {
+                        if(ZeTarget.isDebuggingOn()) {
+                            Log.e(TAG, "Exception in fetchInAppTextsFromDb",e);
+                        }
+                    }
+                }
+            }
+            inAppTextsLoaded = true;
         }
     }
