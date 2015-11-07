@@ -5,7 +5,7 @@ package com.zemosolabs.zetarget.sdk;
  */
 class Constants {
     static final String Z_PLATFORM = "Android";
-    static final String Z_VERSION = "0.3";
+    static final String Z_VERSION = "0.4";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
     //static String Z_BASE_URL = "http://192.168.1.19/";
@@ -60,7 +60,7 @@ class Constants {
 
     //DB related constants
     static final String Z_DB_NAME = Z_NAMESPACE;
-    static final int Z_DB_VERSION = 9;
+    static final int Z_DB_VERSION = 10;
     static final String Z_DB_EVENT_TABLE_NAME = "events";
     static final String Z_DB_EVENT_ID_FIELD_NAME = "id";
     static final String Z_DB_EVENT_EVENTS_FIELD_NAME = "event";

@@ -42,7 +42,9 @@ public class ZContext extends ContextWrapper {
             //swappedOne.setActivityClassName(activityClassName,act);
 
         }
-        Log.d(TAG,"method getResources called for" + getClass().getName());
+        if(ZeTarget.isDebuggingOn()) {
+            Log.d(TAG, "method getResources called for" + getClass().getName());
+        }
         return swappedOne;
     }
 

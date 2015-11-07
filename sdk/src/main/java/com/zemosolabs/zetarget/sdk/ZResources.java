@@ -72,24 +72,36 @@ public class ZResources extends Resources {
         String classNameOfRClass= packageName+".R";
         String classNameOfRStringsClass =packageName+".R$string";
         try {
-            Log.d(TAG,"The R class to fetch= "+classNameOfRClass);
-            //Class rclz=Class.forName(classNameOfRClass);
-            Log.d(TAG,"The R string class to fetch= "+classNameOfRStringsClass);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.d(TAG, "The R class to fetch= " + classNameOfRClass);
+                //Class rclz=Class.forName(classNameOfRClass);
+                Log.d(TAG, "The R string class to fetch= " + classNameOfRStringsClass);
+            }
             Class clz=Class.forName(classNameOfRStringsClass,true,ctxt.getClassLoader());
-            Log.d(TAG,"Obtained clazz instance of "+classNameOfRStringsClass);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.d(TAG, "Obtained clazz instance of " + classNameOfRStringsClass);
+            }
             Field[] fields =clz.getFields();
-            Log.d(TAG,"Obtained fields array of length="+fields.length);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.d(TAG, "Obtained fields array of length=" + fields.length);
+            }
             for (int i=0;i<fields.length;i++) {
                 String fieldName=fields[i].getName();
                 Integer fieldValue=(Integer) fields[i].get(null);
                 stringFieldValuesVersusNames.put(fieldValue,fieldName);
-                Log.d(TAG,"Added "+fieldValue+"="+fieldName+" into stringFieldValuesVersusNames Map");
+                if(ZeTarget.isDebuggingOn()) {
+                    Log.d(TAG, "Added " + fieldValue + "=" + fieldName + " into stringFieldValuesVersusNames Map");
+                }
             }
 
         } catch (ClassNotFoundException cnfe) {
-            Log.e(TAG,cnfe.getMessage(),cnfe);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.e(TAG, cnfe.getMessage(), cnfe);
+            }
         } catch (IllegalAccessException iae) {
-            Log.e(TAG,iae.getMessage(),iae);
+            if(ZeTarget.isDebuggingOn()) {
+                Log.e(TAG, iae.getMessage(), iae);
+            }
         }
 
     }
@@ -97,7 +109,9 @@ public class ZResources extends Resources {
 
     @Override
     public CharSequence getText(int id) throws NotFoundException {
-        Log.d(TAG, "ResourceName: " + getResourceName(id));
+        if(ZeTarget.isDebuggingOn()) {
+            Log.d(TAG, "ResourceName: " + getResourceName(id));
+        }
 //        if(getResourceName(id).equalsIgnoreCase("com.zemoso.zetarget.sampleapp:string/hello_world")){
 //            return "Ok great!!";
 //        }
