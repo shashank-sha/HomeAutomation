@@ -2033,7 +2033,9 @@
             }
             ZContext zctx = new ZContext(ctx,activityName.substring(0, activityName.lastIndexOf(".")));
             //zctx.setActivityClassName(act);
-            Log.d(TAG,"method doPQR called for"+ act.getClass().getName()+"called");
+            if(ZeTarget.isDebuggingOn()) {
+                Log.d(TAG, "method doPQR called for" + act.getClass().getName() + "called");
+            }
             return zctx;
         }
         public static synchronized void fetchInAppTextsFromDb(Context ctx){
