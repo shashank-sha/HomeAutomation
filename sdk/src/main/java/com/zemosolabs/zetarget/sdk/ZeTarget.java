@@ -1404,6 +1404,9 @@
                 if(texts.length() > 0){
                     DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
                     dbHelper.clearInAppTextForLocale();
+                    if(ZeTarget.isDebuggingOn()){
+                        Log.d(TAG,"Found changed texts from server");
+                    }
                     for(int i=0; i < texts.length();i++){
                         JSONObject t = texts.getJSONObject(i);
                         String locale = t.getString("locale");
@@ -1418,6 +1421,9 @@
                             for(int j=0; j< localeTexts.length();j++){
                                 JSONObject kV = localeTexts.getJSONObject(j);
                                 inAppTexts.put(kV.getString("key"),kV.getString("value"));
+                            }
+                            if(ZeTarget.isDebuggingOn()){
+                                Log.d(TAG,"Now we should see updated texts just fetched from server");
                             }
                         }
                     }
@@ -2044,6 +2050,9 @@
                             Log.e(TAG, "Exception in fetchInAppTextsFromDb",e);
                         }
                     }
+                }
+                if(ZeTarget.isDebuggingOn()){
+                    Log.d(TAG,"Loaded changed texts from local db");
                 }
             }
             inAppTextsLoaded = true;
