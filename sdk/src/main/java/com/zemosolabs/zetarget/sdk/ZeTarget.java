@@ -2225,15 +2225,15 @@
                                     JSONObject jsonObject = new JSONObject()
                                             .put(Constants.InAppTexts.KEY_METHODTYPE, Constants.InAppTexts.METHOD_SETHINT)
                                             .put("id", androidId);
-                                    JSONArray existingForText = textIdMap.get(textKey);
+                                    JSONArray existingForText = textIdMap.get(hintKey);
                                     if(existingForText != null){
-                                        textIdMap.put(textKey, existingForText.put(jsonObject));
+                                        textIdMap.put(hintKey, existingForText.put(jsonObject));
                                     }
                                     else {
-                                        textIdMap.put(textKey, new JSONArray().put(jsonObject));
+                                        textIdMap.put(hintKey, new JSONArray().put(jsonObject));
                                     }
                                     if(ZeTarget.isDebuggingOn()){
-                                        Log.d(TAG,"Found android:hint "+textKey+" ,android:id "+androidId);
+                                        Log.d(TAG,"Found android:hint "+hintKey+" ,android:id "+androidId);
                                     }
                                 }
                             }
