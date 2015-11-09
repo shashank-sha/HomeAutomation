@@ -44,7 +44,6 @@ public class DeviceDetails {
     private static String carrier;
     private static int ostzOffset = TimeZone.getDefault().getRawOffset();
     private static final String language = Locale.getDefault().getLanguage();
-    private static final Locale LOCALE = Locale.getDefault();
 
     // Cached properties, since fetching these take time
     private String advertisingId;
@@ -60,11 +59,11 @@ public class DeviceDetails {
     }
 
     public static Locale getLocale() {
-        return LOCALE;
+        return Locale.getDefault();
     }
 
     public static String getLocaleString(){
-        return LOCALE.toString();
+        return getLocale().toString();
     }
 
     public static String getOstz(){

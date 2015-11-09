@@ -1458,7 +1458,6 @@
                 JSONArray texts = newDataStore.getJSONArray("inapptext");
                 if(texts.length() > 0){
                     DbHelper dbHelper = DbHelper.getDatabaseHelper(context);
-                    dbHelper.clearInAppTextForLocale();
                     if(ZeTarget.isDebuggingOn()){
                         Log.d(TAG,"Found changed texts from server");
                     }
@@ -1469,6 +1468,7 @@
                         if(locale.equalsIgnoreCase(DeviceDetails.getLocaleString())){
                             needToUpdate = true;
                         }
+                        dbHelper.clearInAppTextForLocale(locale);
                         JSONArray localeTexts = t.getJSONArray("changed_text");
                         dbHelper.addInAppText(locale,localeTexts.toString());
                         if(needToUpdate){
