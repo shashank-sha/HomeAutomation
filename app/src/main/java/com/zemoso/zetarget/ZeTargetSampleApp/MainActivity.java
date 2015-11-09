@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
         /*enableDebugging method should only be used for uploading screens for to the ZeTarget
          website for dynamic editing or to read the logs for troubleshooting */
         TextView myAwesomeTextView = (TextView)findViewById(R.id.visibleText);
-        myAwesomeTextView.setText(R.string.hello_world);
+        //myAwesomeTextView.setText(R.string.hello_world);
         setTitle(R.string.app_name);
     }
 
@@ -93,6 +93,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void attachBaseContext(Context ctx) {
-        super.attachBaseContext(ZeTarget.attachBaseContext(this,ctx));
+        super.attachBaseContext(ZeTarget.attachBaseContext(ctx,this));
     }
 }

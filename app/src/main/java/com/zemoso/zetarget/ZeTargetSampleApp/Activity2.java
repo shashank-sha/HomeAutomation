@@ -2,6 +2,7 @@ package com.zemoso.zetarget.ZeTargetSampleApp;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -83,5 +84,10 @@ public class Activity2 extends Activity {
         FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         BlankFragment frag = new BlankFragment();
         fTrans.replace(android.R.id.content,frag).commit();
+    }
+
+    @Override
+    protected void attachBaseContext(Context ctx) {
+        super.attachBaseContext(ZeTarget.attachBaseContext(ctx,this));
     }
 }

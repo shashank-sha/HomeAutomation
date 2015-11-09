@@ -1,6 +1,7 @@
 package com.zemoso.zetarget.ZeTargetSampleApp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -88,5 +89,10 @@ public class Activity3 extends Activity {
     {
         Intent intent = new Intent(Activity3.this, Activity2.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void attachBaseContext(Context ctx) {
+        super.attachBaseContext(ZeTarget.attachBaseContext(ctx,this));
     }
 }

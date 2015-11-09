@@ -88,6 +88,8 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
 
     @Override
     public void onActivityResumed(Activity activity) {
+        ZeTarget.setText(activity);
+
         String packageName = activity.getPackageName();
         PackageManager pm = activity.getPackageManager();
 

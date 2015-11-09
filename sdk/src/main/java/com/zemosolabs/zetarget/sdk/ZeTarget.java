@@ -7,10 +7,16 @@
     import android.content.Context;
     import android.content.Intent;
     import android.content.SharedPreferences;
+    import android.content.res.Resources;
+    import android.content.res.XmlResourceParser;
     import android.location.Location;
     import android.text.TextUtils;
     import android.util.Log;
     import android.util.Pair;
+    import android.view.View;
+    import android.widget.Button;
+    import android.widget.EditText;
+    import android.widget.TextView;
 
     import com.google.android.gms.common.ConnectionResult;
     import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -19,10 +25,15 @@
     import org.json.JSONArray;
     import org.json.JSONException;
     import org.json.JSONObject;
+    import org.xmlpull.v1.XmlPullParser;
+    import org.xmlpull.v1.XmlPullParserException;
 
     import java.io.IOException;
+    import java.util.ArrayList;
     import java.util.Calendar;
     import java.util.HashMap;
+    import java.util.Iterator;
+    import java.util.List;
     import java.util.Map;
     import java.util.UUID;
     import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,15 +53,10 @@
 
         private static final DataStore dataStore = DataStore.getDataStore();
         private static Map<String,String> inAppTexts = new HashMap<String,String>();
+        private static Map<String,Map<String,JSONArray>> stringIdMap = new HashMap<String,Map<String,JSONArray>>();
+
+        private static List<Integer> parsedLayouts = new ArrayList<Integer>();
         private static boolean inAppTextsLoaded = false;
-
-        static Map<String, String> getInAppTexts() {
-            return inAppTexts;
-        }
-
-        synchronized static void resetInAppTexts() {
-            ZeTarget.inAppTexts = new HashMap<String,String>();
-        }
 
         static DeviceDetails deviceDetails;
 
@@ -96,6 +102,58 @@
 
         private ZeTarget(){
 
+        }
+
+        static Map<String, String> getInAppTexts() {
+            return inAppTexts;
+        }
+
+        synchronized static void resetInAppTexts() {
+            ZeTarget.inAppTexts = new HashMap<String,String>();
+        }
+
+        static Map<String, Map<String,JSONArray>> getStringIdMap() {
+            return stringIdMap;
+        }
+
+        static synchronized void addStringIdMap(String activityName, Map<String,JSONArray> value) {
+            Map<String,JSONArray> existingValues = ZeTarget.getStringIdMap().get(activityName);
+            if(existingValues == null){
+                ZeTarget.stringIdMap.put(activityName,value);
+            }
+            else {
+                Iterator it = value.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    JSONArray existingArrayForKey = existingValues.get(pair.getKey());
+
+                        try {
+                            if(existingArrayForKey == null) {
+                                existingValues.put(pair.getKey().toString(), new JSONArray(pair.getValue().toString()));
+                            }
+                            else {
+                                JSONArray newToAdd = new JSONArray(pair.getValue().toString());
+                                for(int j=0;j<newToAdd.length();j++){
+                                    existingArrayForKey.put(newToAdd.getJSONObject(j));
+                                }
+                                existingValues.put(pair.getKey().toString(), existingArrayForKey);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                }
+                ZeTarget.stringIdMap.put(activityName,existingValues);
+            }
+        }
+
+        static List<Integer> getParsedLayouts() {
+            return parsedLayouts;
+        }
+
+        static void addParsedLayouts(Integer id) {
+            if(!ZeTarget.parsedLayouts.contains(id)){
+                ZeTarget.parsedLayouts.add(id);
+            }
         }
 
         static void registerZeTargetActivityLifecycleCallbacks(){
@@ -388,7 +446,7 @@
             // since the existing regID is not guaranteed to work with the new
             // app version.
             int registeredVersion = prefs.getInt(Constants.Z_PREFKEY_APP_VERSION, Integer.MIN_VALUE);
-            int currentVersion = deviceDetails.getAppVersionCode();
+            int currentVersion = DeviceDetails.getAppVersionCode();
             if (registeredVersion != currentVersion) {
                 return "";
             }
@@ -1031,7 +1089,7 @@
          */
         public static void setUserProperty(String key, String value){
 
-            dataStore.setUserProperty(context, key, value);
+            UserProperties.setUserProperty(context, key, value);
             sendUserProperties(Constants.Z_USER_PROPS_UPLOAD_PERIOD_MILLIS);
         }
 
@@ -1153,10 +1211,7 @@
 
         private static boolean isValidDeviceId(String deviceId){
             //Filter invalid device ids like empty string etc
-            if(deviceId == null){
-                return false;
-            }
-            return true;
+            return deviceId != null;
         }
 
         private static synchronized String initializeDeviceId() {
@@ -1267,12 +1322,12 @@
                 JSONObject postParams = new JSONObject();
 
                 postParams.put("appName",CommonUtils.replaceWithJSONNull(DeviceDetails.getApplicationName()));
-                postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(deviceDetails.getOSVersion()));
+                postParams.put("OSVersion", CommonUtils.replaceWithJSONNull(DeviceDetails.getOSVersion()));
                 postParams.put("OSName",CommonUtils.replaceWithJSONNull(deviceDetails.getOSName()));
-                postParams.put("OSFamily",CommonUtils.replaceWithJSONNull(deviceDetails.getOsFamily()));
-                postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(deviceDetails.getModel()));
+                postParams.put("OSFamily",CommonUtils.replaceWithJSONNull(DeviceDetails.getOsFamily()));
+                postParams.put("deviceModel", CommonUtils.replaceWithJSONNull(DeviceDetails.getModel()));
                 postParams.put("deviceDataProvider", CommonUtils.replaceWithJSONNull(deviceDetails.getCarrier()));
-                postParams.put("language", CommonUtils.replaceWithJSONNull(deviceDetails.getLanguage()));
+                postParams.put("language", CommonUtils.replaceWithJSONNull(DeviceDetails.getLanguage()));
                 String deviceToken = getRegistrationId();
                 if(deviceToken != null && deviceToken.length() > 5){
                     postParams.put("deviceToken", CommonUtils.replaceWithJSONNull(deviceToken));
@@ -1348,7 +1403,7 @@
             boolean syncSuccess = false;
             try {
                 JSONObject postParams = new JSONObject();
-                postParams.put("lastDataStoreSynchedTime", CommonUtils.replaceWithJSONNull(dataStore.getDataStoreVersion(context)));
+                postParams.put("lastDataStoreSynchedTime", CommonUtils.replaceWithJSONNull(DataStore.getDataStoreVersion(context)));
                 String response = HttpHelper.doPost(Constants.Z_DATASTORE_SYNCH_URL, postParams);
                 if(response != null){
                     final JSONObject jsonResponse = new JSONObject(response);
@@ -1396,7 +1451,7 @@
                     for(int i = 0; i<variables.names().length(); i++){
                         values.put(variables.names().getString(i),variables.getString(variables.names().getString(i)));
                     }
-                    dataStore.setData(context, values);
+                    DataStore.setData(context, values);
                 }
 
                 //In App stuff
@@ -1428,7 +1483,7 @@
                         }
                     }
                 }
-                dataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
+                DataStore.setDataStoreVersion(context, newDataStore.getString("lastDataStoreSynchedTime"));
             } catch (Exception e){
                if(ZeTarget.isDebuggingOn()){
                     Log.e(TAG, "Exception in updating DataStore:", e);
@@ -1840,9 +1895,9 @@
         private static void saveRegistrationId(String registrationId){
             SharedPreferences.Editor editor = CommonUtils.getSharedPreferences(context).edit();
             editor.putString(Constants.Z_PREFKEY_GCM_REGISTRATION_ID, registrationId);
-            editor.putInt(Constants.Z_PREFKEY_APP_VERSION, deviceDetails.getAppVersionCode());
+            editor.putInt(Constants.Z_PREFKEY_APP_VERSION, DeviceDetails.getAppVersionCode());
             editor.putLong(Constants.Z_PREFKEY_GCM_REGISTRATION_ID_SYNC_TIME,System.currentTimeMillis());
-            editor.commit();
+            editor.apply();
         }
 
         /**
@@ -1998,7 +2053,7 @@
          * Method to set user property- age
          */
         public static void setAge(String age){
-            setUserProperty(Constants.ZeTarget_keyForUserPropertyAge,age);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyAge, age);
         }
         /**
          * Method to set user property- Date of Birth
@@ -2017,27 +2072,22 @@
             if(month<currentMonth||(month==currentMonth&&day<currentDay)){
                 age--;
             }
-            setAge(age+"");
+            setAge(age + "");
         }
         /**
          * Method to set user property- Gender
          */
         public static void setGender(String gender){
-            setUserProperty(Constants.ZeTarget_keyForUserPropertyGender,gender);
+            setUserProperty(Constants.ZeTarget_keyForUserPropertyGender, gender);
         }
 
-        public static Context  attachBaseContext(Activity act, Context ctx)  {
-            String activityName = act.getClass().getName();
+        public static Context attachBaseContext(Context ctx,Activity activity)  {
             if(!ZeTarget.inAppTextsLoaded) {
                 ZeTarget.fetchInAppTextsFromDb(ctx);
             }
-            ZContext zctx = new ZContext(ctx,activityName.substring(0, activityName.lastIndexOf(".")));
-            //zctx.setActivityClassName(act);
-//            if(ZeTarget.isDebuggingOn()) {
-//                Log.d(TAG, "method doPQR called for" + act.getClass().getName() + "called");
-//            }
-            return zctx;
+            return ZContext.getInstance(ctx,activity);
         }
+
         public static synchronized void fetchInAppTextsFromDb(Context ctx){
             DbHelper dbHelper = DbHelper.getDatabaseHelper(ctx);
             JSONArray localeTexts = dbHelper.getInAppTexts(DeviceDetails.getLocaleString());
@@ -2058,5 +2108,155 @@
                 }
             }
             inAppTextsLoaded = true;
+        }
+
+        static void setText(Activity activity){
+            Map<String,JSONArray> textsForThisActivity = ZeTarget.getStringIdMap().get(ZeTarget.getActivityClassName(activity));
+            if(textsForThisActivity == null){
+                return;
+            }
+            Iterator it = textsForThisActivity.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                String replacement = ZeTarget.getInAppTexts().get(pair.getKey());
+                //String replacement = "Done done";
+                if(replacement != null){
+                    try {
+                        JSONArray textsIdArray = new JSONArray(pair.getValue().toString());
+                        for(int i=0;i<textsIdArray.length();i++){
+                            JSONObject obj = textsIdArray.getJSONObject(i);
+                            String methodType = obj.getString(Constants.InAppTexts.KEY_METHODTYPE);
+                            int Id = obj.getInt("id");
+                            View v = activity.findViewById(Id);
+                            if(v == null){
+                                continue;
+                            }
+                            if(v instanceof TextView){
+                                ((TextView) v).setText(replacement);
+                            }
+                            else if(v instanceof Button){
+                                ((Button) v).setText(replacement);
+                            }
+                            else if(v instanceof EditText){
+                                if(methodType.equals(Constants.InAppTexts.METHOD_SETHINT)){
+                                    ((EditText) v).setHint(replacement);
+                                }
+                                if(methodType.equals(Constants.InAppTexts.METHOD_SETTEXT)){
+                                    ((EditText) v).setText(replacement);
+                                }
+                            }
+                            //TODO check apart from textview and button where can we setText
+                        }
+                    } catch (JSONException e) {
+                        if(ZeTarget.isDebuggingOn()){
+                            Log.e(TAG,"JSONException",e);
+                        }
+                    }
+                }
+            }
+        }
+
+        static String getActivityClassName(Activity activity){
+            return activity.getClass().getSimpleName();
+        }
+
+        static void parseLayout(final Resources resources, final int layoutId, final String currentActivityName){
+            if(!ZeTarget.getParsedLayouts().contains(layoutId)){
+                logWorker.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        _parseLayout(resources,layoutId,currentActivityName);
+                    }
+                });
+            }
+        }
+
+        private static void _parseLayout(Resources resources, int layoutId, String currentActivityName){
+            int eventType = 0;
+            try {
+                XmlResourceParser output = resources.getLayout(layoutId);
+                eventType = output.getEventType();
+                Map<String,JSONArray> textIdMap = new HashMap<String,JSONArray>();
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (output.getName().equals("TextView") || output.getName().equals("Button") ||
+                                output.getName().equals("EditText")) {
+                            int androidId = 0;
+                            String textKey = null;
+                            String hintKey = null;
+                            for (int i = 0; i < output.getAttributeCount(); i++) {
+                                if (output.getAttributeName(i).equals("id")) {
+                                    androidId = Integer.parseInt(output.getAttributeValue(i).replace("@", ""));
+                                }
+                                if (output.getAttributeName(i).equals("text")) {
+                                    //Check if text is referenced from strings.xml
+                                    if (output.getAttributeValue(i).charAt(0) == '@') {
+                                        int stringId = Integer.parseInt(output.getAttributeValue(i).replace("@", ""));
+                                        String resourceName = resources.getResourceName(stringId);
+                                        textKey = resourceName.substring(resourceName.lastIndexOf("/") + 1, resourceName.length());
+                                    }
+                                }
+                                if (output.getAttributeName(i).equals("hint")) {
+                                    //Check if text is referenced from strings.xml
+                                    if (output.getAttributeValue(i).charAt(0) == '@') {
+                                        int stringId = Integer.parseInt(output.getAttributeValue(i).replace("@", ""));
+                                        String resourceName = resources.getResourceName(stringId);
+                                        hintKey = resourceName.substring(resourceName.lastIndexOf("/") + 1, resourceName.length());
+                                    }
+                                }
+                            }
+                            if (androidId != 0) {
+                                if (textKey != null) {
+                                    JSONObject jsonObject = new JSONObject()
+                                            .put(Constants.InAppTexts.KEY_METHODTYPE, Constants.InAppTexts.METHOD_SETTEXT)
+                                            .put("id", androidId);
+                                    JSONArray existingForText = textIdMap.get(textKey);
+                                    if(existingForText != null){
+                                        textIdMap.put(textKey, existingForText.put(jsonObject));
+                                    }
+                                    else {
+                                        textIdMap.put(textKey, new JSONArray().put(jsonObject));
+                                    }
+                                    if(ZeTarget.isDebuggingOn()){
+                                        Log.d(TAG, "Found android:text " + textKey + " ,android:id " + androidId);
+                                    }
+                                }
+                                if (hintKey != null) {
+                                    JSONObject jsonObject = new JSONObject()
+                                            .put(Constants.InAppTexts.KEY_METHODTYPE, Constants.InAppTexts.METHOD_SETHINT)
+                                            .put("id", androidId);
+                                    JSONArray existingForText = textIdMap.get(textKey);
+                                    if(existingForText != null){
+                                        textIdMap.put(textKey, existingForText.put(jsonObject));
+                                    }
+                                    else {
+                                        textIdMap.put(textKey, new JSONArray().put(jsonObject));
+                                    }
+                                    if(ZeTarget.isDebuggingOn()){
+                                        Log.d(TAG,"Found android:hint "+textKey+" ,android:id "+androidId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    eventType = output.next();
+                }
+                if(textIdMap.size() > 0){
+                    ZeTarget.addStringIdMap(currentActivityName,textIdMap);
+                }
+            } catch (XmlPullParserException e) {
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"XmlPullParserException",e);
+                }
+            } catch (IOException e) {
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"IOException",e);
+                }
+            } catch (JSONException e) {
+                if(ZeTarget.isDebuggingOn()){
+                    Log.e(TAG,"JSONException",e);
+                }
+            }
+            ZeTarget.addParsedLayouts(layoutId);
         }
     }

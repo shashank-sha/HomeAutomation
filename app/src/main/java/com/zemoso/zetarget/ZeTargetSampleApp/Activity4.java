@@ -1,6 +1,7 @@
 package com.zemoso.zetarget.ZeTargetSampleApp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -110,5 +111,10 @@ public class Activity4 extends Activity implements View.OnClickListener {
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context ctx) {
+        super.attachBaseContext(ZeTarget.attachBaseContext(ctx,this));
     }
 }

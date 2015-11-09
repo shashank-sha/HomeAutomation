@@ -13,24 +13,20 @@ public class ZContext extends ContextWrapper {
 
     private final String TAG ="ZeTarget.ZContext";
 
-    public ZContext(Context ctx, String pName) {
+    private ZContext(Context ctx) {
         super(ctx);
-        context = ctx;
-        packageName = pName;
     }
 
-    private String activityClassName = null;
-    private static Context context;
-    private static String packageName;
-
-    private Activity act =null;
-    //private ZResources swappedOne = null;
-
+    private static ZContext zContext = null;
     private static ZResources swappedOne = null;
+    private static String currentActivityName = null;
 
-    public void setActivityClassName(Activity act) {
-        activityClassName=act.getClass().getName();
-        this.act=act;
+    synchronized static ZContext getInstance(Context ctx,Activity activity){
+        currentActivityName = ZeTarget.getActivityClassName(activity);
+        if(zContext == null){
+            zContext = new ZContext(ctx);
+        }
+        return zContext;
     }
 
     @Override
@@ -38,13 +34,12 @@ public class ZContext extends ContextWrapper {
 
         if (swappedOne==null) {
             Resources orig = super.getResources();
-            swappedOne = new ZResources(getAssets(),orig.getDisplayMetrics(),orig.getConfiguration(),orig,context,packageName);
-            //swappedOne.setActivityClassName(activityClassName,act);
-
+            swappedOne = new ZResources(getAssets(),orig.getDisplayMetrics(),orig.getConfiguration(),orig);
         }
         if(ZeTarget.isDebuggingOn()) {
             Log.d(TAG, "method getResources called for" + getClass().getName());
         }
+        swappedOne.setCurrentActivityName(currentActivityName);
         return swappedOne;
     }
 

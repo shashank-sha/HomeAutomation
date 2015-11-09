@@ -37,7 +37,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Screen two"
+        android:text="@string/goto_two"
         android:id="@+id/button1to2"
         android:layout_centerVertical="true"
         android:onClick="sendToActivity2"
@@ -45,7 +45,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show"
+        android:text="@string/show_button"
         android:id="@+id/showTextMainActivity"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/button1to2"

@@ -138,4 +138,10 @@ class Constants {
     public static final String Z_EVENT_TYPE = Z_NAMESPACE+".eventType";
     public static final String Z_CAMPAIGN_TYPE = Z_NAMESPACE+".campaignType" ;
 
+    static final class InAppTexts {
+        static final String METHOD_SETTEXT = "setText";
+        static final String METHOD_SETHINT = "setHint";
+        public static final String KEY_METHODTYPE = "methodType";
+    }
+
 }

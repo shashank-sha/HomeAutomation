@@ -1,11 +1,14 @@
 package com.zemoso.zetarget.ZeTargetSampleApp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.zemosolabs.zetarget.sdk.ZeTarget;
 
 
 public class Activity5 extends Activity {
@@ -59,5 +62,10 @@ public class Activity5 extends Activity {
     {
         Intent intent = new Intent(Activity5.this, MainActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void attachBaseContext(Context ctx) {
+        super.attachBaseContext(ZeTarget.attachBaseContext(ctx,this));
     }
 }
