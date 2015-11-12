@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
 
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {
         Intent startingIntent = activity.getIntent();
         if(startingIntent.hasExtra(Constants.Z_EVENT_TYPE)){
             if(startingIntent.getStringExtra(Constants.Z_EVENT_TYPE).equals(Constants.Z_CAMPAIGN_VIEWED_EVENT)){
@@ -64,7 +65,18 @@ public class ZeTargetActivityLifecycleCallbacks implements Application.ActivityL
                 }
             }
         }
-
+        activity.findViewById(android.R.id.content).addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
+                                       int oldTop, int oldRight, int oldBottom) {
+                if(ZeTarget.isDebuggingOn()){
+                    Log.d(TAG,"LayoutChange called for view:"+v);
+                }
+                if(ZeTarget.needTocallsetText.getAndSet(false)) {
+                    ZeTarget.setText(activity);
+                }
+            }
+        });
     }
 
     @Override

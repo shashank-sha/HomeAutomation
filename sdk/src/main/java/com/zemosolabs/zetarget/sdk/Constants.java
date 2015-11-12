@@ -8,7 +8,6 @@ class Constants {
     static final String Z_VERSION = "0.4";
     static final String Z_SDK_ID = Z_PLATFORM+"-"+Z_VERSION;
     public static final long Z_TIMEOUT_BETWEEN_IN_APP = 60000l;
-    //static String Z_BASE_URL = "http://192.168.1.19/";
     static String Z_BASE_URL = "http://api.zetarget.com/";
     //static String Z_BASE_URL = "http://devapi.zetarget.com/";
     static final String Z_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
@@ -37,7 +36,7 @@ class Constants {
     static final String Z_PREFKEY_LAST_DATASTORE_SYNC_TIME = Z_NAMESPACE+".last_datastore_sync_time";
     static final String Z_PREFKEY_LAST_DATASTORE_VERSION = Z_NAMESPACE+".last_datastore_version";
     //static String Z_DATASTORE_SYNCH_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/fetchDatastore";
-    static String Z_DATASTORE_SYNCH_URL = Z_BASE_URL+"fetchDatastore";
+    static final String Z_DATASTORE_SYNCH_URL = "fetchDatastore";
 
 
 
@@ -97,18 +96,18 @@ class Constants {
     static final long Z_EVENT_UPLOAD_THRESHOLD = 10;
     static int Z_EVENT_UPLOAD_MAX_BATCH_SIZE = 15;
     //static String Z_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sendEvent";
-    static String Z_EVENT_LOG_URL = Z_BASE_URL+"sendEvent";
+    static final String Z_EVENT_LOG_URL = "sendEvent";
 
     //static String Z_SET_USER_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/changeUser";
-    static String Z_SET_USER_URL = Z_BASE_URL+"changeUser";
+    static final String Z_SET_USER_URL = "changeUser";
     //static String Z_START_SESSION_EVENT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/sessionStart";
-    static String Z_START_SESSION_EVENT_LOG_URL = Z_BASE_URL+"sessionStart";
+    static final String Z_START_SESSION_EVENT_LOG_URL = "sessionStart";
     //static String Z_INIT_LOG_URL = "http://private-anon-fe9d7be63-dummysdkapi.apiary-mock.com/init";
-    static String Z_INIT_LOG_URL = Z_BASE_URL+"init";
+    static final String Z_INIT_LOG_URL = "init";
     static String Z_SEND_SNAPSHOT_URL = "http://www.zetarget.com/synchScreenToServer" ;
 
     //Promotions related
-    static String Z_PROMOTION_URL = Z_BASE_URL+"fetchPromo";
+    static final String Z_PROMOTION_URL = "fetchPromo";
     static final String Z_PREFKEY_LAST_CAMPAIGN_SYNC_TIME = Z_NAMESPACE+".lastcampaignsynctime";
 
     static int Z_EVENT_MAX_COUNT = 100;
@@ -117,7 +116,7 @@ class Constants {
 
     //User Properties
     //static String Z_USER_PROPERTIES_LOG_URL = "http://private-9d06c-dummysdkapi.apiary-mock.com/sendUserProperties";
-    static String Z_USER_PROPERTIES_LOG_URL = Z_BASE_URL+"sendUserProperties";
+    static final String Z_USER_PROPERTIES_LOG_URL = "sendUserProperties";
     static long Z_USER_PROPS_UPLOAD_PERIOD_MILLIS = 15*1000;
 
     static final String Z_BUNDLE_KEY_PUSH_NOTIFICATION_CAMPAIGN_ID = Z_NAMESPACE+".pushNotificationCampaignId";

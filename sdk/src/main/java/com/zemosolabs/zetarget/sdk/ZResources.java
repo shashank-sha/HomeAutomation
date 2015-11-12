@@ -41,12 +41,12 @@ public class ZResources extends Resources {
         if(ZeTarget.isDebuggingOn()) {
             Log.d(TAG, "ResourceName: " + getResourceName(id));
         }
-        //getResourceName(id) = "com.zemoso.zetarget.sampleapp:string/hello_world"
-        String resourceName = getResourceName(id);
-        String key = resourceName.substring(resourceName.lastIndexOf("/")+1,resourceName.length());
-        String replacement = ZeTarget.getInAppTexts().get(key);
-        if(replacement != null){
-            return replacement;
+        String key = ZeTarget.getKeyFromResourceName(origResource, id);
+        if(key != null){
+            String replacement = ZeTarget.getInAppTexts().get(key);
+            if(replacement != null){
+                return replacement;
+            }
         }
         return origResource.getText(id);
     }

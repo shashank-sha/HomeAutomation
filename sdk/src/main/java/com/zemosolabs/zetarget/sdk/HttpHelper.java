@@ -40,7 +40,7 @@ public class HttpHelper {
 
         HttpResponse response;
         String stringResponse = null;
-        HttpPost postRequest = new HttpPost(url);
+        HttpPost postRequest = new HttpPost(Constants.Z_BASE_URL+url);
         HttpClient client = new DefaultHttpClient();
         try {
             String jsonString = postParams.toString();

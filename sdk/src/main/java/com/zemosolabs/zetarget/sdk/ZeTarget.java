@@ -71,6 +71,7 @@
         private static AtomicBoolean fetchingPromotionsCurrently = new AtomicBoolean(false);
         private static AtomicBoolean updatingUserPropsCurrently = new AtomicBoolean(false);
         private static AtomicBoolean showingPromotion = new AtomicBoolean(false);
+        static AtomicBoolean needTocallsetText = new AtomicBoolean(true);
 
         private static boolean DEBUG = false;
 
@@ -221,6 +222,15 @@
                     }
                 }
             }
+        }
+
+        /**
+         *
+         * Method to get ZeTarget SDK version
+         *
+         */
+        public static String getSDKVersion() {
+            return Constants.Z_VERSION;
         }
 
 
@@ -2081,7 +2091,7 @@
             setUserProperty(Constants.ZeTarget_keyForUserPropertyGender, gender);
         }
 
-        public static Context attachBaseContext(Context ctx,Activity activity)  {
+        public static Context attachBaseContext(Context ctx, final Activity activity)  {
             if(!ZeTarget.inAppTextsLoaded) {
                 ZeTarget.fetchInAppTextsFromDb(ctx);
             }
@@ -2133,16 +2143,28 @@
                             }
                             if(v instanceof TextView){
                                 ((TextView) v).setText(replacement);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG,"Changing view: "+Id+" text to"+replacement);
+                                }
                             }
                             else if(v instanceof Button){
                                 ((Button) v).setText(replacement);
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG,"Changing view: "+Id+" text to"+replacement);
+                                }
                             }
                             else if(v instanceof EditText){
                                 if(methodType.equals(Constants.InAppTexts.METHOD_SETHINT)){
                                     ((EditText) v).setHint(replacement);
+                                    if(ZeTarget.isDebuggingOn()){
+                                        Log.d(TAG,"Changing view: "+Id+" hint to"+replacement);
+                                    }
                                 }
                                 if(methodType.equals(Constants.InAppTexts.METHOD_SETTEXT)){
                                     ((EditText) v).setText(replacement);
+                                    if(ZeTarget.isDebuggingOn()){
+                                        Log.d(TAG,"Changing view: "+Id+" text to"+replacement);
+                                    }
                                 }
                             }
                             //TODO check apart from textview and button where can we setText
@@ -2161,6 +2183,7 @@
         }
 
         static void parseLayout(final Resources resources, final int layoutId, final String currentActivityName){
+            needTocallsetText.set(true);
             if(!ZeTarget.getParsedLayouts().contains(layoutId)){
                 logWorker.post(new Runnable() {
                     @Override
@@ -2192,16 +2215,14 @@
                                     //Check if text is referenced from strings.xml
                                     if (output.getAttributeValue(i).charAt(0) == '@') {
                                         int stringId = Integer.parseInt(output.getAttributeValue(i).replace("@", ""));
-                                        String resourceName = resources.getResourceName(stringId);
-                                        textKey = resourceName.substring(resourceName.lastIndexOf("/") + 1, resourceName.length());
+                                        textKey = getKeyFromResourceName(resources, stringId);
                                     }
                                 }
                                 if (output.getAttributeName(i).equals("hint")) {
                                     //Check if text is referenced from strings.xml
                                     if (output.getAttributeValue(i).charAt(0) == '@') {
                                         int stringId = Integer.parseInt(output.getAttributeValue(i).replace("@", ""));
-                                        String resourceName = resources.getResourceName(stringId);
-                                        hintKey = resourceName.substring(resourceName.lastIndexOf("/") + 1, resourceName.length());
+                                        hintKey = getKeyFromResourceName(resources, stringId);
                                     }
                                 }
                             }
@@ -2258,5 +2279,14 @@
                 }
             }
             ZeTarget.addParsedLayouts(layoutId);
+        }
+
+        static String getKeyFromResourceName(Resources resources, int resourceId){
+            //getResourceName(id) = "com.zemoso.zetarget.sampleapp:string/hello_world"
+            String resourceName = resources.getResourceName(resourceId);
+            if(resourceName == null){
+                return null;
+            }
+            return resourceName.substring(resourceName.lastIndexOf("/")+1,resourceName.length());
         }
     }
