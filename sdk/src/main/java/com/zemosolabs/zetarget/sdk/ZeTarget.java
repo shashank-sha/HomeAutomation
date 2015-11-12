@@ -230,7 +230,7 @@
          *
          */
         public static String getSDKVersion() {
-            return Constants.Z_VERSION;
+            return Constants.Z_SDK_ID;
         }
 
 
