@@ -50,13 +50,19 @@ import javax.xml.datatype.Duration;
 
 public class MainActivity1 extends AppCompatActivity {
     String TAG = "WhatsApp";
+//    String url1 = "http://192.168.1.55:9000/checkUser";
+//    String url2 = "http://192.168.1.55:9000/addUser";
+//    String url3 = "http://192.168.1.55:9000/findAll";
+
     String url1 = "http://10.0.2.2:9000/checkUser";
     String url2 = "http://10.0.2.2:9000/addUser";
     String url3 = "http://10.0.2.2:9000/findAll";
 
-//    String url1 = "http://localhost:9000/checkUser";
-//  String url2 = "http://localhost:9000/addUser";
-  //  String url3 = "localhost://10.0.2.2:9000/findAll";
+
+
+//    String url1 = "http://192.168.1.55:9000/checkUser";
+//  String url2 = "http://192.168.1.55:9000/addUser";
+//    String url3 = "http://192.168.1.55:9000/findAll";
 
     //    String url = "http://polls.apiblueprint.org/questions";
     //  String result ="";

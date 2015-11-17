@@ -33,11 +33,6 @@ public class SQLite_Messages {
         To_Name = to_Name;
     }
 
-    @Override
-    public String toString() {
-        return "From_Name='" + From_Name + '\'' +
-                ", Message='" + Message + '\'' +
-                ", To_Name='" + To_Name + '\'' +
-                '}';
-    }
+
+
 }

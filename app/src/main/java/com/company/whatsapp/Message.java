@@ -4,20 +4,32 @@ package com.company.whatsapp;
  * Created by sudhanshu on 5/11/15.
  */
 public class Message {
-    private String fromName, message;
+    private String fromName, message,toName;
+    
+
 
 
     public Message() {
     }
 
-    @Override
-    public String toString() {
-        return this.fromName +" : " + this.message;
+    public String getToName() {
+        return toName;
     }
 
-    public Message(String fromName, String message) {
+    public void setToName(String toName) {
+        this.toName = toName;
+    }
+
+    @Override
+    public String toString() {
+        return this.message;
+    }
+
+    public Message(String fromName, String message,String toName) {
         this.fromName = fromName;
         this.message = message;
+        this.toName = toName;
+
 
     }
 

@@ -29,8 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChatTabActivity extends ListActivity {
-    String url3 = "http://10.0.2.2:9000/findAll";
-//    String url3 = "http://localhost:9000/findAll";
+//    String url3 = "http://192.168.1.55:9000/findAll";
+//    String url3 = "http://192.168.1.55:9000/findAll";
+String url3 = "http://10.0.2.2:9000/findAll";
     String username = MainActivity1.bob;
     ListView list;
 

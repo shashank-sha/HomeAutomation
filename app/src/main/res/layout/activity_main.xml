@@ -23,10 +23,9 @@
         android:background="#CCCCCC"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_below="@+id/textView1"
-        android:layout_alignRight="@+id/button1"
-        android:layout_alignEnd="@+id/button1"
-        android:layout_marginTop="130dp">
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView">
 
 
     </EditText>
@@ -44,7 +43,8 @@
         android:background="#0099FF"
         android:text="@string/Existing"
         android:textColor="#FFFFFF"
-        android:layout_marginBottom="74dp"
+
+        android:padding="5dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -56,19 +56,19 @@
         android:background="#0099FF"
         android:text="@string/New_User"
         android:textColor="#FFFFFF"
-        android:layout_alignTop="@+id/button1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="User_Name"
+        android:text="UserName"
         android:id="@+id/textView"
         android:layout_alignTop="@+id/editText1"
-        android:layout_toLeftOf="@+id/editText1"
-        android:layout_toStartOf="@+id/editText1" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

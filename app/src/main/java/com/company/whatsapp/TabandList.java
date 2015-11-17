@@ -21,6 +21,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by sudhanshu on 30/10/15.
@@ -32,8 +35,9 @@ public class TabandList extends TabActivity {
    // ArrayList<HashMap<String, String>> inboxList;
 
     String url3 = "http://10.0.2.2:9000/findAll";
+    //String url3 = "http://192.168.1.105:9000/findAll";
 
-   // String url3 = "http://localhost:9000/findAll";
+//    String url3 = "http://192.168.1.55:9000/findAll";
 
 
 
@@ -79,6 +83,7 @@ public class TabandList extends TabActivity {
     public   static class JSONTask5 extends AsyncTask<String,String,String> {
         String TAG = "WhatsApp";
        static ArrayList<HashMap<String,String>> inboxList = new ArrayList<HashMap<String, String>>();
+       // static ArrayList<HashMap<String,String>> inboxList1 = new ArrayList<>();
         String user_name;
         String id;
 
@@ -129,6 +134,25 @@ public class TabandList extends TabActivity {
                             map.put("userName", user_name);
                             inboxList.add(map);
                         }
+
+                       // ArrayList<HashMap<String,String>> al = new ArrayList<>();
+// add elements to al, including duplicates
+                        Set<HashMap<String,String>> hs = new HashSet<>();
+                        hs.addAll(inboxList);
+                        inboxList.clear();
+                        inboxList.addAll(hs);
+
+
+
+
+
+
+
+
+
+
+
+
 
 // runOnUiThread(new Runnable() {
 //                            @Override

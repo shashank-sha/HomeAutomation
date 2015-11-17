@@ -99,7 +99,7 @@ import android.util.Log;
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE " + MESSAGE_TO + " = " + "'"+username + "'"  +" AND "+ MESSAGE_FROM + " = " + "'"+reciever_name + "' " +
-              " OR " +  MESSAGE_FROM +" = "+ "'"+username + "'" + " AND " + MESSAGE_TO + " = " + "'"+reciever_name + "'" ,null);
+              " OR " +  MESSAGE_FROM +" = "+ "'"+username + "' " + " AND " + MESSAGE_TO + " = " + "'"+reciever_name + "'" ,null);
         if(c!=null){
             c.moveToFirst();
         }

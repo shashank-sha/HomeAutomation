@@ -50,17 +50,17 @@ import java.util.List;
 
 
 
-public class CharArrayAdapter extends ArrayAdapter<ChatMessage> {
+public class CharArrayAdapter extends ArrayAdapter<Message> {
     //private TextView charText;M
-    private List<ChatMessage> messageList = new ArrayList<ChatMessage>();
+    private List<Message> messageList = new ArrayList<Message>();
     private LinearLayout layout;
-    private boolean isMe = true;
+   // private boolean isMe ;
 
-    public CharArrayAdapter(Context applicationContext, int textViewResourceId, List<ChatMessage> objects) {
+    public CharArrayAdapter(Context applicationContext, int textViewResourceId, List<Message> objects) {
         super(applicationContext, textViewResourceId, objects);
     }
 
-    public void add(ChatMessage objects) {
+    public void add(Message objects) {
 
         messageList.add(objects);
         super.add(objects);
@@ -83,32 +83,58 @@ public class CharArrayAdapter extends ArrayAdapter<ChatMessage> {
 
             LayoutInflater inflator = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflator.inflate(R.layout.chat, parent, false);
-            DateFormat df = new SimpleDateFormat("HH:mm");
-            Calendar calobj = Calendar.getInstance();
-            // System.out.println(df.format(calobj.getTime()));
-            CharSequence text = df.format(calobj.getTime());
-            Context context =getContext();
-            int duration = Toast.LENGTH_LONG;
-            Toast toast = Toast.makeText(context,text,duration);
-            toast.show();
+//            DateFormat df = new SimpleDateFormat("HH:mm");
+//            Calendar calobj = Calendar.getInstance();
+//            // System.out.println(df.format(calobj.getTime()));
+//            CharSequence text = df.format(calobj.getTime());
+//            Context context =getContext();
+//            int duration = Toast.LENGTH_LONG;
+//            Toast toast = Toast.makeText(context,text,duration);
+//            toast.show();
 
 
 
         }
-        isMe = !isMe;
+       // isMe = !isMe;
+        DateFormat df = new SimpleDateFormat("HH:mm");
+        Calendar calobj = Calendar.getInstance();
+        // System.out.println(df.format(calobj.getTime()));
+        CharSequence text = df.format(calobj.getTime());
 
         layout = (LinearLayout) v.findViewById(R.id.message1);
-        ChatMessage messageobj = getItem(position);
+        Message messageobj = getItem(position);
         TextView charText = (TextView) v.findViewById(R.id.SingleMessage);
         charText.setText(messageobj.toString());
-//        if (isMe) {
+        TextView date = (TextView) v.findViewById(R.id.Date);
+        date.setText(text);
+        String user = messageobj.getFromName();
+       String user2 = messageobj.getToName();
+        String user1 =MainActivity1.bob;
+
+//        if(ChatBox.isMe) {
 //            charText.setGravity(Gravity.RIGHT);
-//            charText.setBackgroundColor(Color.WHITE);
-//        } else {
+//        ChatBox.isMe=false;
+//        }
+
+        if(user.equals(user1)) {
+
+
+           // charText.setGravity(Gravity.RIGHT);
+            charText.setBackgroundResource(R.drawable.turqfocus);
+        }
+            else {
+
+
+            charText.setGravity(Gravity.START);
+            charText.setBackgroundResource(R.drawable.turq);
+
+        }//  charText.setBackgroundColor(Color.WHITE);
+//         else {
 //            charText.setGravity(Gravity.LEFT);
 //            // charText.setTextColor(Color.WHITE);
 //            //charText.setBackgroundColor(Color.BLACK);
 //        }
+
         return v;
     }
     // layout.setGravity(messageobj.left? Gravity.LEFT:Gravity.RIGHT);

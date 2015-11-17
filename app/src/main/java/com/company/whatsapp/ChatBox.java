@@ -47,30 +47,39 @@ import org.json.JSONObject;
 
 
 public class ChatBox extends AppCompatActivity {
+//    String url4 ="http://192.168.1.55:9000/addMessage";
+//    String url5 ="http://192.168.1.55:9000/findMessage";
+
+//    String url4 ="http://192.168.1.55:9000/addMessage";
+//    String url5 ="http://192.168.1.55:9000/findMessage";
+
     String url4 ="http://10.0.2.2:9000/addMessage";
     String url5 ="http://10.0.2.2:9000/findMessage";
-
-//    String url4 ="http://localhost:9000/addMessage";
-//    String url5 ="http://localhost:9000/findMessage";
 
  //   private MessageListAdapter mdp;
     static String TAG = "WhatsApp";
 
     private ArrayList<Message> messages=new ArrayList<>();
     private CharArrayAdapter adp;
-    ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
+   // ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
 
     private ListView list;
-    private ListView serverList;
+   // private ListView serverList;
     private EditText chatText;
     private Button send;
-    private boolean side =false;
+   static public boolean isMe =false;
     String username = MainActivity1.bob;
+
 
 
 
     public class JSONTASK4 extends AsyncTask<String,String,String> {
 
+        public  String getRecieverName(){
+            Intent intent1 = getIntent();
+            String reciverName = intent1.getStringExtra("recievername");
+            return reciverName;
+        }
         @Override
         protected String doInBackground(String... params) {
             String username = MainActivity1.bob;
@@ -109,17 +118,27 @@ public class ChatBox extends AppCompatActivity {
                             for (int i = 0; i < chats.length(); i++) {
                                 JSONObject c = chats.getJSONObject(i);
                                 Message message123 = new Message();
+                                String messageTo = c.getString("messageTo");
                                 String messageFrom = c.getString("messageFrom");
                                 String message = c.getString("message");
-                                message123.setMessage(message);
+                                String reciever = getRecieverName();
+                                String user = MainActivity1.bob;
 
-                                message123.setFromName(messageFrom);
+                                if(((messageTo.equals(reciever)) || (messageTo.equals(user))) && ((messageFrom.equals(reciever)) || (messageFrom.equals(user)))) {
+                                    message123.setToName(messageTo);
+                                    message123.setMessage(message);
+                                    message123.setFromName(messageFrom);
+                                    messages.add(message123);
+//                                    int count = messages.size();
+//                                    String user1 = reciever;
+                                    Log.d(TAG,"message initialized");
+                                }
+
+                                else{
+                                    Log.d(TAG,"message not initialized");
+                                }
 
 
-
-
-                                messages.add(message123);
-                                Log.d(TAG,"message initialized");
 
 
 
@@ -163,23 +182,23 @@ public class ChatBox extends AppCompatActivity {
                 //ImageView patch = (ImageView) findViewById(R.id.test_image);
 
 
-                new JSONTASK4().execute(url5);
+               new JSONTASK4().execute(url5);
 
 
                 send = (Button) findViewById(R.id.btn);
                 //send.setText(getResources().getText(R.string.a_send));
                 list = (ListView) findViewById(R.id.listView1);
 
-               // chat.add(new ChatMessage("SUD", "abc"));
+                // chat.add(new ChatMessage("SUD", "abc"));
 
-                adp = new CharArrayAdapter(getApplicationContext(),android.R.layout.simple_list_item_1,chat);
+                adp = new CharArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, messages);
 
-                serverList = (ListView) findViewById(R.id.listView2);
-           //     ArrayAdapter<ChatMessage> adapter1 = new ArrayAdapter<ChatMessage>(this, android.R.layout.simple_list_item_1, chat);
+                //serverList = (ListView) findViewById(R.id.listView2);
+                //     ArrayAdapter<ChatMessage> adapter1 = new ArrayAdapter<ChatMessage>(this, android.R.layout.simple_list_item_1, chat);
 
-                ArrayAdapter<Message> adapter = new ArrayAdapter<Message>(this,
-                        android.R.layout.simple_list_item_1, messages);
-                serverList.setAdapter(adapter);
+//                ArrayAdapter<Message> adapter = new ArrayAdapter<Message>(this,
+//                        android.R.layout.simple_list_item_1, messages);
+//                serverList.setAdapter(adapter);
 
                 chatText = (EditText) findViewById(R.id.chat);
 
@@ -200,13 +219,19 @@ public class ChatBox extends AppCompatActivity {
                 send.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        isMe = true;
                         sendChatMessage();
                         new JSONTask3().execute(url4);
-                        chatText.setText("");
+                      //  new JSONTASK4().execute(url5);
+// chatText.setText("");
                     }
+
+
                 });
                 list.setAdapter(null);
                 list.setAdapter(adp);
+//                chatText.setText("");
+
 
                 adp.registerDataSetObserver(new DataSetObserver() {
                     @Override
@@ -214,19 +239,28 @@ public class ChatBox extends AppCompatActivity {
                         super.onChanged();
                         list.setSelection(adp.getCount() - 1);
 
+
                     }
                 });
-            } //list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
+            }          //list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
 
 
      public String getMessage(){
         String message = chatText.getText().toString();
-        return message;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                chatText.setText("");
+            }
+        });
+         return message;
+
      }
 
     public void addMessage(){
-        addChatToSqlite(chat);
+      //  addChatToSqlite(messages);
         addServerChatToSqlite(messages);
         DBAdapter dbAdapter = DBAdapter.getDatabaseHelper(getApplicationContext());
         if(dbAdapter.ifEmpty()){
@@ -238,7 +272,7 @@ public class ChatBox extends AppCompatActivity {
 
 
 
-    public String getRecieverName(){
+    public  String getRecieverName(){
         Intent intent1 = getIntent();
         String reciverName = intent1.getStringExtra("recievername");
         return reciverName;
@@ -246,24 +280,24 @@ public class ChatBox extends AppCompatActivity {
 
 
 
-   public void addChatToSqlite(ArrayList<ChatMessage> List){
-       DBAdapter dbAdapter = DBAdapter.getDatabaseHelper(getApplicationContext());
-       Iterator<ChatMessage> iterator = List.iterator();
-       while(iterator.hasNext()){
-           ChatMessage element =iterator.next();
-           String messageTo = element.getToName();
-           String message = element.getMessage();
-          long result = dbAdapter.insertRow(username, message, messageTo);
-           if(result==-1){
-               Log.d(TAG,"Message cannot be added");
-           }
-
-
-
-
-       }
-
-   }
+//   public void addChatToSqlite(ArrayList<Message> List){
+//       DBAdapter dbAdapter = DBAdapter.getDatabaseHelper(getApplicationContext());
+//       Iterator<Message> iterator = List.iterator();
+//       while(iterator.hasNext()){
+//           Message element =iterator.next();
+//           String messageTo = element.getToName();
+//           String message = element.getMessage();
+//          long result = dbAdapter.insertRow(username, message, messageTo);
+//           if(result==-1){
+//               Log.d(TAG,"Message cannot be added");
+//           }
+//
+//
+//
+//
+//       }
+//
+//   }
     public void addServerChatToSqlite(ArrayList<Message> List){
         DBAdapter dbAdapter = DBAdapter.getDatabaseHelper(getApplicationContext());
         Iterator<Message> iterator = List.iterator();
@@ -287,14 +321,20 @@ public class ChatBox extends AppCompatActivity {
     private boolean sendChatMessage() {
 
 //
-        adp.add(new ChatMessage(getRecieverName(), chatText.getText().toString()));
+
+        adp.add(new Message(MainActivity1.bob, chatText.getText().toString(), getRecieverName()));
+       // if(getRecieverName()==MainActivity1.bob)
+
+
+
+
 
 
        // chatText.setText("");
-        List<ChatMessage> chat = adp.getMessageList();
+       // List<ChatMessage> chat = adp.getMessageList();
 
        addMessage();
-        // side=!side;
+
         return true;
 //        //.add(new ChatMessage(getRecieverName(), chatText.getText().toString()));
 //        runOnUiThread(new Runnable() {
