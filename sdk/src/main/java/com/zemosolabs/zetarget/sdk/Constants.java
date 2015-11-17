@@ -47,6 +47,7 @@ class Constants {
     static final String Z_SESSION_END_EVENT = "zmobile.session_ended";
     static final String Z_CAMPAIGN_VIEWED_EVENT = "zmobile.campaign_viewed";
     static final String Z_CAMPAIGN_REJECTED_EVENT = "zmobile.campaign_rejected";
+    static final String Z_SESSION_END_EVENT_SESSION_LENGTH_PARAMS = "session_length";
 //    static final String Z_CAMPAIGN_SHOW_LATER_EVENT = "zmobile.campaign_later";
 //    static final String Z_CAMPAIGN_RATE_EVENT = "zmobile.campaign_rate";
 //    static final String Z_CAMPAIGN_DONOT_SHOW_EVENT = "zmobile.campaign_dont_show";

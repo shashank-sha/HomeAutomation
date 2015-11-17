@@ -1064,10 +1064,26 @@
                 @Override
                 public void run() {
                     if (isSessionOpen) {
-                        long eventId = logEvent(END_SESSION_EVENT, null, null, timestamp,
+                        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
+                        long startSessionTimeStamp = preferences.getLong(Constants.Z_PREFKEY_LAST_END_SESSION_ID,
+                                -1);
+                        JSONObject end_sessionParams = new JSONObject();
+                        if(startSessionTimeStamp != -1){
+                            try {
+                                end_sessionParams.put(Constants.Z_SESSION_END_EVENT_SESSION_LENGTH_PARAMS, timestamp - startSessionTimeStamp);
+                            } catch (JSONException e) {
+                                end_sessionParams =null;
+                                if(ZeTarget.isDebuggingOn()){
+                                    Log.d(TAG,"JSONException",e);
+                                }
+                            }
+                        }
+                        else {
+                            end_sessionParams = null;
+                        }
+                        long eventId = logEvent(END_SESSION_EVENT, end_sessionParams, null, timestamp,
                                 false);
 
-                        SharedPreferences preferences = CommonUtils.getSharedPreferences(context);
                         preferences.edit().putLong(Constants.Z_PREFKEY_LAST_END_SESSION_EVENT_ID, eventId)
                                 .putLong(Constants.Z_PREFKEY_LAST_END_SESSION_TIME, timestamp)
                                 .apply();
