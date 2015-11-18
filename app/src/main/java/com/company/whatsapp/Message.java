@@ -1,13 +1,21 @@
 package com.company.whatsapp;
 
+import java.util.Comparator;
+
 /**
  * Created by sudhanshu on 5/11/15.
  */
-public class Message {
+public class Message implements Comparable<Message> {
     private String fromName, message,toName;
-    
+    private String dateTime;
 
+    public String getDateTime() {
+        return dateTime;
+    }
 
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
 
     public Message() {
     }
@@ -47,5 +55,10 @@ public class Message {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public int compareTo(Message another) {
+        return getDateTime().compareTo(another.getDateTime());
     }
 }

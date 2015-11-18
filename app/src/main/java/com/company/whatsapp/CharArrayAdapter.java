@@ -106,10 +106,11 @@ public class CharArrayAdapter extends ArrayAdapter<Message> {
         TextView charText = (TextView) v.findViewById(R.id.SingleMessage);
         charText.setText(messageobj.toString());
         TextView date = (TextView) v.findViewById(R.id.Date);
-        date.setText(text);
+        date.setText(messageobj.getDateTime());
         String user = messageobj.getFromName();
        String user2 = messageobj.getToName();
         String user1 =MainActivity1.bob;
+        String date1 = messageobj.getDateTime();
 
 //        if(ChatBox.isMe) {
 //            charText.setGravity(Gravity.RIGHT);
@@ -121,12 +122,19 @@ public class CharArrayAdapter extends ArrayAdapter<Message> {
 
            // charText.setGravity(Gravity.RIGHT);
             charText.setBackgroundResource(R.drawable.turqfocus);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.FILL_PARENT);
+            params.gravity = Gravity.END;
+            charText.setLayoutParams(params);
         }
             else {
 
 
-            charText.setGravity(Gravity.START);
+            //charText.setGravity(Gravity.START);
             charText.setBackgroundResource(R.drawable.turq);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.FILL_PARENT);
+
+            params.gravity = Gravity.START;
+            charText.setLayoutParams(params);
 
         }//  charText.setBackgroundColor(Color.WHITE);
 //         else {

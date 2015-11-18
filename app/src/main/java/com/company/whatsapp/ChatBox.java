@@ -28,7 +28,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +63,7 @@ public class ChatBox extends AppCompatActivity {
 
  //   private MessageListAdapter mdp;
     static String TAG = "WhatsApp";
+    String date;
 
     private ArrayList<Message> messages=new ArrayList<>();
     private CharArrayAdapter adp;
@@ -121,6 +127,8 @@ public class ChatBox extends AppCompatActivity {
                                 String messageTo = c.getString("messageTo");
                                 String messageFrom = c.getString("messageFrom");
                                 String message = c.getString("message");
+                                String date = c.getString("datetime");
+
                                 String reciever = getRecieverName();
                                 String user = MainActivity1.bob;
 
@@ -128,10 +136,12 @@ public class ChatBox extends AppCompatActivity {
                                     message123.setToName(messageTo);
                                     message123.setMessage(message);
                                     message123.setFromName(messageFrom);
+                                    message123.setDateTime(date);;
                                     messages.add(message123);
 //                                    int count = messages.size();
 //                                    String user1 = reciever;
                                     Log.d(TAG,"message initialized");
+
                                 }
 
                                 else{
@@ -140,7 +150,7 @@ public class ChatBox extends AppCompatActivity {
 
 
 
-
+                                Collections.sort(messages);
 
 
                             }
@@ -182,7 +192,7 @@ public class ChatBox extends AppCompatActivity {
                 //ImageView patch = (ImageView) findViewById(R.id.test_image);
 
 
-               new JSONTASK4().execute(url5);
+                new JSONTASK4().execute(url5);
 
 
                 send = (Button) findViewById(R.id.btn);
@@ -222,12 +232,13 @@ public class ChatBox extends AppCompatActivity {
                         isMe = true;
                         sendChatMessage();
                         new JSONTask3().execute(url4);
-                      //  new JSONTASK4().execute(url5);
+                        //  new JSONTASK4().execute(url5);
 // chatText.setText("");
                     }
 
 
                 });
+                adp.notifyDataSetChanged();
                 list.setAdapter(null);
                 list.setAdapter(adp);
 //                chatText.setText("");
@@ -243,8 +254,8 @@ public class ChatBox extends AppCompatActivity {
                     }
                 });
 
-            }          //list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-
+//            }          list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+            }
 
 
      public String getMessage(){
@@ -367,9 +378,14 @@ public class ChatBox extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             try {
+                DateFormat df = new SimpleDateFormat("HH:mm");
+                Calendar calobj = Calendar.getInstance();
+                // System.out.println(df.format(calobj.getTime()));
+                CharSequence text = df.format(calobj.getTime());
 
                 String jsonString = "";
-                JSONObject json = new JSONObject(("{\"From\":\"" + username +"\"" +" ,"+ "\"To\":" + getRecieverName() +" ," +" \"Message\":\"" + getMessage() + "\" }"));
+                JSONObject json = new JSONObject(("{\"From\":\"" + username +"\"" +" ,"+ "\"To\":" + "\""  + getRecieverName() +  "\""
+                        +" ," +" \"Message\":\"" + getMessage() + "\"" + " ," + " \"Date\":\"" + text +"\" }"));
                 jsonString = json.toString();
                 Log.d(TAG,"jsonString=" + jsonString);
 
