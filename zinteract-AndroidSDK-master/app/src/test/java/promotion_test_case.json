@@ -1,0 +1,102 @@
+[
+  {
+	"campaignId": "campaign1",
+	"screenId": "com.zemoso.zetarget.ZeTargetSampleApp.MainActivity",
+	"type":"promotion",
+	"appVersionFrom": 1.0,
+	"appVersionTo": 2.0,
+	"campaignStartTime": 1432206344000,
+	"campaignEndTime": 1500000000000,
+	"suppressionLogic": {
+	  "maximumNumberOfTimesToShow": 3,
+	  "minimumDurationInMinutesBeforeReshow": 1
+	},
+	"template":{
+			"title": "Season sale! Heavy discounts!!!", 
+			"message": "Buy the stuff now and save a loot of money and use that money to buy some more stuff!!!", 
+			"imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg",
+			"onClickUrl": "http://www.google.com",
+			"definition": {
+						"actionType": "LINK", 
+						"actionButton": {
+									"url": "http://www.flipkart.com",
+									"buttonText": "GO"
+                        },
+						"dismissButtonText": "NO THANKS"
+            }
+    }
+  },
+  {
+	"campaignId": "campaign2",
+	"screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity2",
+	"type":"promotion",
+	"appVersionFrom": 1.0,
+	"appVersionTo": 2.0,
+	"suppressionLogic": {
+	  "maximumNumberOfTimesToShow": 3,
+	  "minimumDurationInMinutesBeforeReshow": 1
+	},
+	"campaignStartTime": 1432206344000,
+	"campaignEndTime": 1500000000000,
+	"template":{
+			"title": "RATE OUR APP",
+			"message":  "We value your feedback",
+			"imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg", 
+			"onClickUrl": "http://www.google.com", 
+			"definition": {
+						"actionType": "RATE", 
+						"actionButton": {"buttonText": "RATE US"},
+						"dismissButtonText": "DON'T ASK ME AGAIN",
+						"remindLaterButtonText": "REMIND ME LATER"
+				      }
+  		  }
+  },
+  {
+	"campaignId": "campaign3",
+	"screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity3",
+	"appVersionFrom": 1.0,
+	"appVersionTo": 2.0,
+	"type":"promotion",
+	"suppressionLogic": {
+	  "maximumNumberOfTimesToShow": 3,
+	  "minimumDurationInMinutesBeforeReshow": 1
+	},
+	"campaignStartTime": 1432206344000,
+	"campaignEndTime": 1500000000000,
+	"template": {
+			"title": "Great Offers starting from TODAY",
+			"message": "Tell your friends about it. Click on SHARE",
+			"imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg", 				"onClickUrl": "http://www.google.com",
+			"definition": {
+						"actionType": "SHARE",
+						"actionButton": {
+									"shareText": "Great offers at FLIPKART!!! promocode:sdkekj",
+						  			"buttonText": "INVITE"
+								},
+						"dismissButtonText": "NO THANKS"
+				      }
+		    }
+  },
+  {
+	"campaignId": "campaign4",
+	"screenId": "com.zemoso.zetarget.ZeTargetSampleApp.Activity4",
+	"type":"promotion",
+	"campaignStartTime": 1432206344000,
+	"campaignEndTime": 1500000000000,
+	"appVersionFrom": 1.0,
+	"appVersionTo": 2.0,
+	"suppressionLogic": {
+	  "maximumNumberOfTimesToShow": 3,
+	  "minimumDurationInMinutesBeforeReshow": 1
+	},
+	"template": {
+			"title": "Season Sale is Almost over",
+			"message": "Join us now at the sale",
+			"imageUrl": "http://news.bbcimg.co.uk/media/images/81539000/jpg/_81539447_95ca831d-7a1d-4b02-b3ca-0c9968649937.jpg", 				"onClickUrl": "http://www.google.com",
+			"definition": {
+						"actionType": "NONE",
+						"dismissButtonText": "GOT IT"
+            }
+    }
+  }
+]
