@@ -34,8 +34,8 @@ public class TabandList extends TabActivity {
     private static final String Chat = "Chat_Messages";
    // ArrayList<HashMap<String, String>> inboxList;
 
-//    String url3 = "http://10.0.2.2:9000/findAll";
-    String url3 = "http://192.168.2.15:9000/findAll";
+    String url3 = "http://10.0.2.2:9000/findAll";
+//    String url3 = "http://192.168.2.15:9000/findAll";
 
 //    String url3 = "http://192.168.1.55:9000/findAll";
 

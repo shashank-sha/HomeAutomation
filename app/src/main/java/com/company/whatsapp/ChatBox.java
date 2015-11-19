@@ -57,15 +57,15 @@ import org.json.JSONObject;
 
 
 public class ChatBox extends AppCompatActivity {
-    String url4 ="http://192.168.2.15:9000/addMessage";
-    String url5 ="http://192.168.2.15:9000/findMessage";
+//    String url4 ="http://192.168.2.15:9000/addMessage";
+//    String url5 ="http://192.168.2.15:9000/findMessage";
 
 //    String url4 ="http://192.168.1.55:9000/addMessage";
 //    String url5 ="http://192.168.1.55:9000/findMessage";
 
-//    String url4 ="http://10.0.2.2:9000/addMessage";
-//    String url5 ="http://10.0.2.2:9000/findMessage";
-//
+    String url4 ="http://10.0.2.2:9000/addMessage";
+    String url5 ="http://10.0.2.2:9000/findMessage";
+
  //   private MessageListAdapter mdp;
     static String TAG = "WhatsApp";
 
