@@ -30,7 +30,7 @@ public class Message implements Comparable<Message> {
 
     @Override
     public String toString() {
-        return this.message;
+        return this.message ;
     }
 
     public Message(String fromName, String message,String toName) {

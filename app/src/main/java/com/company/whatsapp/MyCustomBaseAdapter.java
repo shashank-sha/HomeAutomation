@@ -2,10 +2,12 @@ package com.company.whatsapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -50,26 +52,35 @@ import java.util.ArrayList;
 
                 convertView = mInflater.inflate(R.layout.custom_row_view, null);
                 holder = new ViewHolder();
-                holder.message_From = (TextView) convertView.findViewById(R.id.name);
+              //  holder.message_From = (TextView) convertView.findViewById(R.id.name);
                 holder.message = (TextView) convertView.findViewById(R.id.cityState);
-                holder.message_To = (TextView) convertView.findViewById(R.id.phone);
+             if(searchArrayList.get(position).getFrom_Name().equals(MainActivity1.bob)){
+                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.FILL_PARENT);
+                 params.gravity = Gravity.END;
+                 holder.message.setLayoutParams(params);
+                 holder.message.setBackgroundResource(R.drawable.turqfocus);
+             }
+             else{
+                 holder.message.setBackgroundResource(R.drawable.turq);
+                              //  holder.message_To = (TextView) convertView.findViewById(R.id.phone);
+             }
 
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.message_From.setText(searchArrayList.get(position).getFrom_Name());
+         //   holder.message_From.setText(searchArrayList.get(position).getFrom_Name());
             holder.message.setText(searchArrayList.get(position).getMessage());
-            holder.message_To.setText(searchArrayList.get(position).getTo_Name());
+          //  holder.message_To.setText(searchArrayList.get(position).getTo_Name());
 
             return convertView;
         }
 
          class ViewHolder {
-            TextView message_From;
+           // TextView message_From;
             TextView message;
-            TextView message_To;
+           // TextView message_To;
         }
     }
 

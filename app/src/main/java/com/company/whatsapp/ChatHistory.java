@@ -14,6 +14,9 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChatHistory extends ListActivity {
     static String reciever_name;
@@ -38,7 +41,9 @@ public class ChatHistory extends ListActivity {
         ArrayList<SQLite_Messages> results = new ArrayList<SQLite_Messages>();
         Cursor cursor = dbAdapter.getMessages(username,reciever_name);
        if(cursor.moveToFirst()) {
-           while(cursor.moveToNext()) {
+
+
+           do {
                String message_from = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE_FROM));
                String message = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE));
                String message_to = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE_TO));
@@ -49,7 +54,12 @@ public class ChatHistory extends ListActivity {
                message123.setTo_Name(message_to);
                results.add(message123);
 
-           }
+           }while(cursor.moveToNext());
+
+
+
+
+
            final ListView lv1 = (ListView) findViewById(R.id.ListView01);
          //  String[] name = {"name","city","state"};
          //  int[] id = {R.id.name,R.id.cityState,R};

@@ -46,17 +46,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.zemosolabs.zetarget.sdk.ZeTarget;
 import javax.xml.datatype.Duration;
 
 public class MainActivity1 extends AppCompatActivity {
     String TAG = "WhatsApp";
-//    String url1 = "http://192.168.1.55:9000/checkUser";
-//    String url2 = "http://192.168.1.55:9000/addUser";
-//    String url3 = "http://192.168.1.55:9000/findAll";
+    String url1 = "http://192.168.2.15:9000/checkUser";
+    String url2 = "http://192.168.2.15:9000/addUser";
+    String url3 = "http://192.168.2.15:9000/findAll";
 
-    String url1 = "http://10.0.2.2:9000/checkUser";
-    String url2 = "http://10.0.2.2:9000/addUser";
-    String url3 = "http://10.0.2.2:9000/findAll";
+//    String url1 = "http://10.0.2.2:9000/checkUser";
+//    String url2 = "http://10.0.2.2:9000/addUser";
+//    String url3 = "http://10.0.2.2:9000/findAll";
 
 
 
@@ -74,6 +75,8 @@ public class MainActivity1 extends AppCompatActivity {
     Button Button1;
     Button Button2;
     InputStream inputStream = null;
+    final static String apiKey ="1d327259-6d71-4e78-b4c2-91c93c76039c";
+    final static String googleApiProjectNumber="263819815942 ";
 
 
 
@@ -86,6 +89,12 @@ public class MainActivity1 extends AppCompatActivity {
 
         mEdit = (EditText) findViewById(R.id.editText1);
         mText = (TextView) findViewById(R.id.textView1);
+        ZeTarget.setZeTargetURL("http://devapi.zetarget.com/");
+        ZeTarget.initializeWithContextAndKey(getApplicationContext(), apiKey,
+                googleApiProjectNumber);
+
+
+        ZeTarget.enableDebugging();
 
 
 

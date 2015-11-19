@@ -34,10 +34,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
 import android.content.DialogInterface;
+import android.widget.TextView;
 
 import com.company.whatsapp.CharArrayAdapter;
 import com.company.whatsapp.ChatMessage;
@@ -52,18 +57,19 @@ import org.json.JSONObject;
 
 
 public class ChatBox extends AppCompatActivity {
-//    String url4 ="http://192.168.1.55:9000/addMessage";
-//    String url5 ="http://192.168.1.55:9000/findMessage";
+    String url4 ="http://192.168.2.15:9000/addMessage";
+    String url5 ="http://192.168.2.15:9000/findMessage";
 
 //    String url4 ="http://192.168.1.55:9000/addMessage";
 //    String url5 ="http://192.168.1.55:9000/findMessage";
 
-    String url4 ="http://10.0.2.2:9000/addMessage";
-    String url5 ="http://10.0.2.2:9000/findMessage";
-
+//    String url4 ="http://10.0.2.2:9000/addMessage";
+//    String url5 ="http://10.0.2.2:9000/findMessage";
+//
  //   private MessageListAdapter mdp;
     static String TAG = "WhatsApp";
-    String date;
+
+
 
     private ArrayList<Message> messages=new ArrayList<>();
     private CharArrayAdapter adp;
@@ -150,7 +156,11 @@ public class ChatBox extends AppCompatActivity {
 
 
 
-                                Collections.sort(messages);
+                                Set<Message> hs = new HashSet<>();
+                                hs.addAll(messages);
+                                messages.clear();
+                                messages.addAll(hs);
+                                 Collections.sort(messages);
 
 
                             }
@@ -191,8 +201,8 @@ public class ChatBox extends AppCompatActivity {
                 setContentView(R.layout.activity_chat_box);
                 //ImageView patch = (ImageView) findViewById(R.id.test_image);
 
-
                 new JSONTASK4().execute(url5);
+                addMessage();
 
 
                 send = (Button) findViewById(R.id.btn);
@@ -317,7 +327,9 @@ public class ChatBox extends AppCompatActivity {
             Message element =iterator.next();
             String messageFrom = element.getFromName();
             String message = element.getMessage();
-            dbAdapter.insertRow(messageFrom, message, username);
+            String messageTo = element.getToName();
+            dbAdapter.insertRow(messageFrom, message, messageTo);
+            dbAdapter.deleteDuplicates();
 
 
 
@@ -333,7 +345,11 @@ public class ChatBox extends AppCompatActivity {
 
 //
 
-        adp.add(new Message(MainActivity1.bob, chatText.getText().toString(), getRecieverName()));
+        Message message = new Message((MainActivity1.bob),chatText.getText().toString(), getRecieverName());
+        adp.add(message);
+
+//        TextView date = (TextView)findViewById(R.id.Date);
+//        date.setText(message.getDateTime());
        // if(getRecieverName()==MainActivity1.bob)
 
 

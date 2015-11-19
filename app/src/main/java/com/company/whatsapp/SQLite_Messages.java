@@ -9,6 +9,11 @@ public class SQLite_Messages {
     private String Message = "";
     private String To_Name = "";
 
+    @Override
+    public String toString() {
+        return getMessage();
+    }
+
     public String getFrom_Name() {
         return From_Name;
     }
@@ -32,6 +37,8 @@ public class SQLite_Messages {
     public void setTo_Name(String to_Name) {
         To_Name = to_Name;
     }
+
+
 
 
 

@@ -98,8 +98,8 @@ import android.util.Log;
     public Cursor getMessages(String username,String reciever_name){
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE " + MESSAGE_TO + " = " + "'"+username + "'"  +" AND "+ MESSAGE_FROM + " = " + "'"+reciever_name + "' " +
-              " OR " +  MESSAGE_FROM +" = "+ "'"+username + "' " + " AND " + MESSAGE_TO + " = " + "'"+reciever_name + "'" ,null);
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + MESSAGE_TO + " = " + "'" + username + "'" + " AND " + MESSAGE_FROM + " = " + "'" + reciever_name + "' " +
+                " OR " + MESSAGE_FROM + " = " + "'" + username + "' " + " AND " + MESSAGE_TO + " = " + "'" + reciever_name + "'", null);
         if(c!=null){
             c.moveToFirst();
         }
@@ -118,14 +118,25 @@ import android.util.Log;
     }
      public boolean ifEmpty(){
          SQLiteDatabase db = getReadableDatabase();
-         Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME,null);
+         Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME, null);
 
          if(c!=null){
              return false;
          }
          return true;
      }
+    public Cursor deleteDuplicates(){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c =db.rawQuery("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " NOT" + " IN" +
+                        " (SELECT " + "MIN(" +ID +") " + "FROM " +  TABLE_NAME + " GROUP BY "+MESSAGE_FROM +
+                        ", " + MESSAGE +  ", " + MESSAGE_TO + ")",null);
+        if(c!=null){
+            c.moveToFirst();
+        }
+        return c;
 
+
+    }
 
 
 

@@ -9,7 +9,10 @@
     <ListView
         android:id="@+id/ListView01"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"/>
+        android:layout_width="fill_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:transcriptMode="alwaysScroll"/>
 
     <ListView
         android:id="@android:id/list"
