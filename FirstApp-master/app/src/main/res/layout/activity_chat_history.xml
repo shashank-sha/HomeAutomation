@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="16sp"
+    android:paddingRight="16sp"
+    android:paddingTop="16sp"
+    android:paddingBottom="16sp"
+    tools:context="com.company.whatsapp.ChatHistory">
+
+    <ListView
+        android:id="@+id/ListView01"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:divider="@null"
+        android:dividerHeight="0sp"
+        android:transcriptMode="alwaysScroll"/>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="0sp"
+        android:layout_height="0sp">
+</ListView>
+
+</RelativeLayout>
