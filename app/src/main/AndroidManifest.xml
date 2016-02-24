@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.company.whatsapp" >
@@ -19,11 +20,40 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+=======
+<?xml version="1.1" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.zemoso.zetarget.ZeTargetSampleApp">
+
+    <!-- To access Google+ APIs: -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <permission android:name="com.zemoso.zetarget.ZeTargetSampleApp.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.zemoso.zetarget.ZeTargetSampleApp.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:configChanges="keyboardHidden|orientation|screenSize">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            tools:node="replace"
+            android:value="7327000" />
+>>>>>>> 2706c53f271a8c42e2898ca2e65f0e8c5340ec09
         <receiver
             android:name="com.zemosolabs.zetarget.sdk.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+<<<<<<< HEAD
                 <category android:name="com.company.whatsapp" />
             </intent-filter>
         </receiver>
@@ -33,10 +63,25 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
+=======
+
+                <category android:name="com.zemoso.zetarget.ZeTargetSampleApp" />
+            </intent-filter>
+        </receiver>
+
+
+        <activity
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.MainActivity"
+            android:label="@string/app_name"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+>>>>>>> 2706c53f271a8c42e2898ca2e65f0e8c5340ec09
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+<<<<<<< HEAD
             android:name=".InboxActivity"
             android:label="@string/title_activity_inbox" >
         </activity>
@@ -64,6 +109,30 @@
             android:name=".ChatActivity"
             android:label="@string/title_activity_chat" >
         </activity>
+=======
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity2"
+            android:label="@string/title_activity_activity2"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity3"
+            android:label="@string/title_activity_activity3"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity4"
+            android:label="@string/title_activity_activity4"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
+            android:name="com.zemoso.zetarget.ZeTargetSampleApp.Activity5"
+            android:label="@string/title_activity_activity5"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="259c6147fe5af935761b4406bf86454b410cc03c" />
+>>>>>>> 2706c53f271a8c42e2898ca2e65f0e8c5340ec09
     </application>
 
 </manifest>

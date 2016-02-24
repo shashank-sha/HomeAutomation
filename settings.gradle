@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 include ':app', ':httpclient-4.5.1', ':httpcore-4.4.3'
+=======
+include ':app', ':sdk'
+>>>>>>> 2706c53f271a8c42e2898ca2e65f0e8c5340ec09

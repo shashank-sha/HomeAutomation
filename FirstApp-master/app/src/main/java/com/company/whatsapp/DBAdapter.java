@@ -57,26 +57,6 @@ import java.util.Date;
         }
         return instance;
     }
-
-
-//    public DBAdapter(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-//        super(context, name, factory, version);
-//    }
-
-
-//    private static class DatabaseHelper extends SQLiteOpenHelper {
-//        DatabaseHelper(Context context) {
-//            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-//        }
-
-
-
-
-
-
-
-
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_MESSAGE_TABLE);
@@ -195,16 +175,7 @@ import java.util.Date;
 
     }
 
-
-
-
-
-
-
-
-
-
-    }
+ }
 
 
 

@@ -53,30 +53,16 @@ import com.zemosolabs.zetarget.sdk.ZeTarget;
 
 public class MainActivity1 extends AppCompatActivity {
     String TAG = "WhatsApp";
-    String url1 = "http://192.168.2.15:9000/checkUser";
-    String url2 = "http://192.168.2.15:9000/addUser";
-    String url3 = "http://192.168.2.15:9000/findAll";
-
-//    String url1 = "http://10.0.2.2:9000/checkUser";
-//    String url2 = "http://10.0.2.2:9000/addUser";
-//    String url3 = "http://10.0.2.2:9000/findAll";
-
-
-
-//    String url1 = "http://192.168.1.75:9000/checkUser";
-//  String url2 = "http://192.168.1.75:9000/addUser";
-//    String url3 = "http://192.168.1.75:9000/findAll";
-
-    //    String url = "http://polls.apiblueprint.org/questions";
-    //  String result ="";
+    String url1 = Constants.TABLET_SIDE+"checkUser";
+    String url2 = Constants.TABLET_SIDE+"addUser";
 
     static String bob;
     TextView mText;
     EditText mEdit;
 
-    Button Button1;
-    Button Button2;
-    Button Button3;
+    Button Existing_User;
+    Button New_User;
+    Button Log_Out;
     InputStream inputStream = null;
     final static String apiKey ="1d327259-6d71-4e78-b4c2-91c93c76039c";
     final static String googleApiProjectNumber="263819815942 ";
@@ -87,71 +73,49 @@ public class MainActivity1 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button1 = (Button) findViewById(R.id.button1);
-        Button2 = (Button) findViewById(R.id.button2);
-        Button3 = (Button) findViewById(R.id.button3);
+        Existing_User = (Button) findViewById(R.id.button1);
+        New_User = (Button) findViewById(R.id.button2);
+        Log_Out = (Button) findViewById(R.id.button3);
 
         mEdit = (EditText) findViewById(R.id.editText1);
         mText = (TextView) findViewById(R.id.textView1);
         ZeTarget.setZeTargetURL("http://devapi.zetarget.com/");
         ZeTarget.initializeWithContextAndKeyAndUserId(getApplicationContext(), apiKey, MainActivity1.bob, googleApiProjectNumber,null);
         mEdit.setText(loadPrefs("username"));
-       JSONTask1 jsonTask = new JSONTask1();
+        JSONTask1 jsonTask = new JSONTask1();
         if(mEdit.getText().length()!=0) {
             jsonTask.execute(url1);
+
+
+
             Intent intent1 = new Intent(MainActivity1.this, TabandList.class);
             intent1.putExtra("username", mEdit.getText().toString());
             MainActivity1.this.startActivity(intent1);
         }
 
-
-
-
-
         ZeTarget.enableDebugging();
 
-
-
-
-
-        Button1.setOnClickListener(new View.OnClickListener() {
+        Existing_User.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //         DBAdapter dbHelper = DBAdapter.getDatabaseHelper(getApplicationContext());
-//               String message = dbHelper.existingSelected(mEdit.getText().toString());
-//                Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
                 JSONTask1 jsonTask = new JSONTask1();
                 jsonTask.execute(url1);
                 savePrefs("username", bob);
-
                 DBAdapter dbAdapter =DBAdapter.getDatabaseHelper(getApplicationContext());
                 dbAdapter.deleteDuplicateUser();
-//                dbAdapter.insertUser(mEdit.getText().toString());
+
                 if(dbAdapter.checkUser(mEdit.getText().toString())) {
-
-
                     Intent intent1 = new Intent(MainActivity1.this, TabandList.class);
                     intent1.putExtra("username", mEdit.getText().toString());
                     MainActivity1.this.startActivity(intent1);
                 }
-
-//                if (jsonTask.getStatus() == AsyncTask.Status.FINISHED) {
-//                    String reply = jsonTask.getreply(url1);
-////
-////
-//                    Toast.makeText(getApplicationContext(), reply, Toast.LENGTH_SHORT).show();
-//                }
-
             }
         });
 
-        Button2.setOnClickListener(new View.OnClickListener() {
+        New_User.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //     DBAdapter dbHelper = DBAdapter.getDatabaseHelper(getApplicationContext());
-                //       String message2 =  dbHelper.newSelected(mEdit.getText().toString());
                 new JSONTask().execute(url2);
                 savePrefs("username", bob);
                 DBAdapter dbAdapter =DBAdapter.getDatabaseHelper(getApplicationContext());
@@ -161,14 +125,10 @@ public class MainActivity1 extends AppCompatActivity {
                 Intent intent1 = new Intent(MainActivity1.this, TabandList.class);
                 intent1.putExtra("username",mEdit.getText().toString());
                 MainActivity1.this.startActivity(intent1);
-
-                // Toast.makeText(getApplicationContext(),; ,Toast.LENGTH_SHORT).show();
-
-
             }
         });
 
-        Button3.setOnClickListener(new View.OnClickListener() {
+        Log_Out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deletePrefs();
@@ -211,41 +171,20 @@ public class MainActivity1 extends AppCompatActivity {
             protected String doInBackground(String... params) {
 
                 try {
-
                     String jsonString = "";
                     JSONObject json = new JSONObject(("{\"NewAccount_Name\":\"" + getUserName() + "\" }"));
                     jsonString = json.toString();
-
-                    Log.d(TAG, "username=" + jsonString);
                     HttpURLConnection connection = null;
-                    Log.d(TAG, "param=" + params[0]);
                     try {
                         //Create connection
                         URL url1 = new URL(params[0]);
                         connection = (HttpURLConnection) url1.openConnection();
                         connection.setRequestMethod("POST");
                         connection.setRequestProperty("Content-Type", "application/json);");
-//                        connection.setRequestProperty("Content-Length", "" +
-//                                Integer.toString(urlParameters.getBytes().length));
                         connection.setRequestProperty("Content-Language", "en-US");
-
-//                    connection.setUseCaches(false);
-//                    connection.setDoInput(true);
-//                    connection.setDoOutput(true);
-//                    connection.setConnectTimeout(10000);
-//                    connection.setReadTimeout(10000);
                         connection.connect();
-                        //    Log.d(TAG, "before send ");
-                        //Send request
                         OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-                        // wr.writeBytes (urlParameters);
                         out.write(json.toString());
-                        //  Log.d(TAG,"out=" + out.toString());
-
-
-                        //  Log.d(TAG, "after send");
-                        //Get Response
-                        //InputStream is = connection.getInputStream();
                         out.close();
 
                         String reply = "";
@@ -261,21 +200,6 @@ public class MainActivity1 extends AppCompatActivity {
                             reply = sb.toString();
                             JSONObject jsonObject = new JSONObject(reply);
 
-
-//                        try {
-//                            JSONArray inbox = jsonObject.getJSONArray("");
-//                            for (int i = 0; i < inbox.length(); i++) {
-//                                JSONObject c = inbox.getJSONObject(i);
-//                                String id = c.getString("id");
-//                                String user_name = c.getString("userName");
-//
-//                                HashMap<String, String> map = new HashMap<String, String>();
-//                                map.put("id", id);
-//                                map.put("userName", user_name);
-//                                inboxList.add(map);
-//                            }
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
@@ -290,32 +214,16 @@ public class MainActivity1 extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                } catch (ProtocolException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 return null;
             }
+    }
 
 
-
-
-            public String getreply(String url) {
-                String reply = doInBackground(url);
-                return reply;
-            }
-        }
-
-        public class JSONTask1 extends AsyncTask<String, String, String> {
+    public class JSONTask1 extends AsyncTask<String, String, String> {
 
             @Override
             protected String doInBackground(String... params) {
@@ -335,27 +243,10 @@ public class MainActivity1 extends AppCompatActivity {
                         connection = (HttpURLConnection) url1.openConnection();
                         connection.setRequestMethod("POST");
                         connection.setRequestProperty("Content-Type", "application/json);");
-//                        connection.setRequestProperty("Content-Length", "" +
-//                                Integer.toString(urlParameters.getBytes().length));
                         connection.setRequestProperty("Content-Language", "en-US");
-
-//                    connection.setUseCaches(false);
-//                    connection.setDoInput(true);
-//                    connection.setDoOutput(true);
-//                    connection.setConnectTimeout(10000);
-//                    connection.setReadTimeout(10000);
                         connection.connect();
-                        //    Log.d(TAG, "before send ");
-                        //Send request
                         OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-                        // wr.writeBytes (urlParameters);
                         out.write(json.toString());
-                        //  Log.d(TAG,"out=" + out.toString());
-
-
-                        //  Log.d(TAG, "after send");
-                        //Get Response
-                        //InputStream is = connection.getInputStream();
                         out.close();
 
                         String reply = "";
@@ -368,13 +259,9 @@ public class MainActivity1 extends AppCompatActivity {
                             }
                             reply = sb.toString();
                             Log.d(TAG, "reply=" + reply);
-
-
                         } finally {
-
                             in.close();
                             return reply;
-
                         }
 
                     } catch (MalformedURLException e) {
@@ -390,16 +277,13 @@ public class MainActivity1 extends AppCompatActivity {
                 return null;
             }
 
-            public String getreply(String url) {
-                String reply = doInBackground(url);
-                return reply;
-            }
-
-        }
-
-
-
-
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//            Intent intent = new Intent(getApplicationContext(),ChatTabActivity.class);
+//            startActivity(intent);
+//        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

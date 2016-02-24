@@ -31,11 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InboxActivity extends ListActivity {
-//    String url3 = "http://192.168.1.75:9000/findAll";
-  String url3 = "http://192.168.2.15:9000/findAll";
-//String url3 = "http://10.0.2.2:9000/findAll";
 
-   String username = MainActivity1.bob;
+    String username = MainActivity1.bob;
     ListView list;
    // ArrayList<HashMap<String, String>> inboxList;
     ArrayList<String> results = new ArrayList<String>();
@@ -53,13 +50,6 @@ public class InboxActivity extends ListActivity {
         addInbox();
         populateListView();
 
-// String[] name = {"userName"};
-
-//        int[] id = {R.id.user_name};
-//        adapter = new SimpleAdapter(InboxActivity.this, inboxList,
-//                R.layout.inbox_list_item, name, id);
-//        list.setTextFilterEnabled(true);
-//        list.setAdapter(adapter);
         adp = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, results);
         list.setAdapter(adp);
 
@@ -95,12 +85,6 @@ public class InboxActivity extends ListActivity {
         }
     }
 
-
-
-
-
-
-
     private void populateListView(){
         DBAdapter dbAdapter =DBAdapter.getDatabaseHelper(getApplicationContext());
       //  ArrayList<String> results = new ArrayList<String>();
@@ -110,127 +94,13 @@ public class InboxActivity extends ListActivity {
 
             do {
                 String name = cursor.getString(cursor.getColumnIndex(DBAdapter.USER_NAME));
-//                String message = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE));
-//                String message_to = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE_TO));
-
-//                SQLite_Messages message123 = new SQLite_Messages();
-//                message123.setFrom_Name(message_from);
-//                message123.setMessage(message);
-//                message123.setTo_Name(message_to);
                 results.add(name);
 
             } while (cursor.moveToNext());
         }
-
-
-//
     }
 
 
-
-//    public class JSONTask2 extends AsyncTask<String,String,String> {
-//        String TAG = "WhatsApp";
-//
-//        String user_name;
-//        String id;
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//
-//            HttpURLConnection connection = null;
-//            BufferedReader reader = null;
-//
-//            try {
-//                URL url1 = new URL(params[0]);
-//                connection = (HttpURLConnection) url1.openConnection();
-//                // connection.setRequestMethod("GET");
-////                connection.setRequestProperty("Content-Type", "application/json);");
-//////                        connection.setRequestProperty("Content-Length", "" +
-//////                                Integer.toString(urlParameters.getBytes().length));
-////                connection.setRequestProperty("Content-Language", "en-US");
-////
-//                connection.connect();
-//
-//                String reply = "";
-//                InputStream in = connection.getInputStream();
-//
-//                StringBuffer sb = new StringBuffer();
-//                try {
-//                    int chr;
-//                    while ((chr = in.read()) != -1) {
-//                        sb.append((char) chr);
-//                    }
-//                    reply = sb.toString();
-//                    Log.d(TAG, "reply1=" + reply);
-//                   // JSONObject jsonObject = new JSONObject(reply);
-//                    JSONArray inbox = new JSONArray(reply);
-//
-//
-//                    try {
-//
-//                        // JSONArray inbox = jsonObject.getJSONArray("");
-//
-//                        for (int i = 0; i < inbox.length(); i++) {
-//                            JSONObject c = inbox.getJSONObject(i);
-//                             id = c.getString("id");
-//                            user_name = c.getString("userName");
-//                            Log.d("id=" + id, "user_name=" + user_name);
-//
-//                            HashMap<String, String> map = new HashMap<String, String>();
-//                            map.put("id", id);
-//                            map.put("userName", user_name);
-//                            inboxList.add(map);
-//                        }
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    synchronized (adapter) {
-//                                        adapter.notify();
-//                                    }
-//
-//                                }
-//
-//                              //     int count = list.getAdapter().getCount();
-//                          //          Log.d(TAG,"count=" + Integer.toString(count));
-//
-//
-//                            });
-//
-//
-//
-//                    }finally {
-//                        if (connection != null)
-//                            connection.disconnect();
-//                    }
-//                    try {
-//                        if (reader != null)
-//                            reader.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//
-//
-//
-//
-//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

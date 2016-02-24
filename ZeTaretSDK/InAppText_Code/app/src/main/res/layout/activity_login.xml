@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="loginModel" type="com.zemoso.inapptext.inapptext_code.viewModels.LoginModel"></variable>
+        <import type="android.view.View" />
+    </data>
+
+
+    <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Sign_Up"
+    android:background="@drawable/bg"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:focusable="false"
+    android:focusableInTouchMode="true">
+
+    <TextView
+        android:text="@string/Login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="HelveticaNeue-Light"
+        android:id="@+id/sign_up"
+        android:textStyle="bold"
+        android:textSize="27dp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="@string/your_text"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="13.7dp"
+        android:layout_marginBottom="-205dp"
+        android:id="@+id/textfield"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:fontFamily=""
+        android:gravity="center"/>
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_marginTop="89.7dp"
+        android:layout_marginLeft="21.3dp"
+        android:layout_marginBottom="523.9dp"
+        android:layout_marginRight="16.5dp"
+        android:hint="@string/Email"
+        android:addTextChangedListener = "@{loginModel.getEmailTextWatcher}"
+        android:background="@drawable/vline"
+        android:paddingRight="100dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"/>
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:layout_marginTop="138dp"
+        android:layout_marginLeft="21.3dp"
+        android:layout_marginBottom="484.2dp"
+        android:layout_marginRight="16.5dp"
+        android:hint="@string/Password"
+        android:addTextChangedListener = "@{loginModel.getPasswordWatcher}"
+        android:background="@drawable/vline"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:password="true"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:onClick="@{loginModel.SwitchActivity}"
+        android:text="LOGIN"
+        android:background="@color/colorPrimary"
+        android:id="@+id/signup"
+        android:textColor="#FFFFFF"
+        android:textSize="17.7sp"/>
+
+    <!--<Button-->
+    <!--android:layout_width="162.6dp"-->
+    <!--android:layout_height="48dp"-->
+    <!--android:layout_marginBottom="20dp"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_marginRight="10.7dp"-->
+    <!--android:layout_marginLeft="186.7dp"-->
+    <!--android:text="LOGIN"-->
+    <!--android:background="#FFFF00"-->
+    <!--android:id="@+id/login"/>-->
+
+
+
+
+</RelativeLayout>
+    </layout>

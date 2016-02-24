@@ -39,11 +39,7 @@ public class ChatHistory extends ListActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        //   final ListView lv1 = (ListView) findViewById(R.id.ListView01);
-
     }
-
 
     private void populateListView() throws ParseException {
         DBAdapter dbAdapter =DBAdapter.getDatabaseHelper(getApplicationContext());
@@ -58,7 +54,7 @@ public class ChatHistory extends ListActivity {
                String message_to = cursor.getString(cursor.getColumnIndex(DBAdapter.MESSAGE_TO));
                String time = cursor.getString(cursor.getColumnIndex(DBAdapter.DATE));
                DateFormat format = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.ENGLISH);
-               Date date = format.parse(time);
+                   Date date = format.parse(time);
                SQLite_Messages message123 = new SQLite_Messages();
                message123.setFrom_Name(message_from);
                message123.setMessage(message);
@@ -67,35 +63,9 @@ public class ChatHistory extends ListActivity {
                results.add(message123);
 
            }while(cursor.moveToNext());
-
-
-
-
-
            final ListView lv1 = (ListView) findViewById(R.id.ListView01);
-         //  String[] name = {"name","city","state"};
-         //  int[] id = {R.id.name,R.id.cityState,R};
-//          adapter = new SimpleAdapter(ChatHistory.this, results,
-////                   R.layout.custom_row_view,String[]{"name","city","state"},);
-//           ArrayAdapter<SQLite_Messages> adapter = new ArrayAdapter<SQLite_Messages>(this,
-//                   android.R.layout.simple_list_item_1, results);
-         //  list.setTextFilterEnabled(true);
-           //list.setAdapter(adapter);
            lv1.setAdapter(new MyCustomBaseAdapter(ChatHistory.this,results));
-
-
-
-        // lv1.setAdapter(adapter);
        }
-
-//        String[] fieldNames = new String[]{DBAdapter.MESSAGE_FROM,DBAdapter.MESSAGE,DBAdapter.MESSAGE_TO};
-//        int[] viewIDs = new int[]{R.id.message_from,R.id.message,R.id.message_to};
-//        SimpleCursorAdapter myCursorAdapter;
-//        myCursorAdapter = new SimpleCursorAdapter(getBaseContext(),R.layout.chathistoryitems,cursor,fieldNames,viewIDs);
-//        SQLAdapter<r> adapter = new ArrayAdapter<SQLite_Messages>(this,
-//                android.R.layout.simple_list_item_1, results);
-//        ListView list =(ListView)findViewById(android.R.id.list);
-//        list.setAdapter(adapter);
 
 
 

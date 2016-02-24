@@ -1,5 +1,8 @@
 package com.company.whatsapp;
 
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+
 import java.util.Comparator;
 import java.util.Date;
 
@@ -9,6 +12,16 @@ import java.util.Date;
 public class Message implements Comparable<Message> {
     private String fromName, message,toName;
     private Date dateTime;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    private String url;
 
     public Date getDateTime() {
         return dateTime;
@@ -34,11 +47,12 @@ public class Message implements Comparable<Message> {
         return this.message ;
     }
 
-    public Message(String fromName, String message,String toName,Date dateTime) {
+    public Message(String fromName, String message,String toName,Date dateTime,String url) {
         this.fromName = fromName;
         this.message = message;
         this.toName = toName;
         this.dateTime = dateTime;
+        this.url = url;
 
 
     }
@@ -71,6 +85,10 @@ public class Message implements Comparable<Message> {
         else if(days == 1) return "Yesterday";
         else return days + " days ago";
     }
+
+
+
+
 
 
 }

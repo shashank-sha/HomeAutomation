@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="border_radius_inAppMessage">10dp</dimen>
+    <dimen name="bitmap_corner_radius">10dp</dimen>
+    <dimen name="in_app_promo_width">200dp</dimen>
+    <dimen name="in_app_promo_height_action">160dp</dimen>
+    <dimen name="button_height_rate_me_campaign">80dp</dimen>
+    <dimen name="regular_button_height_gotit_campaign">50dp</dimen>
+    <dimen name="margin_between_buttons_rate_me_action">10dp</dimen>
+    <dimen name="margin_in_regular_in_app">20dp</dimen>
+    <dimen name="padding_message_text_in_app">30dp</dimen>
+    <dimen name="padding_title_text_in_app">40dp</dimen>
+    <dimen name="zetarget_in_app_text_size">28sp</dimen>
+    <dimen name="zetarget_in_app_max_image_size">100dp</dimen>
+</resources>

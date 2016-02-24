@@ -17,4 +17,5 @@
     <string name="title_activity_chat_history">ChatHistory</string>
     <string name="title_activity_chat_tab">ChatTabActivity</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_drawing">Drawing</string>
 </resources>
