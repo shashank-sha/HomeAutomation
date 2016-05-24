@@ -50,16 +50,16 @@ public class BeforeMain_3 extends AppCompatActivity {
         nextButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean empty=true;
+                Boolean not_empty=true;
                 for (EditText editText:EditTextList){
                     if(editText.getText().toString().matches(""))
-                        empty=false;
+                        not_empty=false;
                 }
-                if(empty) {
+                if(not_empty) {
                     int i = 1;
                     for (EditText editText : EditTextList) {
                         String room = "room" + i;
-                        editor.putInt(sharedPreferences.getString(room, "room1"), Integer.parseInt(editText.getText().toString()));
+                        editor.putInt(sharedPreferences.getString(room, "room1")+"num", Integer.parseInt(editText.getText().toString()));
                         editor.commit();
                         i++;
                     }
@@ -68,7 +68,7 @@ public class BeforeMain_3 extends AppCompatActivity {
 
                 else {
                     Toast.makeText(getApplicationContext(), "Text fields cannot be empty", Toast.LENGTH_SHORT).show();
-                    empty=true;
+                    not_empty=true;
                 }
             }
         });
