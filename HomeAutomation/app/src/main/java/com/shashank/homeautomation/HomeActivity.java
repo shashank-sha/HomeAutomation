@@ -1,6 +1,7 @@
 package com.shashank.homeautomation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
@@ -16,7 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -48,7 +52,18 @@ public class HomeActivity extends AppCompatActivity {
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), sharedPreferences.getInt(textView.getText().toString(),100)+"", Toast.LENGTH_SHORT).show();
+
+                    int temp=sharedPreferences.getInt(textView.getText().toString(),100);
+                    //Set<String> s = sharedPreferences.getStringSet("room" + temp + "_appliances",null);
+                    //Iterator<String> itr=s.iterator();
+                    //while(itr.hasNext())
+                    //Toast.makeText(getApplicationContext(), s+"", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(HomeActivity.this,ParticularRoomActivity.class);
+                    intent.putExtra("room_number",temp);
+                    startActivity(intent);
 
 
 

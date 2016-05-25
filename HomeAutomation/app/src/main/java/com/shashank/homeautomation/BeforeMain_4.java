@@ -83,20 +83,22 @@ public class BeforeMain_4 extends AppCompatActivity {
                     Log.d("ssssssssssssssssssssss", EditTextList.size()+"");
 
                     int room_num, appliance_num, i = 0;
-                    Set<String> appliances = new LinkedHashSet<String>();
+                    LinkedHashSet<String> appliances = new LinkedHashSet<String>();
                     for (room_num = 0; room_num < rooms; room_num++) {
                         Log.d("aaaaaaaaaaaaaaaaaaaaaaa", room_num+"");
                         int num_appliances=sharedPreferences.getInt("room"+(room_num+1)+"_num",1);
-                        Log.d("nnnnnnnnnnnnnnnnnnnn", num_appliances+"");
+                        //Log.d("nnnnnnnnnnnnnnnnnnnn", num_appliances+"");
                         for (appliance_num = 0; appliance_num < num_appliances; appliance_num++) {
                             Log.d("bbbbbbbbbbbbbbbbbb", appliance_num+"");
                             EditText editText = EditTextList.get(i);
                             Log.d("zzzzzzzzzzzzzzzzzzz", editText.getText().toString());
                             editor.putString("room" + (room_num + 1) + "_appliance" + (appliance_num + 1) + "_name", editText.getText().toString());
+                            editor.putInt("room" + (room_num + 1) + "_" + editText.getText().toString(),room_num+1);
                             editor.commit();
                             appliances.add(editText.getText().toString());
                             i++;
                         }
+                        Log.d("nnnnnnnnnnnnnnnnnnnn", appliances+"");
                         editor.putStringSet("room" + (room_num + 1) + "_appliances",appliances);
                         editor.commit();
                         appliances.clear();

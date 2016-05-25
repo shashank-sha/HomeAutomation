@@ -20,7 +20,8 @@
         <activity android:name=".BeforeMain_3" />
         <activity android:name=".BeforeMain_2" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".BeforeMain_4"></activity>
+        <activity android:name=".BeforeMain_4" />
+        <activity android:name=".ParticularRoomActivity"></activity>
     </application>
 
 </manifest>
