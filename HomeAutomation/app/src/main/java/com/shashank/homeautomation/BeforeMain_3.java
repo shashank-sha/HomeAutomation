@@ -1,6 +1,7 @@
 package com.shashank.homeautomation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +39,7 @@ public class BeforeMain_3 extends AppCompatActivity {
 
         for(int i=0;i<rooms;i++) {
             EditText e = new EditText(this);
-            String hint = sharedPreferences.getString("room"+(i+1),"Error");
+            String hint = sharedPreferences.getString("room"+(i+1)+"_name","Error");
             e.setHint(hint);
             e.setId(i+1);
             e.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -58,12 +59,13 @@ public class BeforeMain_3 extends AppCompatActivity {
                 if(not_empty) {
                     int i = 1;
                     for (EditText editText : EditTextList) {
-                        String room = "room" + i;
-                        editor.putInt(sharedPreferences.getString(room, "room1")+"num", Integer.parseInt(editText.getText().toString()));
+                        String room = "room" + i + "_name";
+                        editor.putInt(sharedPreferences.getString(room, "room1")+"_num", Integer.parseInt(editText.getText().toString()));
                         editor.commit();
                         i++;
                     }
-
+                    Intent intent=new Intent(BeforeMain_3.this,BeforeMain_4.class);
+                    startActivity(intent);
                 }
 
                 else {

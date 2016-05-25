@@ -56,7 +56,7 @@ public class BeforeMain_2 extends AppCompatActivity {
                 if(not_empty) {
                     int i = 1;
                     for (EditText editText : EditTextList) {
-                        String room = "room" + i;
+                        String room = "room" + i +"_name";
                         editor.putString(room, editText.getText().toString());
                         editor.commit();
                         i++;
