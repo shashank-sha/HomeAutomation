@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -17,14 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BeforeMain_4 extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     Button nextButton4;
     private List<EditText> EditTextList = new ArrayList<EditText>();
-    int tot_appliances=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,7 @@ public class BeforeMain_4 extends AppCompatActivity {
                     Log.d("ssssssssssssssssssssss", EditTextList.size()+"");
 
                     int room_num, appliance_num, i = 0;
+                    Set<String> appliances = new LinkedHashSet<String>();
                     for (room_num = 0; room_num < rooms; room_num++) {
                         Log.d("aaaaaaaaaaaaaaaaaaaaaaa", room_num+"");
                         int num_appliances=sharedPreferences.getInt("room"+(room_num+1)+"_num",1);
@@ -91,8 +94,12 @@ public class BeforeMain_4 extends AppCompatActivity {
                             Log.d("zzzzzzzzzzzzzzzzzzz", editText.getText().toString());
                             editor.putString("room" + (room_num + 1) + "_appliance" + (appliance_num + 1) + "_name", editText.getText().toString());
                             editor.commit();
+                            appliances.add(editText.getText().toString());
                             i++;
                         }
+                        editor.putStringSet("room" + (room_num + 1) + "_appliances",appliances);
+                        editor.commit();
+                        appliances.clear();
                     }
 
                     //Log.d("iiiiiiiiiiiiiiiiiiiii", sharedPreferences.getString("room1_appliance2_name","error"));

@@ -63,6 +63,7 @@ public class BeforeMain_2 extends AppCompatActivity {
                     for (EditText editText : EditTextList) {
                         String room = "room" + i +"_name";
                         editor.putString(room, editText.getText().toString());
+                        editor.putInt(editText.getText().toString().toUpperCase(),i);
                         editor.commit();
                         i++;
                     }
