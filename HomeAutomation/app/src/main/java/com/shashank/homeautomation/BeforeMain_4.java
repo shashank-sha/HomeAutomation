@@ -93,7 +93,7 @@ public class BeforeMain_4 extends AppCompatActivity {
                             EditText editText = EditTextList.get(i);
                             Log.d("zzzzzzzzzzzzzzzzzzz", editText.getText().toString());
                             editor.putString("room" + (room_num + 1) + "_appliance" + (appliance_num + 1) + "_name", editText.getText().toString());
-                            editor.putInt("room" + (room_num + 1) + "_" + editText.getText().toString(),room_num+1);
+                            editor.putInt("room" + (room_num + 1) + "_" + editText.getText().toString(),appliance_num+1);
                             editor.commit();
                             appliances.add(editText.getText().toString());
                             i++;

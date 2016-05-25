@@ -25,7 +25,7 @@ import java.util.Set;
 public class HomeActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
-    private List<TextView> TextViewList = new ArrayList<TextView>();
+    //private List<TextView> TextViewList = new ArrayList<TextView>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
