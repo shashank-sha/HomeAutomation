@@ -26,8 +26,8 @@
         style="@android:style/TextAppearance.DeviceDefault.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next"
-        android:id="@+id/nextButton_3_button"
+        android:text="Done"
+        android:id="@+id/nextButton_4_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         />

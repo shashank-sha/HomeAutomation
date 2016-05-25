@@ -59,8 +59,8 @@ public class BeforeMain_3 extends AppCompatActivity {
                 if(not_empty) {
                     int i = 1;
                     for (EditText editText : EditTextList) {
-                        String room = "room" + i + "_name";
-                        editor.putInt(sharedPreferences.getString(room, "room1")+"_num", Integer.parseInt(editText.getText().toString()));
+                        //String room = "room" + i + "_name";
+                        editor.putInt("room"+i+"_num", Integer.parseInt(editText.getText().toString()));
                         editor.commit();
                         i++;
                     }
