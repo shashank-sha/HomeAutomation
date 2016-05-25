@@ -11,24 +11,26 @@
 
     <EditText
         style="@android:style/TextAppearance.DeviceDefault.Medium"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
         android:id="@+id/rooms_editText"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:hint="No. of Rooms"/>
+        android:hint="No. of Rooms"
+        android:gravity="center"/>
 
     <EditText
         style="@android:style/TextAppearance.DeviceDefault.Medium"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/myHome_editText"
         android:layout_above="@+id/rooms_editText"
         android:layout_centerHorizontal="true"
-        android:hint="My Home"/>
+        android:hint="My Home"
+        android:gravity="center"/>
 
     <Button
         style="@android:style/TextAppearance.DeviceDefault.Small"

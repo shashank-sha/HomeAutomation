@@ -3,10 +3,12 @@ package com.shashank.homeautomation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,6 +44,8 @@ public class BeforeMain_4 extends AppCompatActivity {
             String room_name=sharedPreferences.getString("room" + (i+1) +"_name","roomname");
             TextView textView =new TextView(this);
             textView.setText(room_name.toUpperCase());
+            textView.setTypeface(null, Typeface.BOLD);
+            textView.setGravity(Gravity.CENTER);
             //textView.setId(i + 1);
             Log.d("zzzzzzzzzzzzzzzzzzz",room_name+"");
             linearLayout.addView(textView);
@@ -54,6 +58,7 @@ public class BeforeMain_4 extends AppCompatActivity {
                 EditText e = new EditText(this);
                 String hint = "name of appliance "+(j+1);
                 e.setHint(hint);
+                e.setGravity(Gravity.CENTER);
                 e.setId(j + 1);
                 //e.setInputType(InputType.TYPE_CLASS_NUMBER);
                 linearLayout.addView(e);
@@ -61,6 +66,7 @@ public class BeforeMain_4 extends AppCompatActivity {
             }
         }
 
+        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
 
         nextButton4 = (Button) findViewById(R.id.nextButton_4_button);
         nextButton4.setOnClickListener(new View.OnClickListener() {

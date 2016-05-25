@@ -20,14 +20,20 @@
         android:layout_centerHorizontal="true"
         android:textColor="#808080" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textView"
+        android:layout_marginTop="35dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/linearlayoutVertical3"
         android:orientation="vertical"
-        android:layout_below="@id/textView"
-        android:layout_marginTop="40dp">
+        android:layout_gravity="center"
+        >
     </LinearLayout>
+    </ScrollView>
 
     <Button
         style="@android:style/TextAppearance.DeviceDefault.Small"

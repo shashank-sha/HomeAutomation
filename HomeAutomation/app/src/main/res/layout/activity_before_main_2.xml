@@ -10,12 +10,20 @@
     tools:context=".BeforeMain_2">
 
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/linearlayoutVertical2"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        >
     </LinearLayout>
+
+    </ScrollView>
 
     <Button
         style="@android:style/TextAppearance.DeviceDefault.Small"

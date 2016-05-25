@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,11 +42,15 @@ public class BeforeMain_3 extends AppCompatActivity {
             EditText e = new EditText(this);
             String hint = sharedPreferences.getString("room"+(i+1)+"_name","Error");
             e.setHint(hint);
+            e.setGravity(Gravity.CENTER);
             e.setId(i+1);
             e.setInputType(InputType.TYPE_CLASS_NUMBER);
             linearLayout.addView(e);
             EditTextList.add(e);        //EditTexts will be added to the List in order provided(1-5)
         }
+
+        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
+
 
         nextButton3 = (Button) findViewById(R.id.nextButton_3_button);
         nextButton3.setOnClickListener(new View.OnClickListener() {
