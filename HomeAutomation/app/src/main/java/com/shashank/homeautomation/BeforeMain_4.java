@@ -66,7 +66,7 @@ public class BeforeMain_4 extends AppCompatActivity {
             }
         }
 
-        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
+        linearLayout.setGravity(Gravity.CENTER);
 
         nextButton4 = (Button) findViewById(R.id.nextButton_4_button);
         nextButton4.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +99,8 @@ public class BeforeMain_4 extends AppCompatActivity {
                     //Log.d("iiiiiiiiiiiiiiiiiiiii", sharedPreferences.getString("room2_appliance1_name","error"));
                     //Log.d("iiiiiiiiiiiiiiiiiiiii", sharedPreferences.getString("room2_appliance2_name","error"));
 
+                    editor.putBoolean("first_time",false);      //4 activities will never shown again
+                    editor.commit();
 
 
                     Intent intent=new Intent(BeforeMain_4.this,HomeActivity.class);

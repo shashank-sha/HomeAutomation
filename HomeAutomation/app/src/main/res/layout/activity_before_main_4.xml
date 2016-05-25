@@ -16,7 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/linearlayoutVertical4"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
         </LinearLayout>
 
     </ScrollView>

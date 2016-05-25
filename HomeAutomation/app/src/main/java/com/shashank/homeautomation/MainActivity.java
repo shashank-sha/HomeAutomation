@@ -12,14 +12,27 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = getSharedPreferences("shaPreferences", Context.MODE_PRIVATE);
 
-        Intent intent = new Intent(MainActivity.this,BeforeMain_1.class);
-        startActivity(intent);
+        Boolean check = sharedPreferences.getBoolean("first_time",true);
+
+        if(check) {
+            sharedPreferences.edit().clear().commit();
+            Intent intent = new Intent(MainActivity.this, BeforeMain_1.class);
+            startActivity(intent);
+        }
+
+        else{
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
 
     }
 }
