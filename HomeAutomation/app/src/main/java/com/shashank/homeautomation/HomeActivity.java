@@ -43,18 +43,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-    /* adapt the image to the size of the display
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        Bitmap bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
-                getResources(),R.drawable.bg),size.x,size.y,true);*/
-
-    /* fill the background ImageView with the resized image
-        ImageView iv_background = (ImageView) findViewById(R.id.iv_background);
-        iv_background.setImageBitmap(bmp);*/
-
-
 
         sharedPreferences = getSharedPreferences("shaPreferences", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
