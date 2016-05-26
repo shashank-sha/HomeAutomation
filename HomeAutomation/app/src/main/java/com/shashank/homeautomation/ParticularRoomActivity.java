@@ -216,6 +216,8 @@ public class ParticularRoomActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (IOException e) {
                 Log.d("hhhhhhhhhhhhh", "ioexception");
+                Intent intent=new Intent(ParticularRoomActivity.this,BeforeMain_1.class);
+                startActivity(intent);
                 e.printStackTrace();
             } finally {
                 Log.d("hhhhhhhhhhhhh", "sssssssss");
@@ -232,8 +234,6 @@ public class ParticularRoomActivity extends AppCompatActivity {
                         bufferedReader.close();
                     }
                 } catch (IOException e) {
-                    Intent intent=new Intent(ParticularRoomActivity.this,BeforeMain_1.class);
-                    startActivity(intent);
                     e.printStackTrace();
                 }
             }
@@ -244,7 +244,9 @@ public class ParticularRoomActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             //tv=(TextView)findViewById(R.id.textView);
-            Log.d("hhhhhhhhhhhhh", result);
+            if(result==null);
+            else
+                Log.d("hhhhhhhhhhhhh", result);
 
 
         }
@@ -252,6 +254,5 @@ public class ParticularRoomActivity extends AppCompatActivity {
 
 
 }
-
 
 
