@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else{
-            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            Intent intent = new Intent(MainActivity.this, HomeOptionsActivity.class);
             startActivity(intent);
         }
 

@@ -112,7 +112,7 @@ public class BeforeMain_4 extends AppCompatActivity {
                     editor.commit();
 
 
-                    Intent intent=new Intent(BeforeMain_4.this,HomeActivity.class);
+                    Intent intent=new Intent(BeforeMain_4.this,HomeOptionsActivity.class);
                     startActivity(intent);
 
                 }
