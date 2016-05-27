@@ -130,10 +130,9 @@ public class ParticularRoomOptions extends AppCompatActivity {
             LinearLayout linearLayoutHorizontal = new LinearLayout(this);
             linearLayoutHorizontal.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             linearLayoutHorizontal.setOrientation(LinearLayout.HORIZONTAL);
-
-
             ImageView imageView = new ImageView(this);
             imageView.setImageResource(R.drawable.round_toggle_out_off);
+            imageView.setColorFilter(Color.parseColor("#ffffff"));
             textView.measure(0, 0);
             int width=textView.getMeasuredWidth();
             int height=textView.getMeasuredHeight();
@@ -144,7 +143,7 @@ public class ParticularRoomOptions extends AppCompatActivity {
             //imageView.getLayoutParams().height=20;
             //imageView.getLayoutParams().width=10;
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(height+30, 150);
             imageView.setLayoutParams(layoutParams);
 
 
