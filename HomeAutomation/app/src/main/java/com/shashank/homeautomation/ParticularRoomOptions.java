@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,11 +102,10 @@ public class ParticularRoomOptions extends AppCompatActivity {
             TextView textView = new TextView(this);
             textView.setText(appliance_name);
             textView.setTypeface(null, Typeface.BOLD);
-            textView.setGravity(Gravity.CENTER);
-            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            llp.setMargins(0, 20, 0, 0);
-            textView.setLayoutParams(llp);
-
+            //textView.setGravity(Gravity.CENTER);
+            //LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            //llp.setMargins(0, 20, 0, 0);
+            //textView.setLayoutParams(llp);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25.f);
             textView.setTextColor(Color.parseColor("#FFFFFF"));
             textView.setShadowLayer(5, 3, 3, Color.BLACK);
@@ -126,12 +127,13 @@ public class ParticularRoomOptions extends AppCompatActivity {
 
 
 
+            /*
 
             LinearLayout linearLayoutHorizontal = new LinearLayout(this);
             linearLayoutHorizontal.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             linearLayoutHorizontal.setOrientation(LinearLayout.HORIZONTAL);
             ImageView imageView = new ImageView(this);
-            imageView.setImageResource(R.drawable.round_toggle_out_off);
+            imageView.setImageResource(R.drawable.rsz_round_toggle_out_off);
             imageView.setColorFilter(Color.parseColor("#ffffff"));
             textView.measure(0, 0);
             int width=textView.getMeasuredWidth();
@@ -149,9 +151,31 @@ public class ParticularRoomOptions extends AppCompatActivity {
 
             linearLayoutHorizontal.addView(textView);
             linearLayoutHorizontal.addView(imageView);
+*/
+
+            textView.measure(0, 0);
+            int width=textView.getMeasuredWidth();
+            int height=textView.getMeasuredHeight();
+            RelativeLayout relativeLayout = new RelativeLayout(this);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams
+                    (ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+            lp.addRule(RelativeLayout.ALIGN_LEFT);
+
+            relativeLayout.addView(textView,lp);
+
+            RelativeLayout.LayoutParams lpright = new RelativeLayout.LayoutParams(130, height);
+            lpright.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            //lpright.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM+30);
+
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(R.drawable.rsz_round_toggle_out_off);
 
 
-            linearLayout.addView(linearLayoutHorizontal);
+            relativeLayout.addView(imageView,lpright);
+
+
+
+            linearLayout.addView(relativeLayout);
             View v = new View(this);
             v.setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -159,7 +183,7 @@ public class ParticularRoomOptions extends AppCompatActivity {
             ));
             v.setBackgroundColor(Color.parseColor("#FFFFFF"));
 
-            setMargins(v, 0, 15, 0, 0);
+            setMargins(v, 0, 7, 0, 0);
 
             linearLayout.addView(v);
 
