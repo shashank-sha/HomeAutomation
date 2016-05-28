@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -48,6 +49,7 @@ public class ParticularRoomOptions extends AppCompatActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    int appliance_num;
 
 
     @Override
@@ -110,20 +112,13 @@ public class ParticularRoomOptions extends AppCompatActivity {
             textView.setTextColor(Color.parseColor("#FFFFFF"));
             textView.setShadowLayer(5, 3, 3, Color.BLACK);
 
-            /*********************************IMAGEVIEW**************************************/
+
 
 
 
 
             textView.setClickable(true);
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int val = sharedPreferences.getInt("room" + room_number + "_" + appliance_name, 0);
-                    Toast.makeText(getApplicationContext(), val + "", Toast.LENGTH_SHORT).show();
-                    new GETStatus().execute("http://192.168.2.68:8088");
-                }
-            });
+
 
 
 
@@ -165,15 +160,70 @@ public class ParticularRoomOptions extends AppCompatActivity {
 
             RelativeLayout.LayoutParams lpright = new RelativeLayout.LayoutParams(130, height);
             lpright.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            //lpright.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM+30);
 
-            ImageView imageView = new ImageView(this);
-            imageView.setImageResource(R.drawable.rsz_round_toggle_out_off);
+            /*********************************IMAGEVIEW**************************************/
 
 
-            relativeLayout.addView(imageView,lpright);
+
+            final ImageView imageViewOut = new ImageView(this);
+            imageViewOut.setImageResource(R.drawable.rsz_round_toggle_out_off);
+            imageViewOut.setId(appliance_num);
+            imageViewOut.setClickable(true);
 
 
+
+            relativeLayout.addView(imageViewOut,lpright);
+
+            final ImageView imageViewInRight = new ImageView(this);
+            imageViewInRight.setImageResource(R.drawable.round_toggle_in_shadow);
+
+
+            final ImageView imageViewInLeft = new ImageView(this);
+            imageViewInLeft.setImageResource(R.drawable.round_toggle_in_shadow);
+            imageViewInLeft.setColorFilter(Color.parseColor("#E3594F"));
+            imageViewInLeft.setVisibility(View.INVISIBLE);
+
+
+            RelativeLayout.LayoutParams lprightIn = new RelativeLayout.LayoutParams(130, height);
+            lprightIn.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            imageViewInRight.setLayoutParams(lprightIn);
+            imageViewInLeft.setLayoutParams(lprightIn);
+
+
+
+            relativeLayout.addView(imageViewInRight);
+            relativeLayout.addView(imageViewInLeft);
+
+
+            imageViewOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appliance_num = sharedPreferences.getInt("room" + room_number + "_" + appliance_name, 0);
+                    //Toast.makeText(getApplicationContext(), appliance_num + "", Toast.LENGTH_SHORT).show();
+
+                    if(imageViewInLeft.getVisibility()==View.INVISIBLE) {  //Not visible
+                        imageViewInLeft.setVisibility(View.VISIBLE);
+                        imageViewInRight.setVisibility(View.INVISIBLE);
+                        Toast.makeText(getApplicationContext(), "ON", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        imageViewInLeft.setVisibility(View.INVISIBLE);
+                        imageViewInRight.setVisibility(View.VISIBLE);
+                        Toast.makeText(getApplicationContext(), "OFF", Toast.LENGTH_SHORT).show();
+                        imageViewOut.setColorFilter(Color.parseColor("#ffffff"));
+                    }
+                    //Toast.makeText(getApplicationContext(), imageViewIn.getVisibility() + "", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appliance_num = sharedPreferences.getInt("room" + room_number + "_" + appliance_name, 0);
+                    Toast.makeText(getApplicationContext(), appliance_num + "", Toast.LENGTH_SHORT).show();
+                    //new GETStatus().execute("http://192.168.2.68:8088");
+                }
+            });
 
             linearLayout.addView(relativeLayout);
             View v = new View(this);
