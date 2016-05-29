@@ -1,5 +1,6 @@
 package com.shashank.homeautomation;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +44,7 @@ public class ParticularRoomOptions extends AppCompatActivity {
 
 
     SharedPreferences sharedPreferences;
+    ProgressDialog progressDialog;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -198,9 +200,10 @@ public class ParticularRoomOptions extends AppCompatActivity {
             imageViewOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    progressDialog = ProgressDialog.show(ParticularRoomOptions.this,"title","please wait",true,false);
+
                     appliance_num = sharedPreferences.getInt("room" + room_number + "_" + appliance_name, 0);
                     //Toast.makeText(getApplicationContext(), appliance_num + "", Toast.LENGTH_SHORT).show();
-
                     if(imageViewInLeft.getVisibility()==View.INVISIBLE) {  //Not visible
                         imageViewInLeft.setVisibility(View.VISIBLE);
                         imageViewInRight.setVisibility(View.INVISIBLE);
@@ -212,7 +215,11 @@ public class ParticularRoomOptions extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "OFF", Toast.LENGTH_SHORT).show();
                         imageViewOut.setColorFilter(Color.parseColor("#ffffff"));
                     }
+                    new GETStatus().execute("http://192.168.2.68:8088");
                     //Toast.makeText(getApplicationContext(), imageViewIn.getVisibility() + "", Toast.LENGTH_SHORT).show();
+
+                    if(progressDialog != null && progressDialog.isShowing())
+                        progressDialog.dismiss();
                 }
             });
 
@@ -221,7 +228,7 @@ public class ParticularRoomOptions extends AppCompatActivity {
                 public void onClick(View v) {
                     appliance_num = sharedPreferences.getInt("room" + room_number + "_" + appliance_name, 0);
                     Toast.makeText(getApplicationContext(), appliance_num + "", Toast.LENGTH_SHORT).show();
-                    //new GETStatus().execute("http://192.168.2.68:8088");
+                    new GETStatus().execute("http://192.168.2.68:8088");
                 }
             });
 
@@ -298,6 +305,12 @@ public class ParticularRoomOptions extends AppCompatActivity {
     public class GETStatus extends AsyncTask<String, String, String> {
 
         @Override
+        protected void onPreExecute(){
+            progressDialog = ProgressDialog.show(ParticularRoomOptions.this,"title","please wait",true,false);
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(String... params) {
 
             HttpURLConnection httpURLConnection = null;
@@ -361,6 +374,8 @@ public class ParticularRoomOptions extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             //tv=(TextView)findViewById(R.id.textView);
+            if(progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
             if(result==null);
             else
                 Log.d("hhhhhhhhhhhhh", result);
